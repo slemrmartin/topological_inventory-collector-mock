@@ -1,2 +1,4 @@
-# mock-collector
-Mock collector for Topological Inventory
+# Mock collector for OpenShift
+Mock collector for Topological Inventory service
+
+ 
