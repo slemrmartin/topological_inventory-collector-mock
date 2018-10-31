@@ -1,14 +1,14 @@
-require "openshift/mock/entity"
+require "mock_collector/openshift/entity"
 
-module Openshift
-  module Mock
+module MockCollector
+  module Openshift
     class Entity::ClusterServiceClass < Entity
       attr_reader :externalID, :externalName, :description
 
-      def initialize
+      def initialize(id, server)
         super
-        @externalName = 'mock-cluster-svc-class'
-        @externalID   = 'cluster-svc-class-uid'
+        @externalName = @name
+        @externalID   = @uid
         @description  = 'Cluster Service Class'
       end
 

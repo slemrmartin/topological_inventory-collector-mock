@@ -6,7 +6,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 STDOUT.sync = true
 
 require "bundler/setup"
-require "openshift/mock/collector"
+require "mock_collector/openshift/collector"
 require "pry-byebug"
 
 def parse_args
@@ -26,7 +26,7 @@ ingress_api_uri = URI(args[:ingress_api])
 TopologicalInventory::IngressApi::Client.configure.scheme = ingress_api_uri.scheme || "http"
 TopologicalInventory::IngressApi::Client.configure.host   = "#{ingress_api_uri.host}:#{ingress_api_uri.port}"
 
-collector = Openshift::Mock::Collector.new(args[:source], nil, nil)
+collector = MockCollector::Openshift::Collector.new(args[:source], nil, nil)
 Thread.new { collector.collect! }
 
 loop { sleep }

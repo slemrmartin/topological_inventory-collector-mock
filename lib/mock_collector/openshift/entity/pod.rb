@@ -1,7 +1,7 @@
-require "openshift/mock/entity"
+require "mock_collector/openshift/entity"
 
-module Openshift
-  module Mock
+module MockCollector
+  module Openshift
     class Entity::Pod < Entity
       attr_reader :podIP, :nodeName
 
@@ -9,11 +9,11 @@ module Openshift
         TopologicalInventory::IngressApi::Client::ContainerGroup
       end
 
-      def initialize
+      def initialize(id, server)
         super
-        @name     = "mock-pod"
+
         @podIP    = "127.0.0.1"
-        @nodeName = "mock-node"
+        @nodeName = "mock-node-1" #@entities.assign_node
       end
 
       def status

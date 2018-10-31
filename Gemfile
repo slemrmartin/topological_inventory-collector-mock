@@ -4,7 +4,9 @@ gem "activesupport"
 gem "concurrent-ruby"
 gem "kubeclient"
 gem "optimist"
+gem "recursive-open-struct"
 gem "topological_inventory-ingress_api-client", :git => "https://github.com/ManageIQ/topological_inventory-ingress_api-client-ruby", :branch => "master"
+gem "openshift-collector", :git => "https://github.com/agrare/openshift-collector", :branch => "master"
 gem "more_core_extensions"
 
 #

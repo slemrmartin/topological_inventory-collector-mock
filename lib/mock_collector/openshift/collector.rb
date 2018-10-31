@@ -1,11 +1,11 @@
 require "openshift/collector"
-require "openshift/mock/connection"
+require "mock_collector/openshift/server"
 
-module Openshift
-  module Mock
+module MockCollector
+  module Openshift
     class Collector < ::Openshift::Collector
       def connection
-        @connection ||= Openshift::Mock::Connection.new
+        @connection ||= MockCollector::Openshift::Server.new
       end
 
       def connection_for_entity_type(_entity_type = nil)

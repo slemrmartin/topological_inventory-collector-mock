@@ -1,7 +1,7 @@
-require "openshift/mock/entity"
+require "mock_collector/openshift/entity"
 
-module Openshift
-  module Mock
+module MockCollector
+  module Openshift
     class Entity::ServiceInstance < Entity
       attr_reader :externalID, :externalName
 
@@ -17,9 +17,9 @@ module Openshift
         end
       end
 
-      def initialize
+      def initialize(id, server)
         super
-        @externalName = 'mock-service-instance'
+        @externalName = 'mock_collector-service-instance'
         @externalID  = 'service-instance-uid'
       end
 

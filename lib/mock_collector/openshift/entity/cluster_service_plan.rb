@@ -1,7 +1,7 @@
-require "openshift/mock/entity"
+require "mock_collector/openshift/entity"
 
-module Openshift
-  module Mock
+module MockCollector
+  module Openshift
     class Entity::ClusterServicePlan < Entity
       attr_reader :externalID, :externalName, :description, :instanceCreateParameterSchema
 
@@ -11,10 +11,10 @@ module Openshift
         end
       end
 
-      def initialize
+      def initialize(id, server)
         super
-        @externalName = 'mock-cluster-svc-plan'
-        @externalID   = 'cluster-svc-plan-uid'
+        @externalName = @name
+        @externalID   = @uid
         @description  = 'Cluster Service Plan'
         @instanceCreateParameterSchema = ::Kubeclient::Resource.new({"type": "object", "$schema": "http://json-schema.org/draft-04/schema", "additionalProperties": false})
       end
