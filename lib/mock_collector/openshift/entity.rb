@@ -1,16 +1,17 @@
-require_relative "../entity"
+require "mock_collector/entity"
 
 module MockCollector
-  class Openshift::Entity < Entity
-    attr_reader :namespace
+  module Openshift
+    class Entity < ::MockCollector::Entity
+      attr_reader :namespace
+      def initialize(_id, _entity_type)
+        super
+        @namespace = 'namespace-name' #TODO
+      end
 
-    def initialize(id, server)
-      super
-      @namespace = "mock-namespace-1"
-    end
-
-    def metadata
-      self
+      def metadata
+        self
+      end
     end
   end
 end

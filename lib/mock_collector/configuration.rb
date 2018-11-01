@@ -1,12 +1,8 @@
 module MockCollector
   class Configuration
-    # @@instance = self.new
-
     def self.instance
       @@instance ||= self.new
     end
-
-    # protected_class_method :new
 
     attr_reader :references_strategy
     attr_reader :uuid_strategy

@@ -2,7 +2,7 @@ module MockCollector
   class EntityType
     include Enumerable
 
-    attr_reader :storage, :config, :data
+    attr_reader :storage, :config, :data, :ref_id
 
     delegate :collector_type,
              :class_for, :to => :storage

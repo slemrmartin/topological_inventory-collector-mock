@@ -1,6 +1,6 @@
 module MockCollector
   class Storage
-    attr_reader :entities, :server
+    attr_reader :entities, :server, :ref_id
 
     delegate :collector_type,
              :class_for, :to => :server
