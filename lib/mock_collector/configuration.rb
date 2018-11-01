@@ -9,8 +9,8 @@ module MockCollector
 
     def initialize
       # how are associations spread
-      @references_strategy = :linear # or :gauss
-      @uuid_strategy = :sequence_uuids # or :random_uuids
+      @references_strategy = :modulo # :linear or :gauss
+      @uuid_strategy = :human_uids # or :sequence_uuids, :random_uuids
     end
   end
 end

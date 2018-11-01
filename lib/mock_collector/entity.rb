@@ -21,15 +21,14 @@ module MockCollector
       @deletionTimestamp = nil
     end
 
-    def reference
-      @uid
-    end
+    # def reference
+    #   @uid
+    # end
 
     protected
 
     def generate_name
-      name = self.class.name.to_s.split("::").last
-      "mock-#{name.downcase}-#{@ref_id}"
+      @entity_type.name_for(@ref_id)
     end
 
     def generate_uid
@@ -37,7 +36,7 @@ module MockCollector
     end
 
     def link_to(dest_entity_type, ref: :uid)
-      @entity_type.link(@ref_id, dest_entity_type)
+      @entity_type.link(@ref_id, dest_entity_type, ref: ref)
     end
   end
 end

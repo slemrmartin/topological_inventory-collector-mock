@@ -55,28 +55,35 @@ module MockCollector
       @entity_class = klass
     end
 
-    def link(entity_id, dest_entity_type)
-      if @config.object_counts[dest_entity_type].to_i == 0
-        # TODO: can be nil in the future
-        raise "Nil config on #{dest_entity_type}"
-      end
+    def link(entity_id, dest_entity_type, ref: :uid)
+      assert_objects_count(dest_entity_type)
 
       dest_entity_id = entity_id % @config.object_counts[dest_entity_type]
 
-      @storage.entities[dest_entity_type].uid_for(dest_entity_id)
+      case ref
+      when :uid then @storage.entities[dest_entity_type].uid_for(dest_entity_id)
+      when :name then @storage.entities[dest_entity_type].name_for(dest_entity_id)
+      else raise "Link to ref #{ref} not supported (Entity: #{@name})"
+      end
     end
 
     def uid_for(entity_id)
       case config.uuid_strategy
       when :random_uuids then SecureRandom.uuid
       when :sequence_uuids then sequence_uuid(entity_id)
-      when :human_uid then human_uid(entity_id)
+      when :human_uids then human_uid(entity_id)
       else raise "Unknown UUID generating strategy: #{config.uuid_strategy}. Choose from (:random_uuids, :sequence_uuids)"
       end
     end
 
+    def name_for(entity_id)
+      name = entity_class.name.to_s.split("::").last
+      "mock-#{name.downcase}-#{entity_id}"
+    end
+
     private
 
+    # Real GUID simulation
     def sequence_uuid(entity_id)
       collector_id   = "%08x" % storage.ref_id
       entity_type_id = "%04x" % @ref_id
@@ -85,8 +92,16 @@ module MockCollector
       "#{collector_id}-#{entity_type_id}-#{ref_id[0..3]}-#{ref_id[4..7]}-#{ref_id[8..19]}"
     end
 
+    # Entity-type specific readable ID
     def human_uid(entity_id)
-      "#{storage.collector_type}-#{@name}-#{'%10d' % entity_id}"
+      "#{storage.collector_type}-#{@name}-#{'%010d' % entity_id}"
+    end
+
+    def assert_objects_count(dest_entity_type)
+      if @config.object_counts[dest_entity_type].to_i == 0
+        # TODO: can be nil in the future
+        raise "Nil config on #{dest_entity_type}"
+      end
     end
   end
 end
