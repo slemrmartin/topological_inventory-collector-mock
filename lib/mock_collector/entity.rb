@@ -33,21 +33,11 @@ module MockCollector
     end
 
     def generate_uid
-      case config.uuid_strategy
-      when :random_uuids then SecureRandom.uuid
-      when :sequence_uuids then sequence_uuid
-      else raise "Unknown UUID generating strategy: #{config.uuid_strategy}. Choose from (:random_uuids, :sequence_uuids)"
-      end
+      @entity_type.uid_for(@ref_id)
     end
 
-    private
-
-    def sequence_uuid
-      collector_id   = "%08x" % @entity_type.storage.ref_id
-      entity_type_id = "%04x" % @entity_type.ref_id
-      ref_id         = "%020x" % @ref_id
-
-      "#{collector_id}-#{entity_type_id}-#{ref_id[0..3]}-#{ref_id[4..7]}-#{ref_id[8..19]}"
+    def link_to(dest_entity_type, ref: :uid)
+      @entity_type.link(@ref_id, dest_entity_type)
     end
   end
 end

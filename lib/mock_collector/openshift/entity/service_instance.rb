@@ -3,36 +3,20 @@ require "mock_collector/openshift/entity"
 module MockCollector
   module Openshift
     class Entity::ServiceInstance < Entity
-      attr_reader :externalID, :externalName
-
-      class ClusterServiceClassRef
-        def self.name
-          "cluster-svc-class-uid"
-        end
-      end
-
-      class ClusterServicePlanRef
-        def self.name
-          "cluster-svc-plan-uid"
-        end
-      end
+      attr_reader :spec
 
       def initialize(id, server)
         super
-        @externalName = 'mock_collector-service-instance'
-        @externalID  = 'service-instance-uid'
-      end
-
-      def spec
-        self
-      end
-
-      def clusterServiceClassRef
-        ClusterServiceClassRef
-      end
-
-      def clusterServicePlanRef
-        ClusterServicePlanRef
+        @spec = RecursiveOpenStruct.new(
+          :externalName => @name,
+          :externalID => @uid,
+          :clusterServicePlanRef => {
+            :name => link_to(:cluster_service_plans)
+          },
+          :clusterServiceClassRef => {
+            :name => link_to(:cluster_service_classes)
+          }
+        )
       end
     end
   end

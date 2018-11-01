@@ -1,6 +1,5 @@
 require "mock_collector/storage"
 
-# require "mock_collector/openshift/entity"
 require "mock_collector/openshift/entity/namespace"
 require "mock_collector/openshift/entity/pod"
 require "mock_collector/openshift/entity/node"

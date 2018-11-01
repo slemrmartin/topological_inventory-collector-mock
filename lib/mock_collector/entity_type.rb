@@ -2,7 +2,7 @@ module MockCollector
   class EntityType
     include Enumerable
 
-    attr_reader :storage, :config, :data, :ref_id
+    attr_reader :storage, :config, :data, :ref_id, :name
 
     delegate :collector_type,
              :class_for, :to => :storage
@@ -22,6 +22,23 @@ module MockCollector
       @refs = []
     end
 
+    def each
+      @data.each do |entity|
+        yield entity
+      end
+    end
+
+    def <<(entity)
+      @refs << entity.reference
+      @data << entity
+    end
+    alias push <<
+
+    def resourceVersion
+      "1"
+    end
+
+
     def create_data
       @config.object_counts[@name.to_sym].to_i.times do |i|
         @data << entity_class.new(i, self)
@@ -38,21 +55,38 @@ module MockCollector
       @entity_class = klass
     end
 
-    def each
-      @data.each do |entity|
-        yield entity
+    def link(entity_id, dest_entity_type)
+      if @config.object_counts[dest_entity_type].to_i == 0
+        # TODO: can be nil in the future
+        raise "Nil config on #{dest_entity_type}"
+      end
+
+      dest_entity_id = entity_id % @config.object_counts[dest_entity_type]
+
+      @storage.entities[dest_entity_type].uid_for(dest_entity_id)
+    end
+
+    def uid_for(entity_id)
+      case config.uuid_strategy
+      when :random_uuids then SecureRandom.uuid
+      when :sequence_uuids then sequence_uuid(entity_id)
+      when :human_uid then human_uid(entity_id)
+      else raise "Unknown UUID generating strategy: #{config.uuid_strategy}. Choose from (:random_uuids, :sequence_uuids)"
       end
     end
 
-    def resourceVersion
-      "1"
+    private
+
+    def sequence_uuid(entity_id)
+      collector_id   = "%08x" % storage.ref_id
+      entity_type_id = "%04x" % @ref_id
+      ref_id         = "%020x" % entity_id
+
+      "#{collector_id}-#{entity_type_id}-#{ref_id[0..3]}-#{ref_id[4..7]}-#{ref_id[8..19]}"
     end
 
-    def <<(entity)
-      @refs << entity.reference
-      @data << entity
+    def human_uid(entity_id)
+      "#{storage.collector_type}-#{@name}-#{'%10d' % entity_id}"
     end
-
-    alias push <<
   end
 end

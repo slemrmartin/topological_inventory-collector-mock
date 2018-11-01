@@ -6,7 +6,7 @@ module MockCollector
       attr_reader :namespace
       def initialize(_id, _entity_type)
         super
-        @namespace = 'namespace-name' #TODO
+        @namespace = link_to(:namespaces, :ref => :name)
       end
 
       def metadata

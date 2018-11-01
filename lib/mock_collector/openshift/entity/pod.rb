@@ -13,7 +13,7 @@ module MockCollector
         super
 
         @podIP    = "127.0.0.1"
-        @nodeName = "mock-node-1" #@entities.assign_node
+        @nodeName = link_to(:nodes, :ref => :name)
       end
 
       def status

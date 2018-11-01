@@ -26,7 +26,7 @@ module MockCollector
       end
 
       entity_types.each do |entity_type|
-        link_entities_of(entity_type)
+        init_entities_of(entity_type)
       end
     end
 
@@ -53,14 +53,12 @@ module MockCollector
       # TODO: entity_type provider-specific?
       # @entities[entity_type] = server.class_for(:entity_type).new(entity_type, self, entity_type_ref_id(entity_type))
       @entities[entity_type] = MockCollector::EntityType.new(entity_type, self, entity_type_ref_id(entity_type))
+    end
 
+    def init_entities_of(entity_type)
       @entities[entity_type].create_data
 
       @entities[entity_type].data
-    end
-
-    def link_entities_of(entity_type)
-      # TODO
     end
 
     def entity_type_ref_id(entity_type)
