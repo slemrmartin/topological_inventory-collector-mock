@@ -21,10 +21,6 @@ module MockCollector
       @deletionTimestamp = nil
     end
 
-    # def reference
-    #   @uid
-    # end
-
     protected
 
     def generate_name

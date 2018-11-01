@@ -5,7 +5,7 @@ module MockCollector
     class Entity::ServiceInstance < Entity
       attr_reader :spec
 
-      def initialize(id, server)
+      def initialize(_id, _server)
         super
         @spec = RecursiveOpenStruct.new(
           :externalName => @name,

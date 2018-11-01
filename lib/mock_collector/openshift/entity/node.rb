@@ -5,7 +5,7 @@ module MockCollector
     class Entity::Node < Entity
       attr_reader :status
 
-      def initialize(id, server)
+      def initialize(_id, _server)
         super
 
         @status = RecursiveOpenStruct.new(
@@ -14,10 +14,6 @@ module MockCollector
             :memory => "100"
           }
         )
-      end
-
-      def reference
-        @name
       end
     end
   end

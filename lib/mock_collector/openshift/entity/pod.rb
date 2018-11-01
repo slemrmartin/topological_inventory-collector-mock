@@ -5,11 +5,7 @@ module MockCollector
     class Entity::Pod < Entity
       attr_reader :podIP, :nodeName
 
-      def self.ingress_api_class
-        TopologicalInventory::IngressApi::Client::ContainerGroup
-      end
-
-      def initialize(id, server)
+      def initialize(_id, _server)
         super
 
         @podIP    = "127.0.0.1"
