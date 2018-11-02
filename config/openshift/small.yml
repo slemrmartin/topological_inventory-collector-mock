@@ -1,0 +1,11 @@
+inventory:
+  amounts:
+    cluster_service_classes: 2
+    cluster_service_plans: 5
+    namespaces: 2
+    nodes: 5
+    pods: 10
+    service_instances: 10
+    templates: 5
+references_strategy: :modulo # the only option now
+uuid_strategy: :human_uids # or sequence_uuids, random_uuids

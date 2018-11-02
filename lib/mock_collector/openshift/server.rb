@@ -1,5 +1,4 @@
 require "mock_collector/server"
-require "mock_collector/openshift/configuration"
 require "mock_collector/openshift/storage"
 
 module MockCollector

@@ -5,8 +5,6 @@ module MockCollector
     attr_reader :name, :uid, :resourceVersion,
                 :creationTimestamp, :deletionTimestamp
 
-    delegate :config ,:to => :entity_type
-
     # @param id [Integer]
     # @param entity_type [MockCollector::EntityType]
     def initialize(id, entity_type)

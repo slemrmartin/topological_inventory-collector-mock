@@ -19,4 +19,6 @@ Gem::Specification.new do |s|
   s.add_dependency "concurrent-ruby"
   s.add_dependency "kubeclient"
   s.add_dependency "optimist"
+  s.add_dependency "config"
+  s.add_dependency "recursive-open-struct"
 end

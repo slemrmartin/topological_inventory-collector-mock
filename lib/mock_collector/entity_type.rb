@@ -2,7 +2,7 @@ module MockCollector
   class EntityType
     include Enumerable
 
-    attr_reader :storage, :config, :data, :ref_id, :name
+    attr_reader :storage, :data, :ref_id, :name
 
     delegate :collector_type,
              :class_for, :to => :storage
@@ -15,8 +15,6 @@ module MockCollector
       @name = name
       @storage = storage
       @ref_id = ref_id
-
-      @config  = class_for(:configuration).instance
 
       @data = []
       @refs = []
@@ -40,7 +38,7 @@ module MockCollector
 
 
     def create_data
-      @config.object_counts[@name.to_sym].to_i.times do |i|
+      ::Settings.inventory.amounts[@name.to_sym].to_i.times do |i|
         @data << entity_class.new(i, self)
       end
     end
@@ -58,7 +56,7 @@ module MockCollector
     def link(entity_id, dest_entity_type, ref: :uid)
       assert_objects_count(dest_entity_type)
 
-      dest_entity_id = entity_id % @config.object_counts[dest_entity_type]
+      dest_entity_id = entity_id % ::Settings.inventory.amounts[dest_entity_type]
 
       case ref
       when :uid then @storage.entities[dest_entity_type].uid_for(dest_entity_id)
@@ -68,11 +66,11 @@ module MockCollector
     end
 
     def uid_for(entity_id)
-      case config.uuid_strategy
+      case ::Settings.uuid_strategy
       when :random_uuids then SecureRandom.uuid
       when :sequence_uuids then sequence_uuid(entity_id)
       when :human_uids then human_uid(entity_id)
-      else raise "Unknown UUID generating strategy: #{config.uuid_strategy}. Choose from (:random_uuids, :sequence_uuids)"
+      else raise "Unknown UUID generating strategy: #{::Settings.uuid_strategy}. Choose from (:random_uuids, :sequence_uuids)"
       end
     end
 
@@ -98,7 +96,7 @@ module MockCollector
     end
 
     def assert_objects_count(dest_entity_type)
-      if @config.object_counts[dest_entity_type].to_i == 0
+      if ::Settings.inventory.amounts[dest_entity_type].to_i == 0
         # TODO: can be nil in the future
         raise "Nil config on #{dest_entity_type}"
       end

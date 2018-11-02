@@ -1,13 +1,13 @@
+require "config"
 require "mock_collector/entity_type"
 
 module MockCollector
   class Server
-    attr_reader :config
+    def initialize(config_type)
+      path_to_config = File.expand_path("../../config/#{collector_type.to_s}", File.dirname(__FILE__))
+      ::Config.load_and_set_settings(File.join(path_to_config, "#{config_type.to_s}.yml"))
 
-    def initialize
-      @config  = class_for(:configuration).instance
       @storage = class_for(:storage).new(self)
-
       @storage.create_entities
     end
 
@@ -19,7 +19,7 @@ module MockCollector
     # Classes can be determined from:
     # - collector_type
     # - type
-    # @param type [Symbol] :configuration | :storage | :entity | :entity_type
+    # @param type [Symbol] :storage | :entity | :entity_type
     def class_for(type)
       class_name = "MockCollector::#{collector_type.to_s.classify}::#{type.to_s.classify}"
       klass = class_name.safe_constantize
