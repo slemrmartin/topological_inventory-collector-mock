@@ -17,7 +17,6 @@ module MockCollector
       @ref_id = ref_id
 
       @data = []
-      @refs = []
     end
 
     def each
@@ -27,22 +26,23 @@ module MockCollector
     end
 
     def <<(entity)
-      @refs << entity.reference
       @data << entity
     end
     alias push <<
 
+    # TODO later
     def resourceVersion
       "1"
     end
 
-
+    # Creates data of one type (means for 1 InventoryCollection) with amount based on YAML config
     def create_data
       ::Settings.inventory.amounts[@name.to_sym].to_i.times do |i|
         @data << entity_class.new(i, self)
       end
     end
 
+    # To each EntityType belongs one Entity class
     def entity_class
       return @entity_class unless @entity_class.nil?
 
@@ -53,6 +53,12 @@ module MockCollector
       @entity_class = klass
     end
 
+    # Generated reference between entities
+    #
+    # @param entity_id [Integer] entity's id
+    # @param dest_entity_type [Symbol] one of MockCollector::Storage.entity_types
+    # @param ref [Symbol] :uid  => get UID of target entity
+    #                     :name => get name of target entity
     def link(entity_id, dest_entity_type, ref: :uid)
       assert_objects_count(dest_entity_type)
 
@@ -65,6 +71,11 @@ module MockCollector
       end
     end
 
+    # Unique ID for given entity
+    # 3 strategies available:
+    # - random_uuids - Different for every run of collector
+    # - sequence_uuids - UUID format, sequential, same everytime
+    # - human_uids - Mixed text-number unique ID, same everytime
     def uid_for(entity_id)
       case ::Settings.uuid_strategy
       when :random_uuids then SecureRandom.uuid
@@ -74,6 +85,8 @@ module MockCollector
       end
     end
 
+    # Unique name for given entity
+    # Always the same for given ID
     def name_for(entity_id)
       name = entity_class.name.to_s.split("::").last
       "mock-#{name.downcase}-#{entity_id}"

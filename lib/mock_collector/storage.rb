@@ -16,10 +16,11 @@ module MockCollector
       @server = server
 
       @entities = {}
-      # UUID of entity consists of storage id
+      # UUID simulation of entity consists of storage id
       @ref_id   = REF_IDS[collector_type]
     end
 
+    # Creates entity types and initializes data
     def create_entities
       entity_types.each do |entity_type|
         create_entities_of(entity_type)
@@ -31,10 +32,12 @@ module MockCollector
     end
 
     # List of entity types which this server provides
+    # Should be defined by subclass
     def entity_types
       %i()
     end
 
+    # Keys in @entities are method names
     def method_missing(method_name, *arguments, &block)
       if respond_to_missing?(method_name)
         @entities[method_name]

@@ -3,6 +3,8 @@ require "mock_collector/entity_type"
 
 module MockCollector
   class Server
+    # @param config_type [String] - name of config file without .yml suffix.
+    #                               Located in config/openshift/
     def initialize(config_type)
       path_to_config = File.expand_path("../../config/#{collector_type.to_s}", File.dirname(__FILE__))
       ::Config.load_and_set_settings(File.join(path_to_config, "#{config_type.to_s}.yml"))
@@ -28,6 +30,8 @@ module MockCollector
       klass
     end
 
+    # Retrieves data from get_ methods in Openshift Collector's parser
+    # Watch_ method not implemented yet.
     def method_missing(method_name, *arguments, &block)
       # get
       if method_name.to_s.start_with?('get_')
