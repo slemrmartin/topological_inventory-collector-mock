@@ -6,8 +6,8 @@ module MockCollector
     # @param config_type [String] - name of config file without .yml suffix.
     #                               Located in config/openshift/
     def initialize(config_type)
-      path_to_config = File.expand_path("../../config/#{collector_type.to_s}", File.dirname(__FILE__))
-      ::Config.load_and_set_settings(File.join(path_to_config, "#{config_type.to_s}.yml"))
+      path_to_config = File.expand_path("../../config/#{collector_type}", File.dirname(__FILE__))
+      ::Config.load_and_set_settings(File.join(path_to_config, "#{config_type}.yml"))
 
       @storage = class_for(:storage).new(self)
       @storage.create_entities
@@ -45,7 +45,7 @@ module MockCollector
     end
 
     def respond_to_missing?(method_name, _include_private = false)
-      method_name.to_s.start_with?("get_") || method_name.to_s.start_with?("watch_")
+      method_name.to_s.start_with?("get_", "watch_")
     end
   end
 end

@@ -1,11 +1,12 @@
-$:.push File.expand_path("../lib", __FILE__)
+lib = File.expand_path("../lib", __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
-# require "openshift-collector/version"
+require "mock_collector/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
   s.name        = "mock_collector"
-  s.version     = "0.0.1" #OpenshiftCollector::VERSION
+  s.version     = MockCollector::VERSION
   s.authors     = ["Martin Slemr"]
   s.email       = ["mslemr@redhat.com"]
   s.homepage    = "https://github.com/mslemr/mock-collector"

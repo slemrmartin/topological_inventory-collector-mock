@@ -6,7 +6,7 @@ module MockCollector
     class Collector < ::Openshift::Collector
       def initialize(source, config: nil, batch_size: 1_000)
         @config_type = config
-        super(source, nil, nil, batch_size: batch_size)
+        super(source, nil, nil, :batch_size => batch_size)
       end
 
       def connection

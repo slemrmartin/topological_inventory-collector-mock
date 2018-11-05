@@ -30,7 +30,7 @@ module MockCollector
     end
 
     def link_to(dest_entity_type, ref: :uid)
-      @entity_type.link(@ref_id, dest_entity_type, ref: ref)
+      @entity_type.link(@ref_id, dest_entity_type, :ref => ref)
     end
   end
 end

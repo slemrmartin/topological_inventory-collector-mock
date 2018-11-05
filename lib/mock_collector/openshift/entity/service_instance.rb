@@ -8,9 +8,9 @@ module MockCollector
       def initialize(_id, _server)
         super
         @spec = RecursiveOpenStruct.new(
-          :externalName => @name,
-          :externalID => @uid,
-          :clusterServicePlanRef => {
+          :externalName           => @name,
+          :externalID             => @uid,
+          :clusterServicePlanRef  => {
             :name => link_to(:cluster_service_plans)
           },
           :clusterServiceClassRef => {

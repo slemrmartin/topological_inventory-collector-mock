@@ -7,11 +7,11 @@ STDOUT.sync = true
 
 require "bundler/setup"
 require "mock_collector/openshift/collector"
-require "pry-byebug"
+# require "pry-byebug"
 
 def parse_args
   require 'optimist'
-  opts = Optimist::options do
+  opts = Optimist.options do
     opt :source, "Inventory Source UID", :type => :string, :required => ENV["SOURCE_UID"].nil?, :default => ENV["SOURCE_UID"]
     opt :ingress_api, "Hostname of the ingress-api route", :type => :string, :default => ENV["INGRESS_API"] || "http://localhost:9292"
     opt :config, "Configuration file name", :type => :string, :required => ENV["CONFIG"].nil?, :default => "small"
@@ -27,7 +27,7 @@ ingress_api_uri = URI(args[:ingress_api])
 TopologicalInventory::IngressApi::Client.configure.scheme = ingress_api_uri.scheme || "http"
 TopologicalInventory::IngressApi::Client.configure.host   = "#{ingress_api_uri.host}:#{ingress_api_uri.port}"
 
-collector = MockCollector::Openshift::Collector.new(args[:source], config: args[:config])
+collector = MockCollector::Openshift::Collector.new(args[:source], :config => args[:config])
 Thread.new { collector.collect! }
 
 loop { sleep }
