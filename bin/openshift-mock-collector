@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-
 lib = File.expand_path("../../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
@@ -7,7 +6,10 @@ STDOUT.sync = true
 
 require "bundler/setup"
 require "mock_collector/openshift/collector"
-# require "pry-byebug"
+
+# You can add local requires to /lib/mock_collector/require.dev.rb
+require_dev_path = File.join(lib, "mock_collector", "require.dev.rb")
+require require_dev_path if File.exists?(require_dev_path)
 
 def parse_args
   require 'optimist'
