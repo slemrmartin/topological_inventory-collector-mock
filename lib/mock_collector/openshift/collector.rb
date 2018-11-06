@@ -5,11 +5,12 @@ require "mock_collector/openshift/server"
 module MockCollector
   module Openshift
     class Collector < ::Openshift::Collector
-      def initialize(source, config: nil, batch_size: 1_000)
+      def initialize(source, config: nil)
         path_to_config = File.expand_path("../../../config/openshift", File.dirname(__FILE__))
         ::Config.load_and_set_settings(File.join(path_to_config, "#{config}.yml"))
 
-        super(source, nil, nil, :batch_size => batch_size)
+        batch_size = ::Settings.batch&.size || 1_000
+        super(source, nil, nil, :batch_size => batch_size.to_i)
       end
 
       def connection

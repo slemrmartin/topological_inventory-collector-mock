@@ -11,9 +11,19 @@ start collector:
 (service https://github.com/ManageIQ/topological_inventory-core)
 
 @param `config` - YAML files in /config/openshift dir (without ".yml")
+ - default
  - small
  - large
 
     
-Note: Source is like ExtManagementSystem in ManageIQ
+Example:
+```
+bin/openshift-mock-collector --source 31b5338b-685d-4056-ba39-d00b4d7f19cc --config small
+```    
+_Note: Source is manager for this provider (like ExtManagementSystem in ManageIQ)_
   
+---
+
+You can create these local files:
+* bundler.d/Gemfile.dev.rb - local gems
+* lib/mock_collector/require.dev.rb - local requires

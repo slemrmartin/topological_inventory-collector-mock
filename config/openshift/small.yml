@@ -10,11 +10,11 @@ amounts:
 
 batch:
   size: 1000 # Number of entities to send to ingress api
-  sleep: 0   # waiting time between two batches
+  sleep: 0   # waiting time between two batches TODO not implemented
 
 full_refresh:
   # Total round of generating
-  repeats_count: 2
+  repeats_count: 1
   # Order of generating InventoryCollections:
   # - :normal - top level first, dependent later
   # - :reversed - dependent first
@@ -32,6 +32,7 @@ resource_version:
   # - timestamp - current timestamp
   # - ratio - ratio default_value/timestamp
   strategy: :default_value
+  # How many percents of entities have default_value
   ratio_default_values:
     cluster_service_classes: 100
     cluster_service_plans: 100
@@ -41,8 +42,8 @@ resource_version:
     service_instances: 100
     templates: 100
 
-targeted_refresh:
-  # Initial amounts of records
+targeted_refresh: # TODO not implemented
+  # Initial amounts of entities
   # - defaults - amount specified in "amounts" sections
   # - zero - no data
   initial_amount: :defaults
