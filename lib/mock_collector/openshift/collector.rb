@@ -20,12 +20,23 @@ module MockCollector
         connection
       end
 
+      def full_refresh(_connection, _entity_type)
+        if ::Settings.refresh_mode == :full
+          (::Settings.full_refresh&.repeats_count || 1).to_i.times do
+            super
+          end
+          self.stop
+        else
+          raise NotImplementedError, "targeted refresh (watches) not implemented yet"
+        end
+      end
+
       def watch(_connection, _entity_type, _resource_version)
         nil
       end
 
       def entity_types
-        case ::Settings.send_order
+        case ::Settings.full_refresh.send_order
         when :normal then MockCollector::Openshift::Storage.entity_types
         when :reversed then MockCollector::Openshift::Storage.entity_types.reverse
         else raise "Send order :#{::Settings.send_order} of entity types unknown. Allowed values: :normal, :reversed"

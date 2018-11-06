@@ -32,6 +32,7 @@ resource_version:
   # - timestamp - current timestamp
   # - ratio - ratio default_value/timestamp
   strategy: :default_value
+  # How many percents of values have default_value
   ratio_default_values:
     cluster_service_classes: 100
     cluster_service_plans: 100

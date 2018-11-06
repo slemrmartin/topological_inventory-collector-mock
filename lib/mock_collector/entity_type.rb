@@ -2,7 +2,7 @@ module MockCollector
   class EntityType
     include Enumerable
 
-    attr_reader :storage, :data, :ref_id, :name
+    attr_reader :storage, :data, :ref_id, :name, :entities_total
 
     delegate :collector_type,
              :class_for, :to => :storage
@@ -17,6 +17,8 @@ module MockCollector
       @ref_id = ref_id
 
       @data = []
+
+      @entities_total = ::Settings.amounts[@name.to_sym].to_i
     end
 
     def each
@@ -30,14 +32,14 @@ module MockCollector
     end
     alias push <<
 
-    # TODO later
+    # TODO Starting resource_version to watch notification
     def resourceVersion
-      "2"
+      nil
     end
 
     # Creates data of one type (means for 1 InventoryCollection) with amount based on YAML config
     def create_data
-      ::Settings.amounts[@name.to_sym].to_i.times do |i|
+      @entities_total.times do |i|
         @data << entity_class.new(i, self)
       end
     end
@@ -72,16 +74,14 @@ module MockCollector
     end
 
     # Unique ID for given entity
-    # 3 strategies available:
-    # - random_uuids - Different for every run of collector
-    # - sequence_uuids - UUID format, sequential, same everytime
-    # - human_readable_uids - Mixed text-number unique ID, same everytime
+    # 2 strategies available:
+    # - uuids - UUID format, sequential, same everytime
+    # - human_readable - Mixed text-number unique ID, same everytime
     def uid_for(entity_id)
       case ::Settings.uuid_strategy
-      when :random_uuids then SecureRandom.uuid
-      when :sequence_uuids then sequence_uuid(entity_id)
-      when :human_readable_uids then human_readable_uid(entity_id)
-      else raise "Unknown UUID generating strategy: #{::Settings.uuid_strategy}. Choose from (:random_uuids, :sequence_uuids)"
+      when :human_readable then human_readable_uid(entity_id)
+      when :uuids then sequence_uuid(entity_id)
+      else raise "Unknown UUID generating strategy: #{::Settings.uuid_strategy}. Choose from (:human_readable_uids, :sequence_uuids)"
       end
     end
 
