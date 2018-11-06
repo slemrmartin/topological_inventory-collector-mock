@@ -37,7 +37,7 @@ module MockCollector
 
     # Creates data of one type (means for 1 InventoryCollection) with amount based on YAML config
     def create_data
-      ::Settings.inventory.amounts[@name.to_sym].to_i.times do |i|
+      ::Settings.amounts[@name.to_sym].to_i.times do |i|
         @data << entity_class.new(i, self)
       end
     end
@@ -62,7 +62,7 @@ module MockCollector
     def link(entity_id, dest_entity_type, ref: :uid)
       assert_objects_count(dest_entity_type)
 
-      dest_entity_id = entity_id % ::Settings.inventory.amounts[dest_entity_type]
+      dest_entity_id = entity_id % ::Settings.amounts[dest_entity_type]
 
       case ref
       when :uid then @storage.entities[dest_entity_type].uid_for(dest_entity_id)
@@ -109,7 +109,7 @@ module MockCollector
     end
 
     def assert_objects_count(dest_entity_type)
-      if ::Settings.inventory.amounts[dest_entity_type].to_i == 0
+      if ::Settings.amounts[dest_entity_type].to_i == 0
         # TODO: can be nil in the future
         raise "Nil config on #{dest_entity_type}"
       end

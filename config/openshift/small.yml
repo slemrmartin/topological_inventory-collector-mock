@@ -1,19 +1,18 @@
-inventory:
-  # Number of generated items
-  amounts:
-    cluster_service_classes: 2
-    cluster_service_plans: 5
-    namespaces: 2
-    nodes: 5
-    pods: 10
-    service_instances: 10
-    templates: 5
+# Number of generated items
+amounts:
+  cluster_service_classes: 2
+  cluster_service_plans: 5
+  namespaces: 2
+  nodes: 5
+  pods: 10
+  service_instances: 10
+  templates: 5
+# Order of generating InventoryCollections:
+# - :normal - top level first, dependent later
+# - :reversed - dependent first
+send_order: :normal
 # Strategy for generating Unique IDs
 # - :human_readable_uids - sequential, human readable format
 # - :sequence_uuids      - sequential in UUID format
 # - :random_uuids        - using SecureRandom, UUID format
 uuid_strategy: :human_readable_uids
-# Order of generating InventoryCollections:
-# - :normal - top level first, dependent later
-# - :reversed - dependent first
-send_order: :reversed

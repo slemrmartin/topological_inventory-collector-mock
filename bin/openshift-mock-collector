@@ -7,10 +7,18 @@ STDOUT.sync = true
 require "bundler/setup"
 require "mock_collector/openshift/collector"
 
+#
 # You can add local requires to /lib/mock_collector/require.dev.rb
+#
 require_dev_path = File.join(lib, "mock_collector", "require.dev.rb")
 require require_dev_path if File.exists?(require_dev_path)
 
+#
+# Input args
+# --source      (ENV["SOURCE_UID"])  - core: Source.uid (manager for this collector)
+# --ingress_api (ENV["INGRESS_API"]) - swagger api server, by default *localhost:9292*
+# --config      (ENV["CONFIG"])      - file located in config/openshift
+#                                      *small*/*large*
 def parse_args
   require 'optimist'
   opts = Optimist.options do

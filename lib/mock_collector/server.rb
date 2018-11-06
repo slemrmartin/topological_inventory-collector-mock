@@ -25,14 +25,14 @@ module MockCollector
     end
 
     # Retrieves data from get_ methods in Openshift Collector's parser
-    # Watch_ method not implemented yet.
+    # Watch_ methods not implemented.
     def method_missing(method_name, *arguments, &block)
       # get
       if method_name.to_s.start_with?('get_')
         @storage.entities[method_name.to_s.gsub("get_", '').to_sym]
       # watch
       elsif method_name.to_s.start_with?('watch_')
-        nil # TODO: Not implemented yet
+        nil
       else
         super
       end
