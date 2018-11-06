@@ -32,7 +32,7 @@ module MockCollector
 
     # TODO later
     def resourceVersion
-      "1"
+      "2"
     end
 
     # Creates data of one type (means for 1 InventoryCollection) with amount based on YAML config
@@ -75,12 +75,12 @@ module MockCollector
     # 3 strategies available:
     # - random_uuids - Different for every run of collector
     # - sequence_uuids - UUID format, sequential, same everytime
-    # - human_uids - Mixed text-number unique ID, same everytime
+    # - human_readable_uids - Mixed text-number unique ID, same everytime
     def uid_for(entity_id)
       case ::Settings.uuid_strategy
       when :random_uuids then SecureRandom.uuid
       when :sequence_uuids then sequence_uuid(entity_id)
-      when :human_uids then human_uid(entity_id)
+      when :human_readable_uids then human_readable_uid(entity_id)
       else raise "Unknown UUID generating strategy: #{::Settings.uuid_strategy}. Choose from (:random_uuids, :sequence_uuids)"
       end
     end
@@ -104,7 +104,7 @@ module MockCollector
     end
 
     # Entity-type specific readable ID
-    def human_uid(entity_id)
+    def human_readable_uid(entity_id)
       "#{storage.collector_type}-#{@name}-#{'%010d' % entity_id}"
     end
 

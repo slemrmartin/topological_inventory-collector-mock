@@ -1,14 +1,8 @@
-require "config"
 require "mock_collector/entity_type"
 
 module MockCollector
   class Server
-    # @param config_type [String] - name of config file without .yml suffix.
-    #                               Located in config/openshift/
-    def initialize(config_type)
-      path_to_config = File.expand_path("../../config/#{collector_type}", File.dirname(__FILE__))
-      ::Config.load_and_set_settings(File.join(path_to_config, "#{config_type}.yml"))
-
+    def initialize
       @storage = class_for(:storage).new(self)
       @storage.create_entities
     end

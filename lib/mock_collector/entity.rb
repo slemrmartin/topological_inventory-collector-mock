@@ -14,7 +14,7 @@ module MockCollector
       @name = generate_name
       @uid  = generate_uid
 
-      @resourceVersion   = "1"
+      @resourceVersion   = "3"
       @creationTimestamp = Time.now.utc
       @deletionTimestamp = nil
     end

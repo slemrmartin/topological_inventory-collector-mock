@@ -10,14 +10,20 @@ require "mock_collector/openshift/entity/service_instance"
 
 module MockCollector
   class Openshift::Storage < Storage
-    def entity_types
+    # Ordering of items in array is important!
+    # Used for ordered generation of entities
+    def self.entity_types
       %i(namespaces
-         pods
          nodes
+         pods
          templates
          cluster_service_classes
          cluster_service_plans
          service_instances)
+    end
+
+    def entity_types
+      self.class.entity_types
     end
   end
 end
