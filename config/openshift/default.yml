@@ -21,9 +21,10 @@ full_refresh:
   send_order: :normal
 
 # Refresh mode:
-# - :full - sequential full refresh, applied settings *full_refresh*
-# - :targeted - generated events, applied settings *targeted_refresh*
-refresh_mode: :full
+# - :full_refresh - one-time full refresh, applied settings *full_refresh*
+# - :targeted_refresh - generated events, applied settings *targeted_refresh*
+# - :standard - first full_refresh then generating events (like standard provider)
+refresh_mode: :standard
 
 resource_version:
   default_value: 1
@@ -43,10 +44,6 @@ resource_version:
     templates: 100
 
 targeted_refresh: # TODO not implemented
-  # Initial amounts of entities
-  # - defaults - amount specified in "amounts" sections
-  # - zero - no data
-  initial_amount: :defaults
   amount_per_hour:
     created: 10
     updated: 10

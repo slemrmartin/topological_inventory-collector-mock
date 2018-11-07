@@ -21,19 +21,34 @@ module MockCollector
         connection
       end
 
-      def full_refresh(_connection, _entity_type)
-        if ::Settings.refresh_mode == :full
+      def collector_thread(connection, entity_type)
+        # Full refresh
+        if %i(standard full_refresh).include?(::Settings.refresh_mode)
           (::Settings.full_refresh&.repeats_count || 1).to_i.times do
-            super
+            full_refresh(connection, entity_type)
           end
-          self.stop
-        else
-          raise NotImplementedError, "targeted refresh (watches) not implemented yet"
         end
+
+        # Stop if full refresh only
+        self.stop if ::Settings.mode == :full_refresh
+
+        # Watching events (targeted refresh)
+        if %i(standard targeted_refresh).include?(::Settings.refresh_mode)
+          watch(connection, entity_type, nil) do |notice|
+            log.info("#{entity_type} #{notice.object.metadata.name} was #{notice.type.downcase}")
+            queue.push(notice)
+          end
+        end
+      rescue => err
+        log.error(err)
       end
 
-      def watch(_connection, _entity_type, _resource_version)
-        nil
+      def full_refresh(_connection, _entity_type)
+        super
+      end
+
+      def watch(connection, entity_type, _resource_version, &block)
+        connection.watch(entity_type, &block)
       end
 
       def entity_types

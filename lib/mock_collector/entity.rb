@@ -19,6 +19,10 @@ module MockCollector
       @deletionTimestamp = nil
     end
 
+    def kind
+      @entity_type.name.to_s.singularize
+    end
+
     protected
 
     def generate_name

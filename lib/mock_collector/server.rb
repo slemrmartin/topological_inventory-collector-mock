@@ -24,22 +24,23 @@ module MockCollector
       klass
     end
 
+    def watch(entity_type, &block)
+      class_for(:notice_generator).start(@storage.entities[entity_type.to_sym], self, &block)
+    end
+
     # Retrieves data from get_ methods in Openshift Collector's parser
     # Watch_ methods not implemented.
     def method_missing(method_name, *arguments, &block)
       # get
       if method_name.to_s.start_with?('get_')
         @storage.entities[method_name.to_s.gsub("get_", '').to_sym]
-      # watch
-      elsif method_name.to_s.start_with?('watch_')
-        nil
       else
         super
       end
     end
 
     def respond_to_missing?(method_name, _include_private = false)
-      method_name.to_s.start_with?("get_", "watch_")
+      method_name.to_s.start_with?("get_")
     end
   end
 end

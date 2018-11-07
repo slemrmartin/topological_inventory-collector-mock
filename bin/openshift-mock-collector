@@ -38,6 +38,5 @@ TopologicalInventory::IngressApi::Client.configure.scheme = ingress_api_uri.sche
 TopologicalInventory::IngressApi::Client.configure.host   = "#{ingress_api_uri.host}:#{ingress_api_uri.port}"
 
 collector = MockCollector::Openshift::Collector.new(args[:source], :config => args[:config])
-Thread.new { collector.collect! }
+collector.collect!
 
-loop { sleep }
