@@ -9,8 +9,12 @@ module MockCollector
         path_to_config = File.expand_path("../../../config/openshift", File.dirname(__FILE__))
         ::Config.load_and_set_settings(File.join(path_to_config, "#{config}.yml"))
 
-        batch_size = ::Settings.batch&.size || 1_000
-        super(source, nil, nil, :batch_size => batch_size.to_i)
+        super(source,
+              nil,
+              nil,
+              :default_limit => (::Settings.default_limit || 1_000).to_i,
+              :poll_time     => (::Settings.poll_time || 5).to_i
+        )
       end
 
       def connection
@@ -30,10 +34,10 @@ module MockCollector
         end
 
         # Stop if full refresh only
-        self.stop if ::Settings.mode == :full_refresh
+        stop and return if ::Settings.refresh_mode == :full_refresh
 
         # Watching events (targeted refresh)
-        if %i(standard targeted_refresh).include?(::Settings.refresh_mode)
+        if %i(standard events).include?(::Settings.refresh_mode)
           watch(connection, entity_type, nil) do |notice|
             log.info("#{entity_type} #{notice.object.metadata.name} was #{notice.type.downcase}")
             queue.push(notice)
@@ -41,10 +45,6 @@ module MockCollector
         end
       rescue => err
         log.error(err)
-      end
-
-      def full_refresh(_connection, _entity_type)
-        super
       end
 
       def watch(connection, entity_type, _resource_version, &block)

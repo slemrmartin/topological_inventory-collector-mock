@@ -3,10 +3,12 @@ require "mock_collector/entity"
 module MockCollector
   module Openshift
     class Entity < ::MockCollector::Entity
-      attr_reader :namespace
-      def initialize(_id, _entity_type)
-        super
-        @namespace = link_to(:namespaces, :ref => :name)
+      attr_reader
+
+      # Is NoticeGenerator started for this entity?
+      # Can be overriden by subclasses
+      def self.watch_enabled?
+        false
       end
 
       def metadata

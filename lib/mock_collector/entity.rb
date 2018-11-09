@@ -17,10 +17,20 @@ module MockCollector
       @resourceVersion   = resource_version
       @creationTimestamp = Time.now.utc
       @deletionTimestamp = nil
+
+      @associations = {}
     end
 
     def kind
       @entity_type.name.to_s.singularize
+    end
+
+    def archive
+      @deletionTimestamp = Time.now.utc
+    end
+
+    def modify
+      @resourceVersion = resource_version
     end
 
     protected
@@ -34,7 +44,7 @@ module MockCollector
     end
 
     def link_to(dest_entity_type, ref: :uid)
-      @entity_type.link(@ref_id, dest_entity_type, :ref => ref)
+      @associations[dest_entity_type] ||= @entity_type.link(@ref_id, dest_entity_type, :ref => ref)
     end
 
     def resource_version
@@ -60,7 +70,7 @@ module MockCollector
       ratio = ratio_values.send(@entity_type.name) unless ratio_values.nil?
       ratio ||= 100
 
-      if ratio == 0 || @ref_id > (@entity_type.entities_total * (ratio / 100.0))
+      if ratio == 0 || @ref_id > (@entity_type.stats[:total] * (ratio / 100.0))
         resource_version_timestamp
       else
         resource_version_default_value

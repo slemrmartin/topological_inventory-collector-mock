@@ -1,11 +1,17 @@
+require "concurrent"
+
 module MockCollector
   class EntityType
     include Enumerable
 
-    attr_reader :storage, :data, :ref_id, :name, :entities_total
+    attr_reader :storage, :data, :ref_id, :name, :stats, :entity_class
+
+    attr_accessor :limit, :continue
 
     delegate :collector_type,
              :class_for, :to => :storage
+
+    delegate :watch_enabled?, :to => :entity_class
 
     # @param name [Symbol] identifier in storage
     # @param storage [MockCollector::Storage]
@@ -15,14 +21,24 @@ module MockCollector
       @name = name
       @storage = storage
       @ref_id = ref_id
+      entity_class #init
 
       @data = []
+      @paginated_data = []
 
-      @entities_total = ::Settings.amounts[@name.to_sym].to_i
+      # pointer to data
+      @limit    = 0
+      @continue = 0
+
+      @stats = {
+        :deleted => Concurrent::AtomicFixnum.new(0),
+        :total   => Concurrent::AtomicFixnum.new(::Settings.amounts[@name.to_sym].to_i)
+      }
     end
 
+    # Paginated each
     def each
-      @data.each do |entity|
+      @paginated_data.each do |entity|
         yield entity
       end
     end
@@ -32,6 +48,22 @@ module MockCollector
     end
     alias push <<
 
+    def prepare_paginated_data(limit, offset)
+      first = offset
+
+      return [] if first >= @data.size
+
+      last = first + limit - 1
+      last = @data.size - 1 if last >= @data.size
+
+      @continue = last + 1
+      @paginated_data = @data[first..last]
+    end
+
+    def last?
+      @continue >= @data.size
+    end
+
     # TODO Starting resource_version to watch notification
     def resourceVersion
       nil
@@ -39,9 +71,34 @@ module MockCollector
 
     # Creates data of one type (means for 1 InventoryCollection) with amount based on YAML config
     def create_data
-      @entities_total.times do |i|
+      @stats[:total].value.times do |i|
         @data << entity_class.new(i, self)
       end
+    end
+
+    def add_entity
+      entity = entity_class.new(@stats[:total].value, self)
+      @data << entity
+      @stats[:total].increment
+      entity
+    end
+
+    # archives first unarchived
+    def archive_entity
+      return nil if @stats[:deleted].value < @stats[:total].value
+
+      entity = @data[@stats[:deleted].value]
+      entity = @data[@stats[:deleted].value]
+      entity.archive
+      @stats[:deleted].increment
+      entity
+    end
+
+    def modify_entity(index)
+      return nil if @data[index].nil?
+
+      @data[index].modify
+      @data[index]
     end
 
     # To each EntityType belongs one Entity class
@@ -63,8 +120,7 @@ module MockCollector
     #                     :name => get name of target entity
     def link(entity_id, dest_entity_type, ref: :uid)
       assert_objects_count(dest_entity_type)
-
-      dest_entity_id = entity_id % ::Settings.amounts[dest_entity_type]
+      dest_entity_id = entity_id % @storage.entities[dest_entity_type].stats[:total].value
 
       case ref
       when :uid then @storage.entities[dest_entity_type].uid_for(dest_entity_id)
@@ -108,6 +164,7 @@ module MockCollector
       "#{storage.collector_type}-#{@name}-#{'%010d' % entity_id}"
     end
 
+    # TODO
     def assert_objects_count(dest_entity_type)
       if ::Settings.amounts[dest_entity_type].to_i == 0
         # TODO: can be nil in the future

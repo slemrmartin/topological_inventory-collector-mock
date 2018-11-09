@@ -33,7 +33,11 @@ module MockCollector
     def method_missing(method_name, *arguments, &block)
       # get
       if method_name.to_s.start_with?('get_')
-        @storage.entities[method_name.to_s.gsub("get_", '').to_sym]
+        entity_type = @storage.entities[method_name.to_s.gsub("get_", '').to_sym]
+        return nil unless entity_type
+
+        entity_type.prepare_paginated_data(arguments[0][:limit] || 0, arguments[0][:continue] || 0)
+        entity_type
       else
         super
       end

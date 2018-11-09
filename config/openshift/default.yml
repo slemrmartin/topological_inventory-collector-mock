@@ -8,9 +8,8 @@ amounts:
   service_instances: 10
   templates: 5
 
-batch:
-  size: 1000 # Number of entities to send to ingress api
-  sleep: 0   # waiting time between two batches TODO not implemented
+default_limit: 1 # Number of entities to send at once to ingress api
+poll_time: 5   # sleep time of main thread
 
 full_refresh:
   # Total round of generating
@@ -22,9 +21,9 @@ full_refresh:
 
 # Refresh mode:
 # - :full_refresh - one-time full refresh, applied settings *full_refresh*
-# - :targeted_refresh - generated events, applied settings *targeted_refresh*
+# - :events - generated events, applied settings *targeted_refresh*
 # - :standard - first full_refresh then generating events (like standard provider)
-refresh_mode: :standard
+refresh_mode: :full_refresh
 
 resource_version:
   default_value: 1
@@ -43,10 +42,15 @@ resource_version:
     service_instances: 100
     templates: 100
 
-targeted_refresh: # TODO not implemented
-  amount_per_hour:
-    created: 10
-    updated: 10
+notices:
+  check_interval: 1 #second
+  # Units for amount_per_hour
+  # - :fixed_number
+  # - :percents
+  entities_per_hour_unit: :fixed_number
+  entities_per_hour:
+    added: 10
+    modified: 10
     deleted: 10
 
 # Strategy for generating Unique IDs
