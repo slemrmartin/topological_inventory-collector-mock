@@ -1,13 +1,9 @@
 source 'https://rubygems.org'
 
-gem "activesupport"
-gem "concurrent-ruby"
-gem "config"
-gem "kubeclient"
-gem "more_core_extensions"
+# Specify your gem's dependencies in inventory_refresh.gemspec
+gemspec
+
 gem "openshift-collector", :git => "https://github.com/agrare/openshift-collector", :branch => "master"
-gem "optimist"
-gem "recursive-open-struct"
 gem "topological_inventory-ingress_api-client", :git => "https://github.com/ManageIQ/topological_inventory-ingress_api-client-ruby", :branch => "master"
 
 #

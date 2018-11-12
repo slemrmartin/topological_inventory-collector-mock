@@ -15,7 +15,7 @@ module MockCollector
     # Classes can be determined from:
     # - collector_type
     # - type
-    # @param type [Symbol] :storage | :entity | :entity_type
+    # @param type [Symbol] :storage | :entity | :entity_type | ...
     def class_for(type)
       class_name = "MockCollector::#{collector_type.to_s.classify}::#{type.to_s.classify}"
       klass = class_name.safe_constantize
