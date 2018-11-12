@@ -1,6 +1,6 @@
 module MockCollector
   module Openshift
-    class Notice
+    class Event
       attr_accessor :object, :type
 
       OPERATIONS = {

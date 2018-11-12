@@ -25,7 +25,7 @@ module MockCollector
     end
 
     def watch(entity_type, &block)
-      class_for(:notice_generator).start(@storage.entities[entity_type.to_sym], self, &block)
+      class_for(:event_generator).start(@storage.entities[entity_type.to_sym], self, &block)
     end
 
     # Retrieves data from get_ methods in Openshift Collector's parser

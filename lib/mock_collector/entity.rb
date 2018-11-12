@@ -15,10 +15,15 @@ module MockCollector
       @uid  = generate_uid
 
       @resourceVersion   = resource_version
-      @creationTimestamp = Time.now.utc
+      @creationTimestamp = Time.new(2018, 3, 1).utc
       @deletionTimestamp = nil
 
       @associations = {}
+    end
+
+    # Can be overriden by subclasses
+    def self.watch_enabled?
+      false
     end
 
     def kind

@@ -1,6 +1,6 @@
 require "mock_collector/server"
 require "mock_collector/openshift/storage"
-require "mock_collector/openshift/notice_generator"
+require "mock_collector/openshift/event_generator"
 
 module MockCollector
   class Openshift::Server < Server

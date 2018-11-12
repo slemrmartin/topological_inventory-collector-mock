@@ -17,6 +17,27 @@ module MockCollector
         )
       end
 
+      def collect!
+        start_collector_threads
+
+        until finished? do
+          notices = []
+          notices << queue.pop until queue.empty?
+
+          targeted_refresh(notices) unless notices.empty?
+
+          sleep(poll_time)
+        end
+      end
+
+      def finished?
+        some_thread_alive = entity_types.any? do |entity_type|
+          collector_threads[entity_type] && collector_threads[entity_type].alive?
+        end
+
+        !some_thread_alive
+      end
+
       def connection
         @connection ||= MockCollector::Openshift::Server.new
       end
@@ -34,7 +55,7 @@ module MockCollector
         end
 
         # Stop if full refresh only
-        stop and return if ::Settings.refresh_mode == :full_refresh
+        return if ::Settings.refresh_mode == :full_refresh
 
         # Watching events (targeted refresh)
         if %i(standard events).include?(::Settings.refresh_mode)

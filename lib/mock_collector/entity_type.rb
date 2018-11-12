@@ -85,9 +85,8 @@ module MockCollector
 
     # archives first unarchived
     def archive_entity
-      return nil if @stats[:deleted].value < @stats[:total].value
+      return nil if @stats[:deleted].value >= @stats[:total].value
 
-      entity = @data[@stats[:deleted].value]
       entity = @data[@stats[:deleted].value]
       entity.archive
       @stats[:deleted].increment
