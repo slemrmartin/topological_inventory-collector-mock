@@ -17,10 +17,16 @@ module MockCollector
     # - type
     # @param type [Symbol] :storage | :entity | :entity_type | ...
     def class_for(type)
-      class_name = "MockCollector::#{collector_type.to_s.classify}::#{type.to_s.classify}"
-      klass = class_name.safe_constantize
+      klass, found = nil, false
 
-      raise "Class #{class_name} doesn't exists!" if klass.to_s != class_name
+      %W(MockCollector::#{collector_type.to_s.classify}::#{type.to_s.classify}
+         MockCollector::#{type.to_s.classify}).each do |class_name|
+        klass = class_name.safe_constantize
+        found = klass.to_s == class_name
+        break if found
+      end
+
+      raise "Class #{type} doesn't exist!" unless found
       klass
     end
 
