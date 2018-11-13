@@ -10,12 +10,18 @@ module MockCollector
         true
       end
 
-      def initialize(_id, _server)
+      def initialize(id, _entity_type)
         super
 
         @podIP    = "127.0.0.1"
         @namespace = link_to(:namespaces, :ref => :name)
         @nodeName = link_to(:nodes, :ref => :name)
+
+        @container = @entity_type.storage.entities[:containers].add_entity
+      end
+
+      def containers
+        [@container]
       end
 
       def status

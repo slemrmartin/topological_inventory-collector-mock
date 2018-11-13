@@ -1,6 +1,7 @@
 require "mock_collector/storage"
 
 require "mock_collector/openshift/entity/namespace"
+require "mock_collector/openshift/entity/container"
 require "mock_collector/openshift/entity/pod"
 require "mock_collector/openshift/entity/node"
 require "mock_collector/openshift/entity/template"
@@ -24,6 +25,12 @@ module MockCollector
 
     def entity_types
       self.class.entity_types
+    end
+    
+    # Containers are initialized in a special way by pods
+    def create_entities
+      create_entities_of(:containers)
+      super
     end
   end
 end

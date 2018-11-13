@@ -17,8 +17,6 @@ module MockCollector
       @resourceVersion   = resource_version
       @creationTimestamp = Time.new(2018, 3, 1).utc
       @deletionTimestamp = nil
-
-      @associations = {}
     end
 
     # Can be overriden by subclasses
@@ -49,7 +47,7 @@ module MockCollector
     end
 
     def link_to(dest_entity_type, ref: :uid)
-      @associations[dest_entity_type] ||= @entity_type.link(@ref_id, dest_entity_type, :ref => ref)
+      @entity_type.link(@ref_id, dest_entity_type, :ref => ref)
     end
 
     def resource_version

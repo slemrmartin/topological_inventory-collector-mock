@@ -8,7 +8,7 @@ amounts:
   service_instances: 10
   templates: 50
 
-default_limit: 1 # Number of entities to send at once to ingress api
+default_limit: 1000 # Number of entities to send at once to ingress api
 poll_time: 5   # sleep time of main thread
 
 full_refresh:

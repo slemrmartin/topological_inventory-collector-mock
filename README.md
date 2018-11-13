@@ -10,8 +10,8 @@ start collector:
 @param `source` is sources.uid from topological_inventory db
 (service https://github.com/ManageIQ/topological_inventory-core)
 
-@param `config` - YAML files in /config/openshift dir (without ".yml")
- - default
+@param `config` [optional] - YAML files in /config/openshift dir (without ".yml")
+ - default (default value)
  - small
  - large
 

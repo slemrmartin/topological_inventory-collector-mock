@@ -5,15 +5,19 @@ module MockCollector
     class Entity::Node < Entity
       attr_reader :status
 
-      def initialize(_id, _server)
-        super
-
-        @status = RecursiveOpenStruct.new(
+      def self.status
+        @@status ||= RecursiveOpenStruct.new(
           :capacity => {
             :cpu    => "2",
             :memory => "100"
           }
         )
+      end
+
+      def initialize(_id, _server)
+        super
+
+        @status = self.class.status
       end
     end
   end
