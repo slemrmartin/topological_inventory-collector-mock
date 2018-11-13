@@ -13,15 +13,13 @@ RUN yum -y install --setopt=tsflags=nodocs \
 ENV WORKDIR /opt/mock-collector/
 WORKDIR $WORKDIR
 
-COPY Gemfile $WORKDIR
+COPY . $WORKDIR
 RUN echo "gem: --no-document" > ~/.gemrc && \
     gem install bundler --conservative --without development:test && \
     bundle install --jobs 8 --retry 3 && \
     find ${RUBY_GEMS_ROOT}/gems/ | grep "\.s\?o$" | xargs rm -rvf && \
     rm -rvf ${RUBY_GEMS_ROOT}/cache/* && \
     rm -rvf /root/.bundle/cache
-
-COPY . $WORKDIR
 
 RUN chgrp -R 0 $WORKDIR && \
     chmod -R g=u $WORKDIR
