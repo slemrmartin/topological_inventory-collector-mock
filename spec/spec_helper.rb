@@ -9,3 +9,6 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 end
+
+path_to_config = File.expand_path("../config/openshift", File.dirname(__FILE__))
+::Config.load_and_set_settings(File.join(path_to_config, "test.yml"))

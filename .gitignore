@@ -48,3 +48,6 @@ bundler.d/*
 
 # generated rubocop file
 .rubocop-https*
+
+# rspec failure tracking
+.rspec_status
