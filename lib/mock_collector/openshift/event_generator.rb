@@ -44,6 +44,7 @@ module MockCollector
         deleted_entities = @entity_type.stats[:deleted].value
         remaining_active_entities = @entity_type.stats[:total].value - deleted_entities
 
+        # binding.pry
         events_count = events_per_check(operation)
         if operation == :deleted || operation == :modified
           events_count = [events_count, remaining_active_entities].min
@@ -79,7 +80,9 @@ module MockCollector
                            end
         events_per_check = (events_per_hour / 3600.0 * @check_interval).ceil
 
-        [events_per_check, @entity_type.stats[:total].value].min
+        events_per_check = [events_per_check, @entity_type.stats[:total].value].min
+
+        events_per_check.zero? && operation == :added ? 1 : events_per_check
       end
     end
   end

@@ -42,7 +42,7 @@ module MockCollector
         entity_type = @storage.entities[method_name.to_s.gsub("get_", '').to_sym]
         return nil unless entity_type
 
-        entity_type.prepare_paginated_data(arguments[0][:limit] || 0, arguments[0][:continue] || 0)
+        entity_type.prepare_for_pagination(arguments[0][:limit] || 0, arguments[0][:continue] || 0)
         entity_type
       else
         super

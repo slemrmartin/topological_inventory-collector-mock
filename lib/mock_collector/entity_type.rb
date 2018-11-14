@@ -4,7 +4,7 @@ module MockCollector
   class EntityType
     include Enumerable
 
-    attr_reader :storage, :data, :ref_id, :name, :stats, :entity_class
+    attr_reader :storage, :ref_id, :name, :stats, :entity_class
 
     attr_accessor :limit, :continue
 
@@ -17,51 +17,50 @@ module MockCollector
     # @param storage [MockCollector::Storage]
     # @param ref_id [Integer] specific part for uuids of
     #                         all entities of this type
-    def initialize(name, storage, ref_id)
+    def initialize(name, storage, ref_id, initial_entities_count)
       @name = name
       @storage = storage
       @ref_id = ref_id
       entity_class #init
 
-      @data = []
-      @paginated_data = []
-
-      # pointer to data
-      @limit    = 0
-      @continue = 0
+      # pointers to data
+      @pagination = {
+        :start => 0,
+        :end   => -1,
+      }
 
       @stats = {
         :deleted => Concurrent::AtomicFixnum.new(0),
-        :total   => Concurrent::AtomicFixnum.new(::Settings.amounts[@name.to_sym].to_i)
+        :total   => Concurrent::AtomicFixnum.new(initial_entities_count)
       }
     end
 
     # Paginated each
     def each
-      @paginated_data.each do |entity|
-        yield entity
+      puts("Getting #{@name} #{@pagination[:start]}..#{@pagination[:end]}")
+      (@pagination[:start]..@pagination[:end]).each do |id|
+        yield get_entity(id)
       end
     end
 
-    def <<(entity)
-      @data << entity
-    end
-    alias push <<
-
-    def prepare_paginated_data(limit, offset)
-      first = offset
-
-      return [] if first >= @data.size
+    def prepare_for_pagination(limit, offset)
+      first = offset || 0
+      entities_count = @stats[:total].value
 
       last = first + limit - 1
-      last = @data.size - 1 if last >= @data.size
+      last = entities_count - 1 if last >= entities_count
 
-      @continue = last + 1
-      @paginated_data = @data[first..last]
+      @pagination[:start] = first
+      @pagination[:end]   = last
+    end
+
+    def continue
+      return @stats[:total].value if @pagination[:end].nil?
+      @pagination[:end] + 1
     end
 
     def last?
-      @continue >= @data.size
+      continue >= @stats[:total].value
     end
 
     # TODO Starting resource_version to watch notification
@@ -69,35 +68,31 @@ module MockCollector
       nil
     end
 
-    # Creates data of one type (means for 1 InventoryCollection) with amount based on YAML config
-    def create_data
-      @stats[:total].value.times do |i|
-        @data << entity_class.new(i, self)
-      end
+    def add_entity(id = @stats[:total].value)
+      @stats[:total].increment
+      get_entity(id)
     end
 
-    def add_entity
-      entity = entity_class.new(@stats[:total].value, self)
-      @data << entity
-      @stats[:total].increment
+    def get_entity(id = @stats[:total].value)
+      entity = entity_class.new(id, self)
       entity
     end
 
     # archives first unarchived
     def archive_entity
-      return nil if @stats[:deleted].value >= @stats[:total].value
+      deleted_count = @stats[:deleted].value
+      return nil if deleted_count >= @stats[:total].value
 
-      entity = @data[@stats[:deleted].value]
-      entity.archive
       @stats[:deleted].increment
-      entity
+      get_entity(deleted_count)
     end
 
     def modify_entity(index)
-      return nil if @data[index].nil?
+      return nil if index >= @stats[:total].value
 
-      @data[index].modify
-      @data[index]
+      entity = get_entity(index)
+      entity.modify
+      entity
     end
 
     # To each EntityType belongs one Entity class

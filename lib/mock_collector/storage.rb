@@ -25,10 +25,6 @@ module MockCollector
       entity_types.each do |entity_type|
         create_entities_of(entity_type)
       end
-
-      entity_types.each do |entity_type|
-        init_entities_of(entity_type)
-      end
     end
 
     # List of entity types which this server provides
@@ -53,15 +49,16 @@ module MockCollector
     protected
 
     def create_entities_of(entity_type)
-      # TODO: entity_type provider-specific?
-      # @entities[entity_type] = server.class_for(:entity_type).new(entity_type, self, entity_type_ref_id(entity_type))
-      @entities[entity_type] = MockCollector::EntityType.new(entity_type, self, entity_type_ref_id(entity_type))
-    end
+      initial_amount = if %i(full_refresh standard).include?(Settings.refresh_mode)
+                         ::Settings.amounts[entity_type].to_i
+                       else
+                         0
+                       end
 
-    def init_entities_of(entity_type)
-      @entities[entity_type].create_data
-
-      @entities[entity_type].data
+      @entities[entity_type] = server.class_for(:entity_type).new(entity_type,
+                                                                  self,
+                                                                  entity_type_ref_id(entity_type),
+                                                                  initial_amount)
     end
 
     def entity_type_ref_id(entity_type)
