@@ -29,7 +29,7 @@ full_refresh:
 # - :full_refresh - one-time full refresh, applied settings *full_refresh*
 # - :events - generated events, applied settings *targeted_refresh*
 # - :standard - first full_refresh then generating events (like standard provider)
-refresh_mode: :events
+refresh_mode: :standard
 
 resource_version:
   default_value: 1
@@ -47,6 +47,11 @@ resource_version:
     pods: 100
     service_instances: 100
     templates: 100
+
+# Generate and send entities in parallel
+# - :on
+# - :off
+threads: :on
 
 # Strategy for generating Unique IDs
 # - :human_readable - sequential, human readable format

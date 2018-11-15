@@ -18,6 +18,15 @@ module MockCollector
       end
 
       def collect!
+        if ::Settings.threads == :on
+          collect_in_threads!
+        else
+          collect_sequential!
+        end
+      end
+
+      # Generating entities in parallel using threads
+      def collect_in_threads!
         start_collector_threads
 
         until finished? do
@@ -28,6 +37,30 @@ module MockCollector
 
           sleep(poll_time)
         end
+      end
+
+      # Generating entities sequentially, useful for debugging
+      def collect_sequential!
+        if %i(standard full_refresh).include?(::Settings.refresh_mode)
+          entity_types.each do |entity_type|
+            connection = connection_for_entity_type(entity_type)
+            full_refresh(connection, entity_type)
+          end
+        end
+
+        # Watching events (targeted refresh)
+        entity_type = :pods #now pods only
+
+        if %i(standard events).include?(::Settings.refresh_mode)
+          connection = connection_for_entity_type(entity_type)
+          watch(connection, entity_type, nil) do |notice|
+            log.info("#{entity_type} #{notice.object.metadata.name} was #{notice.type.downcase}")
+
+            targeted_refresh([notice])
+          end
+        end
+      rescue => err
+        log.error(err)
       end
 
       def finished?
@@ -47,12 +80,7 @@ module MockCollector
       end
 
       def collector_thread(connection, entity_type)
-        # Full refresh
-        if %i(standard full_refresh).include?(::Settings.refresh_mode)
-          (::Settings.full_refresh&.repeats_count || 1).to_i.times do
-            full_refresh(connection, entity_type)
-          end
-        end
+        full_refresh(connection, entity_type)
 
         # Stop if full refresh only
         return if ::Settings.refresh_mode == :full_refresh
@@ -66,6 +94,12 @@ module MockCollector
         end
       rescue => err
         log.error(err)
+      end
+
+      def full_refresh(connection, entity_type)
+        (::Settings.full_refresh&.repeats_count || 1).to_i.times do
+          super(connection, entity_type)
+        end
       end
 
       def watch(connection, entity_type, _resource_version, &block)
