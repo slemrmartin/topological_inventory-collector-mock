@@ -18,7 +18,7 @@ module MockCollector
       end
 
       def collect!
-        if ::Settings.threads == :on
+        if ::Settings.multithreading == :on
           collect_in_threads!
         else
           collect_sequential!
