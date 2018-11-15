@@ -9,7 +9,13 @@ amounts:
   templates: 5
 
 default_limit: 1000 # Number of entities to send at once to ingress api
-poll_time: 5   # sleep time of main thread
+
+events:
+  check_interval: 1 #second
+  per_check:
+    added: 1 # == 1 per check interval
+    modified: 1 # == 2 per check interval
+    deleted: 0
 
 full_refresh:
   # Total round of generating
@@ -41,17 +47,6 @@ resource_version:
     pods: 100
     service_instances: 100
     templates: 100
-
-events:
-  check_interval: 2 #second
-  # Units for amount_per_hour
-  # - :fixed
-  # - :percents
-  per_hour_unit: :fixed
-  per_hour:
-    added: 7200 # == 1 per check interval
-    modified: 3600 # == 0.5 ~> 1 per check interval
-    deleted: 0 # 0 per check interval
 
 # Strategy for generating Unique IDs
 # - :human_readable - sequential, human readable format

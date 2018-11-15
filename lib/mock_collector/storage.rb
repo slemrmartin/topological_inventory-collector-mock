@@ -49,11 +49,7 @@ module MockCollector
     protected
 
     def create_entities_of(entity_type)
-      initial_amount = if %i(full_refresh standard).include?(Settings.refresh_mode)
-                         ::Settings.amounts[entity_type].to_i
-                       else
-                         0
-                       end
+      initial_amount = ::Settings.amounts[entity_type].to_i
 
       @entities[entity_type] = server.class_for(:entity_type).new(entity_type,
                                                                   self,

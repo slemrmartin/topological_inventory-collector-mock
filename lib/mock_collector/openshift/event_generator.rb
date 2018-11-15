@@ -70,19 +70,13 @@ module MockCollector
       end
 
       def events_per_check(operation)
-        amount_unit = ::Settings.events&.per_hour_unit || :unknown
-        amount_events = ::Settings.events&.per_hour&.send(operation).to_i
+        events_per_check = ::Settings.events&.per_check&.send(operation).to_i
 
-        events_per_hour = case amount_unit
-                           when :fixed then amount_events
-                           when :percents then @entity_type.stats[:total].value * (amount_events / 100.0)
-                           else raise "Undefined settings events/per hour unit. Possible values: [:fixed, :percents]"
-                           end
-        events_per_check = (events_per_hour / 3600.0 * @check_interval).ceil
-
-        events_per_check = [events_per_check, @entity_type.stats[:total].value].min
-
-        events_per_check.zero? && operation == :added ? 1 : events_per_check
+        if operation != class_for(:event)::OPERATIONS[:added]
+          [events_per_check, @entity_type.stats[:total].value].min
+        else
+          events_per_check
+        end
       end
     end
   end
