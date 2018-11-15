@@ -76,9 +76,9 @@ module MockCollector
     def resource_version_by_ratio
       ratio_values = ::Settings.resource_version&.ratio_default_values
       ratio = ratio_values.send(@entity_type.name) unless ratio_values.nil?
-      ratio ||= 100
+      ratio = 100 if ratio.nil? || !(0..100).cover?(ratio.to_i)
 
-      if ratio == 0 || @ref_id > (@entity_type.stats[:total] * (ratio / 100.0))
+      if ratio == 0 || @ref_id >= (@entity_type.stats[:total].value * (ratio / 100.0))
         resource_version_timestamp
       else
         resource_version_default_value

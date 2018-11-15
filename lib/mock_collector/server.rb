@@ -1,4 +1,5 @@
 require "mock_collector/entity_type"
+require "mock_collector/event_generator"
 
 module MockCollector
   class Server
@@ -42,7 +43,8 @@ module MockCollector
         entity_type = @storage.entities[method_name.to_s.gsub("get_", '').to_sym]
         return nil unless entity_type
 
-        entity_type.prepare_for_pagination(arguments[0][:limit] || 0, arguments[0][:continue] || 0)
+        args = arguments[0] || {}
+        entity_type.prepare_for_pagination(args[:limit] || 0, args[:continue] || 0)
         entity_type
       else
         super

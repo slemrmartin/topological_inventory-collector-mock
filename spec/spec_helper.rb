@@ -10,5 +10,11 @@ RSpec.configure do |config|
   end
 end
 
-path_to_config = File.expand_path("../config/openshift", File.dirname(__FILE__))
-::Config.load_and_set_settings(File.join(path_to_config, "test.yml"))
+spec_path = File.dirname(__FILE__)
+Dir[File.join(spec_path, "support/**/*.rb")].each { |f| require f }
+
+#
+# You can add local requires to /lib/mock_collector/require.dev.rb
+#
+require_dev_path = File.join(spec_path, "../lib/mock_collector", "require.dev.rb")
+require require_dev_path if File.exists?(require_dev_path)

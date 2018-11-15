@@ -5,9 +5,11 @@ require "mock_collector/openshift/server"
 module MockCollector
   module Openshift
     class Collector < ::Openshift::Collector
-      def initialize(source, config: nil)
-        path_to_config = File.expand_path("../../../config/openshift", File.dirname(__FILE__))
-        ::Config.load_and_set_settings(File.join(path_to_config, "#{config}.yml"))
+      def initialize(source, config)
+        unless config.nil?
+          path_to_config = File.expand_path("../../../config/openshift", File.dirname(__FILE__))
+          ::Config.load_and_set_settings(File.join(path_to_config, "#{config}.yml"))
+        end
 
         super(source,
               nil,
@@ -49,7 +51,7 @@ module MockCollector
         end
 
         # Watching events (targeted refresh)
-        entity_type = :pods #now pods only
+        entity_type = :pods # now pods only
 
         if %i(standard events).include?(::Settings.refresh_mode)
           connection = connection_for_entity_type(entity_type)

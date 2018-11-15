@@ -37,6 +37,6 @@ ingress_api_uri = URI(args[:ingress_api])
 TopologicalInventory::IngressApi::Client.configure.scheme = ingress_api_uri.scheme || "http"
 TopologicalInventory::IngressApi::Client.configure.host   = "#{ingress_api_uri.host}:#{ingress_api_uri.port}"
 
-collector = MockCollector::Openshift::Collector.new(args[:source], :config => args[:config])
+collector = MockCollector::Openshift::Collector.new(args[:source], args[:config])
 collector.collect!
 

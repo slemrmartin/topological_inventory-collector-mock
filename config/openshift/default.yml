@@ -32,7 +32,7 @@ multithreading: :on
 
 # Refresh mode:
 # - :full_refresh - one-time full refresh, applied settings *full_refresh*
-# - :events - generated events, applied settings *targeted_refresh*
+# - :events - generated events, applied settings *events*
 # - :standard - first full_refresh then generating events (like standard provider)
 refresh_mode: :standard
 
