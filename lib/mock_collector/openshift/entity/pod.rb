@@ -17,7 +17,7 @@ module MockCollector
         @namespace = link_to(:namespaces, :ref => :name)
         @nodeName = link_to(:nodes, :ref => :name)
 
-        @container = @entity_type.storage.entities[:containers].add_entity
+        @container = @entity_type.storage.entities[:containers].get_entity(id)
       end
 
       def containers
