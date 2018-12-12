@@ -3,9 +3,9 @@ module MockCollector
     attr_accessor :object, :type
 
     OPERATIONS = {
-      :added    => "ADDED",
-      :modified => "MODIFIED",
-      :deleted  => "DELETED"
+      :add    => "ADDED",
+      :modify => "MODIFIED",
+      :delete  => "DELETED"
     }.freeze
   end
 end

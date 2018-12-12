@@ -26,8 +26,8 @@ module MockCollector
     end
 
     def start
-      loop do
-        %i(added modified deleted).each do |operation|
+      checks_count do
+        %i(add modify delete).each do |operation|
           create_events(operation) do |event|
             yield event unless event.nil?
           end
@@ -39,22 +39,35 @@ module MockCollector
 
     protected
 
+    def checks_count
+      cnt = ::Settings.events&.checks_count || :infinite
+      if cnt == :infinite
+        loop do
+          yield
+        end
+      elsif cnt.to_s.to_i > 0
+        cnt.to_s.to_i.times do |_i|
+          yield
+        end
+      end
+    end
+
     def create_events(operation)
       deleted_entities          = @entity_type.stats[:deleted].value
       remaining_active_entities = @entity_type.stats[:total].value - deleted_entities
-
+      # binding.pry
       events_count = events_per_check(operation)
-      if operation == :deleted || operation == :modified
+      if operation == :delete || operation == :modify
         events_count = [events_count, remaining_active_entities].min
       end
 
       (deleted_entities..deleted_entities + events_count - 1).each do |index|
         entity = case operation
-                 when :added then
+                 when :add then
                    @entity_type.add_entity
-                 when :deleted then
+                 when :delete then
                    @entity_type.archive_entity
-                 when :modified then
+                 when :modify then
                    @entity_type.modify_entity(index)
                  end
         yield make_event(entity, operation) unless entity.nil?
@@ -73,10 +86,10 @@ module MockCollector
     def events_per_check(operation)
       events_per_check = ::Settings.events&.per_check&.send(operation).to_i
 
-      if operation != class_for(:event)::OPERATIONS[:added]
-        [events_per_check, @entity_type.stats[:total].value].min
-      else
+      if operation == :add
         events_per_check
+      else
+        [events_per_check, @entity_type.stats[:total].value].min
       end
     end
   end

@@ -12,10 +12,11 @@ default_limit: 1000 # Number of entities to send at once to ingress api
 
 events:
   check_interval: 1 #second
+  checks_count: :infinite
   per_check:
-    added: 1
-    modified: 1
-    deleted: 0
+    add: 1
+    modify: 1
+    delete: 0
 
 full_refresh:
   # Total round of generating
