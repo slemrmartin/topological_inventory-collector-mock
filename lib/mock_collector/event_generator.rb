@@ -55,7 +55,7 @@ module MockCollector
     def create_events(operation)
       deleted_entities          = @entity_type.stats[:deleted].value
       remaining_active_entities = @entity_type.stats[:total].value - deleted_entities
-      # binding.pry
+
       events_count = events_per_check(operation)
       if operation == :delete || operation == :modify
         events_count = [events_count, remaining_active_entities].min

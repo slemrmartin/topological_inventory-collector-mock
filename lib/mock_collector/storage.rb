@@ -17,7 +17,7 @@ module MockCollector
 
       @entities = {}
       # UUID simulation of entity consists of storage id
-      @ref_id   = REF_IDS[collector_type]
+      @ref_id   = REF_IDS[collector_type] || REF_IDS[:default]
     end
 
     # Creates entity types and initializes data

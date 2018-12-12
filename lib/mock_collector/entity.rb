@@ -24,11 +24,6 @@ module MockCollector
       false
     end
 
-    # Can be overriden by subclasses
-    def self.watch_enabled?
-      false
-    end
-
     def kind
       @entity_type.name.to_s.singularize
     end
