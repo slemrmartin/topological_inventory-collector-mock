@@ -1,6 +1,6 @@
 describe MockCollector::Storage do
   let(:server) do
-    MockCollector::Server.any_instance.stub(:collector_type).and_return(:test)
+    allow_any_instance_of(MockCollector::Server).to receive(:collector_type).and_return(:test)
     MockCollector::Server.new
   end
 
@@ -14,7 +14,7 @@ describe MockCollector::Storage do
 
       allow(@storage).to receive(:entity_types).and_return(@entity_types)
 
-      MockCollector::EntityType.any_instance.stub(:entity_class).and_return(nil)
+      allow_any_instance_of(MockCollector::EntityType).to receive(:entity_class).and_return(nil)
     end
 
     it "creates entity types based on list" do

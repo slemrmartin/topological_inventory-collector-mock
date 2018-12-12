@@ -4,7 +4,7 @@ describe MockCollector::Server do
   end
 
   let(:server) do
-    described_class.any_instance.stub(:collector_type).and_return(:test)
+    allow_any_instance_of(MockCollector::Server).to receive(:collector_type).and_return(:test)
     described_class.new
   end
 
