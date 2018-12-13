@@ -1,7 +1,7 @@
 # Mock collector for OpenShift
 Mock collector for Topological Inventory service
 
-At this moment, it can simulate full refresh in OpenShift.
+It can simulate OpenShift (more providers planned) collector and provides generated data.
 It's using https://github.com/agrare/openshift-collector.
 
 start collector:
