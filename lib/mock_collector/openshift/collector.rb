@@ -14,7 +14,7 @@ module MockCollector
         super(source,
               nil,
               nil,
-              :default_limit => (::Settings.default_limit || 1_000).to_i,
+              :default_limit => (::Settings.default_limit || 100).to_i,
               :poll_time     => (::Settings.events&.check_interval || 5).to_i
         )
       end
