@@ -2,6 +2,7 @@
 amounts:
   cluster_service_classes: 2
   cluster_service_plans: 5
+  images: 5
   namespaces: 2
   nodes: 5
   pods: 10

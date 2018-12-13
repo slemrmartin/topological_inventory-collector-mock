@@ -2,6 +2,7 @@
 amounts:
   cluster_service_classes: 100000
   cluster_service_plans: 500000
+  images: 50000
   namespaces: 10000
   nodes: 500000
   pods: 1000000

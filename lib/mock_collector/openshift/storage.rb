@@ -5,6 +5,7 @@ require "mock_collector/openshift/entity/container"
 require "mock_collector/openshift/entity/pod"
 require "mock_collector/openshift/entity/node"
 require "mock_collector/openshift/entity/template"
+require "mock_collector/openshift/entity/image"
 require "mock_collector/openshift/entity/cluster_service_class"
 require "mock_collector/openshift/entity/cluster_service_plan"
 require "mock_collector/openshift/entity/service_instance"
@@ -18,6 +19,7 @@ module MockCollector
          nodes
          pods
          templates
+         images
          cluster_service_classes
          cluster_service_plans
          service_instances)
