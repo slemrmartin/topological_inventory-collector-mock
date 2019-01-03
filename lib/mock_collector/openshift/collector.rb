@@ -43,6 +43,8 @@ module MockCollector
 
       # Generating entities sequentially, useful for debugging
       def collect_sequential!
+        log.info("Collecting in sequential mode...")
+
         if %i(standard full_refresh).include?(::Settings.refresh_mode)
           entity_types.each do |entity_type|
             connection = connection_for_entity_type(entity_type)
@@ -99,7 +101,8 @@ module MockCollector
       end
 
       def full_refresh(connection, entity_type)
-        (::Settings.full_refresh&.repeats_count || 1).to_i.times do
+        (::Settings.full_refresh&.repeats_count || 1).to_i.times do |cnt|
+          log.info("Collecting #{entity_type}: round #{cnt}")
           super(connection, entity_type)
         end
       end

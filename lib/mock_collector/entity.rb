@@ -2,7 +2,7 @@ module MockCollector
   class Entity
     attr_reader :entity_type
 
-    attr_reader :name, :uid, :resourceVersion,
+    attr_reader :name, :uid, :ref_id, :resourceVersion,
                 :creationTimestamp, :deletionTimestamp
 
     # @param id [Integer]
