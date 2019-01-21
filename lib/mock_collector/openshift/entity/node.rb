@@ -14,7 +14,7 @@ module MockCollector
         )
       end
 
-      def initialize(_id, _server)
+      def initialize(_id, _entity_type)
         super
 
         @status = self.class.status

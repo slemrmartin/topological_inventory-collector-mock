@@ -5,7 +5,7 @@ module MockCollector
     class Entity::ClusterServiceClass < Entity
       attr_reader :externalID, :externalName, :description
 
-      def initialize(_id, _server)
+      def initialize(_id, _entity_type)
         super
         @externalName = @name
         @externalID   = @uid

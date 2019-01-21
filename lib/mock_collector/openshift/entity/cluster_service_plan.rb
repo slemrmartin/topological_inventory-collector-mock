@@ -5,7 +5,7 @@ module MockCollector
     class Entity::ClusterServicePlan < Entity
       attr_reader :spec
 
-      def initialize(_id, _server)
+      def initialize(_id, _entity_type)
         super
         @spec = RecursiveOpenStruct.new(
           :externalName                  => @name,
