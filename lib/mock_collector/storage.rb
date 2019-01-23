@@ -58,7 +58,7 @@ module MockCollector
     end
 
     def entity_type_ref_id(entity_type)
-      entity_types.index(entity_type)
+      entity_types.index(entity_type) || @entities.keys.size + 1 # if index is missing
     end
   end
 end
