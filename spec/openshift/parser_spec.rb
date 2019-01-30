@@ -19,7 +19,7 @@ describe MockCollector::TestOpenshiftParser do
     @storage = MockCollector::Openshift::Storage.new(server)
     @storage.create_entities
 
-    @parser = MockCollector::TestOpenshiftParser.new
+    @parser = MockCollector::TestOpenshiftParser.new(:openshift_host => 'localhost')
   end
 
   it "parses openshift mock objects correctly" do
@@ -61,7 +61,7 @@ describe MockCollector::TestOpenshiftParser do
   private
 
   def assert_container_project(mock_namespace, api_container_project)
-    expect(api_container_project).to be_instance_of(::TopologicalInventory::IngressApi::Client::ContainerProject)
+    expect(api_container_project).to be_instance_of(::TopologicalInventoryIngressApiClient::ContainerProject)
     expect(api_container_project).to have_base_attributes(mock_namespace)
     expect(api_container_project).to have_attributes(
                                        :display_name => nil
@@ -71,7 +71,7 @@ describe MockCollector::TestOpenshiftParser do
   end
 
   def assert_container_node(mock_node, api_container_node)
-    expect(api_container_node).to be_instance_of(::TopologicalInventory::IngressApi::Client::ContainerNode)
+    expect(api_container_node).to be_instance_of(::TopologicalInventoryIngressApiClient::ContainerNode)
     expect(api_container_node).to have_base_attributes(mock_node)
     expect(api_container_node).to have_attributes(
                                     :cpus   => mock_node.status.capacity.cpu,
@@ -82,7 +82,7 @@ describe MockCollector::TestOpenshiftParser do
   end
 
   def assert_container_group(mock_pod, api_container_group)
-    expect(api_container_group).to be_instance_of(::TopologicalInventory::IngressApi::Client::ContainerGroup)
+    expect(api_container_group).to be_instance_of(::TopologicalInventoryIngressApiClient::ContainerGroup)
     expect(api_container_group).to have_base_attributes(mock_pod)
 
     pending("ipaddress is missing in ingress api, returning nil")
@@ -99,7 +99,7 @@ describe MockCollector::TestOpenshiftParser do
     mock_container = mock_pod.spec.containers.first
     expect(mock_container).not_to be_nil
 
-    expect(api_container).to be_instance_of(::TopologicalInventory::IngressApi::Client::Container)
+    expect(api_container).to be_instance_of(::TopologicalInventoryIngressApiClient::Container)
     expect(api_container).to have_attributes(
                                :name           => mock_container.name,
                                :cpu_limit      => mock_container.resources.limits.cpu.to_i,
@@ -112,7 +112,7 @@ describe MockCollector::TestOpenshiftParser do
   end
 
   def assert_image(mock_image, api_container_image)
-    expect(api_container_image).to be_instance_of(::TopologicalInventory::IngressApi::Client::ContainerImage)
+    expect(api_container_image).to be_instance_of(::TopologicalInventoryIngressApiClient::ContainerImage)
 
     expect(api_container_image).to have_attributes(
                                      :name              => "jboss-webserver-3/webserver30-tomcat8-openshift",
@@ -126,7 +126,7 @@ describe MockCollector::TestOpenshiftParser do
   end
 
   def assert_template(mock_template, api_container_template)
-    expect(api_container_template).to be_instance_of(::TopologicalInventory::IngressApi::Client::ContainerTemplate)
+    expect(api_container_template).to be_instance_of(::TopologicalInventoryIngressApiClient::ContainerTemplate)
 
     expect(api_container_template).to have_base_attributes(mock_template)
 
@@ -135,7 +135,7 @@ describe MockCollector::TestOpenshiftParser do
   end
 
   def assert_service_instance(mock_service_instance, api_service_instance)
-    expect(api_service_instance).to be_instance_of(::TopologicalInventory::IngressApi::Client::ServiceInstance)
+    expect(api_service_instance).to be_instance_of(::TopologicalInventoryIngressApiClient::ServiceInstance)
 
     expect(api_service_instance).to have_attributes(
                                       :name => mock_service_instance.spec.externalName,
@@ -151,20 +151,26 @@ describe MockCollector::TestOpenshiftParser do
   end
 
   def assert_cluster_service_class(mock_cluster_svc_class, api_service_offering)
-    expect(api_service_offering).to be_instance_of(TopologicalInventory::IngressApi::Client::ServiceOffering)
+    expect(api_service_offering).to be_instance_of(TopologicalInventoryIngressApiClient::ServiceOffering)
 
     expect(api_service_offering).to have_attributes(
-                                      :name => mock_cluster_svc_class.spec.externalName,
-                                      :source_ref => mock_cluster_svc_class.spec.externalID,
-                                      :description => mock_cluster_svc_class.spec.description,
-                                      :source_created_at => mock_cluster_svc_class.metadata.creationTimestamp,
-                                      :source_region => nil,
-                                      :subscription => nil
+                                      :name                  => mock_cluster_svc_class.spec.externalName,
+                                      :source_ref            => mock_cluster_svc_class.spec.externalID,
+                                      :description           => mock_cluster_svc_class.spec.description,
+                                      :display_name          => mock_cluster_svc_class.externalMetadata.displayName,
+                                      :documentation_url     => mock_cluster_svc_class.externalMetadata.documentationUrl,
+                                      :long_description      => mock_cluster_svc_class.externalMetadata.longDescription,
+                                      :distributor           => mock_cluster_svc_class.externalMetadata.providerDisplayName,
+                                      :support_url           => mock_cluster_svc_class.externalMetadata.support_url,
+                                      :source_created_at     => mock_cluster_svc_class.metadata.creationTimestamp,
+                                      :source_region         => nil,
+                                      :subscription          => nil,
+                                      :service_offering_icon => nil
                                     )
   end
 
   def assert_cluster_service_plan(mock_cluster_svc_plan, api_service_plan)
-    expect(api_service_plan).to be_instance_of(TopologicalInventory::IngressApi::Client::ServicePlan)
+    expect(api_service_plan).to be_instance_of(TopologicalInventoryIngressApiClient::ServicePlan)
 
     pending("resource_version is not included in ingress api")
     expect(api_service_plan).to have_attributes(
@@ -208,7 +214,7 @@ describe MockCollector::TestOpenshiftParser do
     expect(@parser.collections[tag_collection_name].data.count).to eq(tags_count)
 
     # Tag class
-    api_class_name = "TopologicalInventory::IngressApi::Client::#{tag_collection_name.to_s.classify}"
+    api_class_name = "TopologicalInventoryIngressApiClient::#{tag_collection_name.to_s.classify}"
     api_tag = @parser.collections[tag_collection_name].data[0]
     expect(api_tag.class.name).to eq(api_class_name)
 
