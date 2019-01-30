@@ -85,7 +85,6 @@ describe MockCollector::TestOpenshiftParser do
     expect(api_container_group).to be_instance_of(::TopologicalInventoryIngressApiClient::ContainerGroup)
     expect(api_container_group).to have_base_attributes(mock_pod)
 
-    pending("ipaddress is missing in ingress api, returning nil")
     expect(api_container_group).to have_attributes(
                                     :ipaddress => mock_pod.status.podIP
                                   )
@@ -146,7 +145,6 @@ describe MockCollector::TestOpenshiftParser do
                                     )
 
     assert_lazy_object(api_service_instance.service_offering, :source_ref => mock_service_instance.spec.clusterServiceClassRef.name)
-    pending("Ingress api has service_parameters_set instead!")
     assert_lazy_object(api_service_instance.service_plan, :source_ref => mock_service_instance.spec.clusterServicePlanRef.name)
   end
 
@@ -161,23 +159,23 @@ describe MockCollector::TestOpenshiftParser do
                                       :documentation_url     => mock_cluster_svc_class.externalMetadata.documentationUrl,
                                       :long_description      => mock_cluster_svc_class.externalMetadata.longDescription,
                                       :distributor           => mock_cluster_svc_class.externalMetadata.providerDisplayName,
-                                      :support_url           => mock_cluster_svc_class.externalMetadata.support_url,
+                                      :support_url           => mock_cluster_svc_class.externalMetadata.supportUrl,
                                       :source_created_at     => mock_cluster_svc_class.metadata.creationTimestamp,
                                       :source_region         => nil,
                                       :subscription          => nil,
-                                      :service_offering_icon => nil
                                     )
+
+    assert_lazy_object(api_service_offering.service_offering_icon, :source_ref => nil)
   end
 
   def assert_cluster_service_plan(mock_cluster_svc_plan, api_service_plan)
     expect(api_service_plan).to be_instance_of(TopologicalInventoryIngressApiClient::ServicePlan)
 
-    pending("resource_version is not included in ingress api")
     expect(api_service_plan).to have_attributes(
                                   :name => mock_cluster_svc_plan.spec.externalName,
                                   :source_ref => mock_cluster_svc_plan.spec.externalID,
                                   :description => mock_cluster_svc_plan.spec.description,
-                                  # :resource_version => mock_cluster_svc_plan.metadata.resourceVersion,
+                                  :resource_version => mock_cluster_svc_plan.metadata.resourceVersion,
                                   :source_created_at => mock_cluster_svc_plan.metadata.creationTimestamp,
                                   :create_json_schema => mock_cluster_svc_plan.spec.instanceCreateParameterSchema,
                                   :update_json_schema => nil,
