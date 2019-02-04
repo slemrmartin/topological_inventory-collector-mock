@@ -3,16 +3,16 @@ require "mock_collector/openshift/entity"
 module MockCollector
   module Openshift
     class Entity::Container < Entity
-      attr_reader :resources
+      attr_reader :resources, :image
 
       def self.resources
         @@resources ||= RecursiveOpenStruct.new(
-          :limits => {
+          :limits   => {
             :cpu    => "2",
             :memory => "256"
           },
           :requests => {
-            :cpu => "1",
+            :cpu    => "1",
             :memory => "128"
           }
         )
@@ -22,6 +22,7 @@ module MockCollector
         super
 
         @resources = self.class.resources
+        @image = link_to(:images)
       end
     end
   end

@@ -9,7 +9,8 @@ describe MockCollector::TestOpenshiftParser do
       :nodes                   => 1,
       :pods                    => 1,
       :service_instances       => 1,
-      :templates               => 1
+      :templates               => 1,
+      :images                  => 1
     }
 
     stub_settings_merge(:refresh_mode   => :full_refresh,
@@ -19,7 +20,7 @@ describe MockCollector::TestOpenshiftParser do
     @storage = MockCollector::Openshift::Storage.new(server)
     @storage.create_entities
 
-    @parser = MockCollector::TestOpenshiftParser.new(:openshift_host => 'localhost')
+    @parser = MockCollector::TestOpenshiftParser.new(:openshift_host => 'localhost', :openshift_port => 80)
   end
 
   it "parses openshift mock objects correctly" do
@@ -100,14 +101,15 @@ describe MockCollector::TestOpenshiftParser do
 
     expect(api_container).to be_instance_of(::TopologicalInventoryIngressApiClient::Container)
     expect(api_container).to have_attributes(
-                               :name           => mock_container.name,
-                               :cpu_limit      => mock_container.resources.limits.cpu.to_i,
-                               :cpu_request    => mock_container.resources.requests.cpu.to_i,
-                               :memory_limit   => mock_container.resources.limits.memory.to_i,
-                               :memory_request => mock_container.resources.requests.memory.to_i
-                             )
+      :name           => mock_container.name,
+      :cpu_limit      => mock_container.resources.limits.cpu.to_i,
+      :cpu_request    => mock_container.resources.requests.cpu.to_i,
+      :memory_limit   => mock_container.resources.limits.memory.to_i,
+      :memory_request => mock_container.resources.requests.memory.to_i
+    )
 
-    assert_lazy_object(api_container.container_group, {:source_ref => mock_pod.metadata.uid})
+    assert_lazy_object(api_container.container_group, :source_ref => mock_pod.metadata.uid)
+    assert_lazy_object(api_container.container_image, :source_ref => mock_container.image)
   end
 
   def assert_image(mock_image, api_container_image)
