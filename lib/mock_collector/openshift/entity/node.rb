@@ -6,7 +6,7 @@ module MockCollector
       attr_reader :status, :providerID, :annotations
 
       def self.status
-        @@status ||= RecursiveOpenStruct.new(
+        @@status ||= ::RecursiveOpenStruct.new(
           :capacity        => {
             :cpu             => "48",
             :"hugepages-1Gi" => "0",

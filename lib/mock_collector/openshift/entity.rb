@@ -1,4 +1,5 @@
 require "mock_collector/entity"
+require "recursive-open-struct"
 
 module MockCollector
   module Openshift

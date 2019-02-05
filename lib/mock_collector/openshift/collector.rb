@@ -1,10 +1,10 @@
-require "config"
-require "openshift/collector"
+require "mock_collector/collector"
+require "mock_collector/openshift/parser"
 require "mock_collector/openshift/server"
 
 module MockCollector
   module Openshift
-    class Collector < ::Openshift::Collector
+    class Collector < ::MockCollector::Collector
       def initialize(source, config)
         unless config.nil?
           path_to_config = File.expand_path("../../../config/openshift", File.dirname(__FILE__))
@@ -12,7 +12,6 @@ module MockCollector
         end
 
         super(source,
-              nil,
               nil,
               :default_limit => (::Settings.default_limit || 100).to_i,
               :poll_time     => (::Settings.events&.check_interval || 5).to_i
@@ -117,6 +116,10 @@ module MockCollector
         when :reversed then MockCollector::Openshift::Storage.entity_types.reverse
         else raise "Send order :#{::Settings.send_order} of entity types unknown. Allowed values: :normal, :reversed"
         end
+      end
+
+      def parser_class
+        MockCollector::Openshift::Parser
       end
     end
   end

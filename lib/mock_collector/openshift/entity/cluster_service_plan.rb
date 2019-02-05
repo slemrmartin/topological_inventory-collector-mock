@@ -1,4 +1,5 @@
 require "mock_collector/openshift/entity"
+require "kubeclient/resource"
 
 module MockCollector
   module Openshift

@@ -1,4 +1,4 @@
-describe MockCollector::TestOpenshiftParser do
+describe MockCollector::Openshift::Parser do
   let(:server) { MockCollector::Openshift::Server.new }
 
   before do
@@ -20,7 +20,7 @@ describe MockCollector::TestOpenshiftParser do
     @storage = MockCollector::Openshift::Storage.new(server)
     @storage.create_entities
 
-    @parser = MockCollector::TestOpenshiftParser.new(:openshift_host => 'localhost', :openshift_port => 80)
+    @parser = MockCollector::Openshift::Parser.new
   end
 
   it "parses openshift mock objects correctly" do
