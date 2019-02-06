@@ -5,17 +5,8 @@ require "mock_collector/openshift/server"
 module MockCollector
   module Openshift
     class Collector < ::MockCollector::Collector
-      def initialize(source, config)
-        unless config.nil?
-          path_to_config = File.expand_path("../../../config/openshift", File.dirname(__FILE__))
-          ::Config.load_and_set_settings(File.join(path_to_config, "#{config}.yml"))
-        end
-
-        super(source,
-              nil,
-              :default_limit => (::Settings.default_limit || 100).to_i,
-              :poll_time     => (::Settings.events&.check_interval || 5).to_i
-        )
+      def path_to_config
+        File.expand_path("../../../config/openshift", File.dirname(__FILE__))
       end
 
       def connection

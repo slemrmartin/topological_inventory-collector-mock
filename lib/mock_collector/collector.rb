@@ -7,12 +7,16 @@ require "mock_collector/server"
 
 module MockCollector
   class Collector
-    def initialize(source, _config, default_limit: 100, poll_time: 30)
+    def initialize(source, config)
+      unless config.nil?
+        ::Config.load_and_set_settings(File.join(path_to_config, "#{config}.yml"))
+      end
+
       self.collector_threads  = Concurrent::Map.new
       self.finished           = Concurrent::AtomicBoolean.new(false)
-      self.limits             = Hash.new(default_limit)
+      self.limits             = Hash.new((::Settings.default_limit || 100).to_i)
       self.log                = Logger.new(STDOUT)
-      self.poll_time          = poll_time
+      self.poll_time          = ::Settings.events&.check_interval || 5
       self.queue              = Queue.new
       self.source             = source
     end
@@ -71,6 +75,10 @@ module MockCollector
 
     attr_accessor :collector_threads, :finished, :limits, :log,
                   :poll_time, :queue, :source
+
+    def path_to_config
+      File.expand_path("../../config", File.dirname(__FILE__))
+    end
 
     def finished?
       some_thread_alive = entity_types.any? do |entity_type|
