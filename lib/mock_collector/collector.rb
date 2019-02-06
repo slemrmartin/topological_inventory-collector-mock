@@ -8,25 +8,28 @@ require "mock_collector/server"
 module MockCollector
   class Collector
     def initialize(source, _config, default_limit: 100, poll_time: 30)
-      # self.connection_manager = MockCollector::Server.new
       self.collector_threads  = Concurrent::Map.new
       self.finished           = Concurrent::AtomicBoolean.new(false)
       self.limits             = Hash.new(default_limit)
       self.log                = Logger.new(STDOUT)
-      self.openshift_host     = nil # openshift_host
-      self.openshift_port     = nil # openshift_port
-      self.openshift_token    = nil # openshift_token
       self.poll_time          = poll_time
       self.queue              = Queue.new
       self.source             = source
     end
 
     def collect!
+      if ::Settings.multithreading == :on
+        collect_in_threads!
+      else
+        collect_sequential!
+      end
+    end
+
+    # Generating entities in parallel using threads
+    def collect_in_threads!
       start_collector_threads
 
       until finished? do
-        ensure_collector_threads
-
         notices = []
         notices << queue.pop until queue.empty?
 
@@ -36,18 +39,45 @@ module MockCollector
       end
     end
 
+    # Generating entities sequentially, useful for debugging
+    def collect_sequential!
+      log.info("Collecting in sequential mode...")
+
+      if %i(standard full_refresh).include?(::Settings.refresh_mode)
+        entity_types.each do |entity_type|
+          full_refresh(entity_type)
+        end
+      end
+
+      # Watching events (targeted refresh)
+      entity_type = :pods # now pods only
+
+      if %i(standard events).include?(::Settings.refresh_mode)
+        watch(entity_type, nil) do |notice|
+          log.info("#{entity_type} #{notice.object.metadata.name} was #{notice.type.downcase}")
+
+          targeted_refresh([notice])
+        end
+      end
+    rescue => err
+      log.error(err)
+    end
+
     def stop
       finished.value = true
     end
 
     private
 
-    attr_accessor :connection_manager, :collector_threads, :finished, :limits, :log,
-                  :openshift_host, :openshift_token, :openshift_port,
+    attr_accessor :collector_threads, :finished, :limits, :log,
                   :poll_time, :queue, :source
 
     def finished?
-      finished.value
+      some_thread_alive = entity_types.any? do |entity_type|
+        collector_threads[entity_type] && collector_threads[entity_type].alive?
+      end
+
+      !some_thread_alive
     end
 
     def ensure_collector_threads
@@ -62,21 +92,19 @@ module MockCollector
 
     def start_collector_thread(entity_type)
       log.info("Starting collector thread for #{entity_type}...")
-      connection = connection_for_entity_type(entity_type)
-      return if connection.nil?
 
       Thread.new do
-        collector_thread(connection, entity_type)
+        collector_thread(entity_type)
       end
     rescue => err
       log.error(err)
       nil
     end
 
-    def collector_thread(connection, entity_type)
-      resource_version = full_refresh(connection, entity_type)
+    def collector_thread(entity_type)
+      resource_version = full_refresh(entity_type)
 
-      watch(connection, entity_type, resource_version) do |notice|
+      watch(entity_type, resource_version) do |notice|
         log.info("#{entity_type} #{notice.object.metadata.name} was #{notice.type.downcase}")
         queue.push(notice)
       end
@@ -84,11 +112,11 @@ module MockCollector
       log.error(err)
     end
 
-    def watch(connection, entity_type, resource_version)
-      connection.send("watch_#{entity_type}", :resource_version => resource_version).each { |notice| yield notice }
+    def watch(entity_type, _resource_version, &block)
+      connection.watch(entity_type, &block)
     end
 
-    def full_refresh(connection, entity_type)
+    def full_refresh(entity_type)
       resource_version = continue = nil
 
       refresh_state_uuid = SecureRandom.uuid
@@ -171,43 +199,9 @@ module MockCollector
       )
     end
 
+    # Should be overriden by subclass
     def entity_types
-      endpoint_types.flat_map { |endpoint| send("#{endpoint}_entity_types") }
-    end
-
-    def kubernetes_entity_types
-      %w(namespaces pods nodes)
-    end
-
-    def openshift_entity_types
-      %w(templates images)
-    end
-
-    def servicecatalog_entity_types
-      %w(cluster_service_classes cluster_service_plans service_instances)
-    end
-
-    def endpoint_types
-      %w(kubernetes openshift servicecatalog)
-    end
-
-    def connection_for_entity_type(entity_type)
-      endpoint_type = endpoint_for_entity_type(entity_type)
-      return if endpoint_type.nil?
-
-      connection_manager.connect(endpoint_type, connection_params)
-    end
-
-    def endpoint_for_entity_type(entity_type)
-      endpoint_types.each do |endpoint|
-        return endpoint if send("#{endpoint}_entity_types").include?(entity_type)
-      end
-
-      nil
-    end
-
-    def connection_params
-      {:host => openshift_host, :port => openshift_port, :token => openshift_token}
+      []
     end
 
     def ingress_api_client
