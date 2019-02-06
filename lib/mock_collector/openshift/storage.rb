@@ -28,7 +28,7 @@ module MockCollector
     def entity_types
       self.class.entity_types
     end
-    
+
     # Containers are initialized in a special way by pods
     def create_entities
       create_entities_of(:containers)

@@ -5,7 +5,7 @@ describe MockCollector::Storage do
   end
 
   before do
-   @storage = described_class.new(server)
+    @storage = described_class.new(server)
   end
 
   context "#entity types" do

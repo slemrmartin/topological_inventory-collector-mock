@@ -13,7 +13,7 @@ module MockCollector
 
         def parse_cluster_service_class(service_class)
           @icons_cache ||= Set.new
-          icon_class   = (service_class.spec&.externalMetadata || {})["console.openshift.io/iconClass"]
+          icon_class = (service_class.spec&.externalMetadata || {})["console.openshift.io/iconClass"]
           @icons_cache << icon_class
 
           service_offering = TopologicalInventoryIngressApiClient::ServiceOffering.new(

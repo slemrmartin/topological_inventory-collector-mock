@@ -10,7 +10,7 @@ module MockCollector
         @externalName = @name
         @externalID   = @uid
         @externalMetadata = self.class.external_metadata
-        @description  = 'Cluster Service Class'
+        @description = 'Cluster Service Class'
         @tags = %w(tag1 tag2 tag3)
       end
 
@@ -20,11 +20,11 @@ module MockCollector
 
       def self.external_metadata
         @external_metadata ||= RecursiveOpenStruct.new(
-          :displayName => "Cluster Service Class",
-          :documentationUrl => "http://example.com/documentation/",
-          :longDescription => "This is long description",
+          :displayName         => "Cluster Service Class",
+          :documentationUrl    => "http://example.com/documentation/",
+          :longDescription     => "This is long description",
           :providerDisplayName => "ClusterServiceClass",
-          :supportUrl => "http://example.com/support/"
+          :supportUrl          => "http://example.com/support/"
         )
       end
     end

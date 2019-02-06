@@ -18,11 +18,10 @@ module MockCollector
         self
       end
 
-
       def self.annotations
         {
-          :"node.openshift.io/md5sum"=>"d59c38bb2c2e6553a869752ba72d3a6c",
-          :"volumes.kubernetes.io/controller-managed-attach-detach"=>"true"
+          :"node.openshift.io/md5sum"                               => "d59c38bb2c2e6553a869752ba72d3a6c",
+          :"volumes.kubernetes.io/controller-managed-attach-detach" => "true"
         }
       end
 

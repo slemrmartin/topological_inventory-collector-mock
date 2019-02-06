@@ -21,7 +21,7 @@ module MockCollector
       @name = name
       @storage = storage
       @ref_id = ref_id
-      entity_class #init
+      entity_class # init
 
       # pointers to data
       @pagination = {
@@ -63,7 +63,7 @@ module MockCollector
       continue >= @stats[:total].value
     end
 
-    # TODO Starting resource_version to watch notification
+    # TODO: Starting resource_version to watch notification
     def resourceVersion
       nil
     end

@@ -15,12 +15,12 @@ module MockCollector
 
       def annotations_data
         {
-          :"openshift.io/description" => "description-#{@ref_id}",
-          :"openshift.io/display-name" => @name,
-          :"openshift.io/requester" => "admin",
-          :"openshift.io/sa.scc.mcs" => "s0:c25,c0",
+          :"openshift.io/description"                => "description-#{@ref_id}",
+          :"openshift.io/display-name"               => @name,
+          :"openshift.io/requester"                  => "admin",
+          :"openshift.io/sa.scc.mcs"                 => "s0:c25,c0",
           :"openshift.io/sa.scc.supplemental-groups" => "1000600000/10000",
-          :"openshift.io/sa.scc.uid-range" => "1000600000/10000"
+          :"openshift.io/sa.scc.uid-range"           => "1000600000/10000"
         }
       end
     end

@@ -51,7 +51,7 @@ module MockCollector
           _, instance_uri = provider_id.split("://", 2)
           uid_ems         = instance_uri.split("/").last
 
-          lazy_find(:cross_link_vms, {:uid_ems => uid_ems})
+          lazy_find(:cross_link_vms, :uid_ems => uid_ems)
         end
       end
     end

@@ -33,7 +33,7 @@ module MockCollector
     def collect_in_threads!
       start_collector_threads
 
-      until finished? do
+      until finished?
         notices = []
         notices << queue.pop until queue.empty?
 
@@ -82,7 +82,7 @@ module MockCollector
 
     def finished?
       some_thread_alive = entity_types.any? do |entity_type|
-        collector_threads[entity_type] && collector_threads[entity_type].alive?
+        collector_threads[entity_type]&.alive?
       end
 
       !some_thread_alive
@@ -90,7 +90,7 @@ module MockCollector
 
     def ensure_collector_threads
       entity_types.each do |entity_type|
-        next if collector_threads[entity_type] && collector_threads[entity_type].alive?
+        next if collector_threads[entity_type]&.alive?
 
         collector_threads[entity_type] = start_collector_thread(entity_type)
       end

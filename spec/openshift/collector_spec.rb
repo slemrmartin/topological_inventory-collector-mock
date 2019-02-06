@@ -6,13 +6,13 @@ describe MockCollector::Openshift::Collector do
   context "full refresh" do
     before do
       @amounts = {
-        cluster_service_classes: 2,
-        cluster_service_plans: 5,
-        namespaces: 2,
-        nodes: 5,
-        pods: 10,
-        service_instances: 10,
-        templates: 5
+        :cluster_service_classes => 2,
+        :cluster_service_plans   => 5,
+        :namespaces              => 2,
+        :nodes                   => 5,
+        :pods                    => 10,
+        :service_instances       => 10,
+        :templates               => 5
       }
 
       stub_settings_merge(:refresh_mode   => :full_refresh,
@@ -37,8 +37,6 @@ describe MockCollector::Openshift::Collector do
     end
 
     it "creates inventory collection with data" do
-
     end
-
   end
 end

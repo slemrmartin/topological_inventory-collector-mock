@@ -26,10 +26,10 @@ module MockCollector
             {:type => "MemoryPressure", :status => "False", :lastHeartbeatTime => "2019-01-22T11:32:05Z", :lastTransitionTime => "2018-11-27T15:56:34Z", :reason => "KubeletHasSufficientMemory", :message => "kubelet has sufficient memory available"},
             {:type => "DiskPressure", :status => "False", :lastHeartbeatTime => "2019-01-22T11:32:05Z", :lastTransitionTime => "2018-12-31T12:08:42Z", :reason => "KubeletHasNoDiskPressure", :message => "kubelet has no disk pressure"},
             {:type => "PIDPressure", :status => "False", :lastHeartbeatTime => "2019-01-22T11:32:05Z", :lastTransitionTime => "2018-11-27T15:56:34Z", :reason => "KubeletHasSufficientPID", :message => "kubelet has sufficient PID available"},
-            {:type => "Ready", :status => "True", :lastHeartbeatTime => "2019-01-22T11:32:05Z", :lastTransitionTime => "2018-11-27T20:14:59Z", :reason => "KubeletReady", :message => "kubelet is posting ready status"}],
-          :addresses       => [{:type => "InternalIP", :address => "10.8.96.54"},
-                               {:type => "Hostname", :address => "dell-r430-19.cloudforms.lab.eng.rdu2.redhat.com"}
+            {:type => "Ready", :status => "True", :lastHeartbeatTime => "2019-01-22T11:32:05Z", :lastTransitionTime => "2018-11-27T20:14:59Z", :reason => "KubeletReady", :message => "kubelet is posting ready status"}
           ],
+          :addresses       => [{:type => "InternalIP", :address => "10.8.96.54"},
+                               {:type => "Hostname", :address => "dell-r430-19.cloudforms.lab.eng.rdu2.redhat.com"}],
           :daemonEndpoints => {
             :kubeletEndpoint => {
               :Port => 10250
@@ -48,9 +48,10 @@ module MockCollector
             :architecture            => "amd64"
           },
           :images          => [{
-                                 :names     => ["docker.io/manageiq/manageiq-ui-worker@sha256:2073c9606b048d53b7855589dfa860330d1c5c0402fe20c216fc484242ad9f43", "docker.io/manageiq/manageiq-ui-worker:latest"],
-                                 :sizeBytes => 3178161349
-                               }])
+            :names     => ["docker.io/manageiq/manageiq-ui-worker@sha256:2073c9606b048d53b7855589dfa860330d1c5c0402fe20c216fc484242ad9f43", "docker.io/manageiq/manageiq-ui-worker:latest"],
+            :sizeBytes => 3178161349
+          }]
+        )
       end
 
       def initialize(_id, _entity_type)

@@ -75,7 +75,6 @@ describe MockCollector::EventGenerator do
         end
       end
     end
-
   end
 
   %i(modify delete).each do |operation|
@@ -107,7 +106,6 @@ describe MockCollector::EventGenerator do
                 # - maximally total amount of entities
                 #
                 when :modify then expect(entity_id).to eq([events_cnt % changed_per_check, initial_entities - 1].min)
-                else nil
                 end
 
                 events_cnt += 1
@@ -130,7 +128,7 @@ describe MockCollector::EventGenerator do
 
   context "on multiple simultaneous events." do
     it "Modifies first undeleted entity" do
-      entity_type = make_entity_type(initial_entities: 10)
+      entity_type = make_entity_type(:initial_entities => 10)
       modify_settings(:checks_count => 5,
                       :delete       => 1,
                       :modify       => 1)
