@@ -1,4 +1,4 @@
-describe MockCollector::TestOpenshiftParser do
+describe MockCollector::Openshift::Parser do
   let(:server) { MockCollector::Openshift::Server.new }
 
   before do
@@ -20,7 +20,7 @@ describe MockCollector::TestOpenshiftParser do
     @storage = MockCollector::Openshift::Storage.new(server)
     @storage.create_entities
 
-    @parser = MockCollector::TestOpenshiftParser.new(:openshift_host => 'localhost', :openshift_port => 80)
+    @parser = MockCollector::Openshift::Parser.new
   end
 
   it "parses openshift mock objects correctly" do
@@ -65,8 +65,8 @@ describe MockCollector::TestOpenshiftParser do
     expect(api_container_project).to be_instance_of(::TopologicalInventoryIngressApiClient::ContainerProject)
     expect(api_container_project).to have_base_attributes(mock_namespace)
     expect(api_container_project).to have_attributes(
-                                       :display_name => nil
-                                     )
+      :display_name => nil
+    )
 
     assert_tag(:container_project_tags, :source_ref => mock_namespace.uid)
   end
@@ -75,10 +75,10 @@ describe MockCollector::TestOpenshiftParser do
     expect(api_container_node).to be_instance_of(::TopologicalInventoryIngressApiClient::ContainerNode)
     expect(api_container_node).to have_base_attributes(mock_node)
     expect(api_container_node).to have_attributes(
-                                    :cpus   => mock_node.status.capacity.cpu,
-                                    :memory => mock_node.status.capacity.memory.to_i,
-                                  )
-    assert_lazy_object(api_container_node.lives_on, {:uid_ems => mock_node.providerID.split("/").last})
+      :cpus   => mock_node.status.capacity.cpu,
+      :memory => mock_node.status.capacity.memory.to_i,
+    )
+    assert_lazy_object(api_container_node.lives_on, :uid_ems => mock_node.providerID.split("/").last)
     assert_tag(:container_node_tags, :source_ref => mock_node.uid)
   end
 
@@ -87,8 +87,8 @@ describe MockCollector::TestOpenshiftParser do
     expect(api_container_group).to have_base_attributes(mock_pod)
 
     expect(api_container_group).to have_attributes(
-                                    :ipaddress => mock_pod.status.podIP
-                                  )
+      :ipaddress => mock_pod.status.podIP
+    )
     assert_lazy_object(api_container_group.container_node, :name => mock_pod.spec.nodeName)
     assert_lazy_object(api_container_group.container_project, :name => mock_pod.metadata.namespace)
 
@@ -116,14 +116,14 @@ describe MockCollector::TestOpenshiftParser do
     expect(api_container_image).to be_instance_of(::TopologicalInventoryIngressApiClient::ContainerImage)
 
     expect(api_container_image).to have_attributes(
-                                     :name              => "jboss-webserver-3/webserver30-tomcat8-openshift",
-                                     :resource_version  => mock_image.resourceVersion,
-                                     :source_created_at => mock_image.creationTimestamp,
-                                     :source_deleted_at => mock_image.deletionTimestamp,
-                                     :source_ref        => mock_image.uid
-                                   )
+      :name              => "jboss-webserver-3/webserver30-tomcat8-openshift",
+      :resource_version  => mock_image.resourceVersion,
+      :source_created_at => mock_image.creationTimestamp,
+      :source_deleted_at => mock_image.deletionTimestamp,
+      :source_ref        => mock_image.uid
+    )
 
-    assert_tag(:container_image_tags, { :source_ref => mock_image.uid }, :tags_count => 26)
+    assert_tag(:container_image_tags, { :source_ref => mock_image.uid }, {:tags_count => 26})
   end
 
   def assert_template(mock_template, api_container_template)
@@ -139,12 +139,12 @@ describe MockCollector::TestOpenshiftParser do
     expect(api_service_instance).to be_instance_of(::TopologicalInventoryIngressApiClient::ServiceInstance)
 
     expect(api_service_instance).to have_attributes(
-                                      :name => mock_service_instance.spec.externalName,
-                                      :source_ref => mock_service_instance.spec.externalID,
-                                      :source_created_at => mock_service_instance.metadata.creationTimestamp,
-                                      :source_region => nil,
-                                      :subscription => nil
-                                    )
+      :name              => mock_service_instance.spec.externalName,
+      :source_ref        => mock_service_instance.spec.externalID,
+      :source_created_at => mock_service_instance.metadata.creationTimestamp,
+      :source_region     => nil,
+      :subscription      => nil
+    )
 
     assert_lazy_object(api_service_instance.service_offering, :source_ref => mock_service_instance.spec.clusterServiceClassRef.name)
     assert_lazy_object(api_service_instance.service_plan, :source_ref => mock_service_instance.spec.clusterServicePlanRef.name)
@@ -154,18 +154,18 @@ describe MockCollector::TestOpenshiftParser do
     expect(api_service_offering).to be_instance_of(TopologicalInventoryIngressApiClient::ServiceOffering)
 
     expect(api_service_offering).to have_attributes(
-                                      :name                  => mock_cluster_svc_class.spec.externalName,
-                                      :source_ref            => mock_cluster_svc_class.spec.externalID,
-                                      :description           => mock_cluster_svc_class.spec.description,
-                                      :display_name          => mock_cluster_svc_class.externalMetadata.displayName,
-                                      :documentation_url     => mock_cluster_svc_class.externalMetadata.documentationUrl,
-                                      :long_description      => mock_cluster_svc_class.externalMetadata.longDescription,
-                                      :distributor           => mock_cluster_svc_class.externalMetadata.providerDisplayName,
-                                      :support_url           => mock_cluster_svc_class.externalMetadata.supportUrl,
-                                      :source_created_at     => mock_cluster_svc_class.metadata.creationTimestamp,
-                                      :source_region         => nil,
-                                      :subscription          => nil,
-                                    )
+      :name              => mock_cluster_svc_class.spec.externalName,
+      :source_ref        => mock_cluster_svc_class.spec.externalID,
+      :description       => mock_cluster_svc_class.spec.description,
+      :display_name      => mock_cluster_svc_class.externalMetadata.displayName,
+      :documentation_url => mock_cluster_svc_class.externalMetadata.documentationUrl,
+      :long_description  => mock_cluster_svc_class.externalMetadata.longDescription,
+      :distributor       => mock_cluster_svc_class.externalMetadata.providerDisplayName,
+      :support_url       => mock_cluster_svc_class.externalMetadata.supportUrl,
+      :source_created_at => mock_cluster_svc_class.metadata.creationTimestamp,
+      :source_region     => nil,
+      :subscription      => nil,
+    )
 
     assert_lazy_object(api_service_offering.service_offering_icon, :source_ref => nil)
   end
@@ -174,16 +174,16 @@ describe MockCollector::TestOpenshiftParser do
     expect(api_service_plan).to be_instance_of(TopologicalInventoryIngressApiClient::ServicePlan)
 
     expect(api_service_plan).to have_attributes(
-                                  :name => mock_cluster_svc_plan.spec.externalName,
-                                  :source_ref => mock_cluster_svc_plan.spec.externalID,
-                                  :description => mock_cluster_svc_plan.spec.description,
-                                  :resource_version => mock_cluster_svc_plan.metadata.resourceVersion,
-                                  :source_created_at => mock_cluster_svc_plan.metadata.creationTimestamp,
-                                  :create_json_schema => mock_cluster_svc_plan.spec.instanceCreateParameterSchema,
-                                  :update_json_schema => nil,
-                                  :source_region => nil,
-                                  :subscription => nil
-                                )
+      :name               => mock_cluster_svc_plan.spec.externalName,
+      :source_ref         => mock_cluster_svc_plan.spec.externalID,
+      :description        => mock_cluster_svc_plan.spec.description,
+      :resource_version   => mock_cluster_svc_plan.metadata.resourceVersion,
+      :source_created_at  => mock_cluster_svc_plan.metadata.creationTimestamp,
+      :create_json_schema => mock_cluster_svc_plan.spec.instanceCreateParameterSchema,
+      :update_json_schema => nil,
+      :source_region      => nil,
+      :subscription       => nil
+    )
 
     assert_lazy_object(api_service_plan.service_offering, :source_ref => mock_cluster_svc_plan.spec.clusterServiceClassRef.name)
   end

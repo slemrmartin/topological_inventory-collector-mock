@@ -8,7 +8,7 @@ module MockCollector
     def self.start(entity_type, server, &block)
       return unless entity_type&.watch_enabled?
 
-      generator = self.new(entity_type, server)
+      generator = new(entity_type, server)
 
       generator.start(&block)
     end
@@ -77,7 +77,7 @@ module MockCollector
     def make_event(entity, operation)
       klass = class_for(:event)
       # save memory with 1 event per generator
-      @event        ||= klass.new
+      @event ||= klass.new
       @event.object = entity
       @event.type   = klass::OPERATIONS[operation]
       @event

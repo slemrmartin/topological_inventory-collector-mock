@@ -11,7 +11,7 @@ require "mock_collector/openshift/collector"
 # You can add local requires to /lib/mock_collector/require.dev.rb
 #
 require_dev_path = File.join(lib, "mock_collector", "require.dev.rb")
-require require_dev_path if File.exists?(require_dev_path)
+require require_dev_path if File.exist?(require_dev_path)
 
 #
 # Input args
@@ -39,4 +39,3 @@ TopologicalInventoryIngressApiClient.configure.host   = "#{ingress_api_uri.host}
 
 collector = MockCollector::Openshift::Collector.new(args[:source], args[:config])
 collector.collect!
-

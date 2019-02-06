@@ -5,7 +5,7 @@ module MockCollector
     OPERATIONS = {
       :add    => "ADDED",
       :modify => "MODIFIED",
-      :delete  => "DELETED"
+      :delete => "DELETED"
     }.freeze
   end
 end

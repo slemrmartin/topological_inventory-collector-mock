@@ -9,11 +9,10 @@ describe MockCollector::EntityType do
   before do
     allow_any_instance_of(MockCollector::EntityType).to receive(:entity_class).and_return(MockCollector::Entity)
 
-    stub_settings_merge({ :amounts => { :entities => 1 },
-                          :uuid_strategy => :uuids,
-                          :resource_version => {
-                            :strategy => :timestamp
-                          }
+    stub_settings_merge(:amounts          => { :entities => 1 },
+                        :uuid_strategy    => :uuids,
+                        :resource_version => {
+                          :strategy => :timestamp
                         })
 
     @entity_type = described_class.new("test", storage, 0, 0)
