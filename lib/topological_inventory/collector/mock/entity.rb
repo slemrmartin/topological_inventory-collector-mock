@@ -61,7 +61,6 @@ module TopologicalInventory
           when :ratio then
             resource_version_by_ratio
           else
-            binding.pry
             raise "Unknown resource_version strategy! Allowed values: :default_value, :timestamp, :ratio"
           end
         end

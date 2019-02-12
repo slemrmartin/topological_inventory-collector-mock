@@ -8,9 +8,9 @@ require "bundler/setup"
 require "topological_inventory/collector/mock/openshift/collector"
 
 #
-# You can add local requires to /lib/mock/require.dev.rb
+# You can add local requires to /lib/topological_inventory/collector/mock/require.dev.rb
 #
-require_dev_path = File.join(lib, "mock", "require.dev.rb")
+require_dev_path = File.join(lib, "require.dev.rb")
 require require_dev_path if File.exist?(require_dev_path)
 
 #
