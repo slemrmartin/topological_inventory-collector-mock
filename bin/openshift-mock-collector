@@ -5,12 +5,12 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 STDOUT.sync = true
 
 require "bundler/setup"
-require "mock_collector/openshift/collector"
+require "topological_inventory/collector/mock/openshift/collector"
 
 #
-# You can add local requires to /lib/mock_collector/require.dev.rb
+# You can add local requires to /lib/mock/require.dev.rb
 #
-require_dev_path = File.join(lib, "mock_collector", "require.dev.rb")
+require_dev_path = File.join(lib, "mock", "require.dev.rb")
 require require_dev_path if File.exist?(require_dev_path)
 
 #
@@ -37,5 +37,5 @@ ingress_api_uri = URI(args[:ingress_api])
 TopologicalInventoryIngressApiClient.configure.scheme = ingress_api_uri.scheme || "http"
 TopologicalInventoryIngressApiClient.configure.host   = "#{ingress_api_uri.host}:#{ingress_api_uri.port}"
 
-collector = MockCollector::Openshift::Collector.new(args[:source], args[:config])
+collector = TopologicalInventory::Collector::Mock::Openshift::Collector.new(args[:source], args[:config])
 collector.collect!

@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "mock_collector/openshift/collector"
+require "topological_inventory/collector/mock/openshift/collector"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -14,7 +14,7 @@ spec_path = File.dirname(__FILE__)
 Dir[File.join(spec_path, "support/**/*.rb")].each { |f| require f }
 
 #
-# You can add local requires to /lib/mock_collector/require.dev.rb
+# You can add local requires to /lib/mock/require.dev.rb
 #
-require_dev_path = File.join(spec_path, "../lib/mock_collector", "require.dev.rb")
+require_dev_path = File.join(spec_path, "../lib/topological_inventory/collector/mock", "require.dev.rb")
 require require_dev_path if File.exist?(require_dev_path)
