@@ -1,4 +1,4 @@
-describe TopologicalInventory::Collector::Mock::Openshift::Collector do
+describe TopologicalInventory::MockCollector::Openshift::Collector do
   before do
     @collector = described_class.new(nil, "test")
   end

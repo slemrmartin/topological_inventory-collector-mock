@@ -1,5 +1,5 @@
-describe TopologicalInventory::Collector::Mock::Openshift::Parser do
-  let(:server) { TopologicalInventory::Collector::Mock::Openshift::Server.new }
+describe TopologicalInventory::MockCollector::Openshift::Parser do
+  let(:server) { TopologicalInventory::MockCollector::Openshift::Server.new }
 
   before do
     @amounts = {
@@ -17,10 +17,10 @@ describe TopologicalInventory::Collector::Mock::Openshift::Parser do
                         :multithreading => :off,
                         :amounts        => @amounts)
 
-    @storage = TopologicalInventory::Collector::Mock::Openshift::Storage.new(server)
+    @storage = TopologicalInventory::MockCollector::Openshift::Storage.new(server)
     @storage.create_entities
 
-    @parser = TopologicalInventory::Collector::Mock::Openshift::Parser.new
+    @parser = TopologicalInventory::MockCollector::Openshift::Parser.new
   end
 
   it "parses openshift mock objects correctly" do

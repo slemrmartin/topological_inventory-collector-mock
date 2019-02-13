@@ -1,14 +1,14 @@
-describe TopologicalInventory::Collector::Mock::EventGenerator do
+describe TopologicalInventory::MockCollector::EventGenerator do
   let(:server) do
-    allow_any_instance_of(TopologicalInventory::Collector::Mock::Server).to receive(:collector_type).and_return(:test)
-    TopologicalInventory::Collector::Mock::Server.new
+    allow_any_instance_of(TopologicalInventory::MockCollector::Server).to receive(:collector_type).and_return(:test)
+    TopologicalInventory::MockCollector::Server.new
   end
 
   before do
-    @storage = TopologicalInventory::Collector::Mock::Storage.new(server)
+    @storage = TopologicalInventory::MockCollector::Storage.new(server)
 
     allow(@storage).to receive(:entity_types).and_return(%i(entity))
-    allow_any_instance_of(TopologicalInventory::Collector::Mock::EntityType).to receive(:entity_class).and_return(TopologicalInventory::Collector::Mock::Entity)
+    allow_any_instance_of(TopologicalInventory::MockCollector::EntityType).to receive(:entity_class).and_return(TopologicalInventory::MockCollector::Entity)
 
     @settings = {
       :refresh_mode  => :events,
@@ -45,8 +45,8 @@ describe TopologicalInventory::Collector::Mock::EventGenerator do
                       :delete => event_type == :delete ? 3 : 0)
 
       described_class.start(make_entity_type, server) do |event|
-        expect(event.object).to be_an_instance_of(TopologicalInventory::Collector::Mock::Event)
-        expect(event.type).to eq(TopologicalInventory::Collector::Mock::Event::OPERATIONS[event_type])
+        expect(event.object).to be_an_instance_of(TopologicalInventory::MockCollector::Event)
+        expect(event.type).to eq(TopologicalInventory::MockCollector::Event::OPERATIONS[event_type])
       end
     end
   end
@@ -134,12 +134,12 @@ describe TopologicalInventory::Collector::Mock::EventGenerator do
                       :modify       => 1)
 
       events_cnt = {
-        TopologicalInventory::Collector::Mock::Event::OPERATIONS[:modify] => 0,
-        TopologicalInventory::Collector::Mock::Event::OPERATIONS[:delete] => 0,
+        TopologicalInventory::MockCollector::Event::OPERATIONS[:modify] => 0,
+        TopologicalInventory::MockCollector::Event::OPERATIONS[:delete] => 0,
       }
       described_class.start(entity_type, server) do |event|
-        if event.type == TopologicalInventory::Collector::Mock::Event::OPERATIONS[:modify]
-          expect(entity_id(event)).to eq(events_cnt[TopologicalInventory::Collector::Mock::Event::OPERATIONS[:delete]])
+        if event.type == TopologicalInventory::MockCollector::Event::OPERATIONS[:modify]
+          expect(entity_id(event)).to eq(events_cnt[TopologicalInventory::MockCollector::Event::OPERATIONS[:delete]])
         end
 
         events_cnt[event.type] += 1
@@ -148,7 +148,7 @@ describe TopologicalInventory::Collector::Mock::EventGenerator do
   end
 
   def make_entity_type(initial_entities: 0, watch_enabled: true)
-    entity_type = TopologicalInventory::Collector::Mock::EntityType.new(:entities, @storage, 0, initial_entities)
+    entity_type = TopologicalInventory::MockCollector::EntityType.new(:entities, @storage, 0, initial_entities)
     allow(entity_type).to receive(:watch_enabled?).and_return(watch_enabled)
     entity_type
   end

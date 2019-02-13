@@ -1,7 +1,7 @@
-describe TopologicalInventory::Collector::Mock::Storage do
+describe TopologicalInventory::MockCollector::Storage do
   let(:server) do
-    allow_any_instance_of(TopologicalInventory::Collector::Mock::Server).to receive(:collector_type).and_return(:test)
-    TopologicalInventory::Collector::Mock::Server.new
+    allow_any_instance_of(TopologicalInventory::MockCollector::Server).to receive(:collector_type).and_return(:test)
+    TopologicalInventory::MockCollector::Server.new
   end
 
   before do
@@ -14,7 +14,7 @@ describe TopologicalInventory::Collector::Mock::Storage do
 
       allow(@storage).to receive(:entity_types).and_return(@entity_types)
 
-      allow_any_instance_of(TopologicalInventory::Collector::Mock::EntityType).to receive(:entity_class).and_return(nil)
+      allow_any_instance_of(TopologicalInventory::MockCollector::EntityType).to receive(:entity_class).and_return(nil)
     end
 
     it "creates entity types based on list" do
@@ -28,7 +28,7 @@ describe TopologicalInventory::Collector::Mock::Storage do
     it "access entity types by method missing" do
       @storage.create_entities
 
-      expect(@storage.entity1).to be_kind_of(TopologicalInventory::Collector::Mock::EntityType)
+      expect(@storage.entity1).to be_kind_of(TopologicalInventory::MockCollector::EntityType)
       expect(@storage.respond_to?(:entity3)).to eq(false)
     end
   end
