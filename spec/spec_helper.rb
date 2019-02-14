@@ -16,5 +16,5 @@ Dir[File.join(spec_path, "support/**/*.rb")].each { |f| require f }
 #
 # You can add local requires to /lib/mock/require.dev.rb
 #
-require_dev_path = File.join(spec_path, "../lib/topological_inventory/mock_source", "require.dev.rb")
+require_dev_path = File.join(spec_path, "../lib", "require.dev.rb")
 require require_dev_path if File.exist?(require_dev_path)

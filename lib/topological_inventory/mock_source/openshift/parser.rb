@@ -25,20 +25,6 @@ module TopologicalInventory
         include TopologicalInventory::MockSource::Openshift::Parser::ClusterServicePlan
         include TopologicalInventory::MockSource::Openshift::Parser::ServiceInstance
 
-        def initialize
-          super
-
-          # TODO: merge with Server
-          entity_types = %i(containers container_groups container_nodes container_projects container_images
-                          container_templates service_instances service_offerings service_plans
-                          container_group_tags container_node_tags container_project_tags container_image_tags
-                          container_template_tags service_offering_tags service_offering_icons)
-
-          self.collections = entity_types.each_with_object({}).each do |entity_type, collections|
-            collections[entity_type] = TopologicalInventoryIngressApiClient::InventoryCollection.new(:name => entity_type, :data => [])
-          end
-        end
-
         private
 
         def parse_base_item(entity)

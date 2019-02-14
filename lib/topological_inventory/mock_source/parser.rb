@@ -5,7 +5,11 @@ module TopologicalInventory
     class Parser
       attr_accessor :collections, :resource_timestamp
 
+      delegate :add_collection, :to => :collections
+
       def initialize
+        @collections = TopologicalInventory::ProviderCommon::Collector::InventoryCollectionStorage.new
+
         self.resource_timestamp = Time.now.utc
       end
 
