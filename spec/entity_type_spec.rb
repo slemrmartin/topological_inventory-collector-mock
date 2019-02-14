@@ -1,13 +1,13 @@
-describe TopologicalInventory::MockCollector::EntityType do
+describe TopologicalInventory::MockSource::EntityType do
   let(:server) do
-    allow_any_instance_of(TopologicalInventory::MockCollector::Server).to receive(:collector_type).and_return(:test)
-    TopologicalInventory::MockCollector::Server.new
+    allow_any_instance_of(TopologicalInventory::MockSource::Server).to receive(:collector_type).and_return(:test)
+    TopologicalInventory::MockSource::Server.new
   end
 
-  let(:storage) { TopologicalInventory::MockCollector::Storage.new(server) }
+  let(:storage) { TopologicalInventory::MockSource::Storage.new(server) }
 
   before do
-    allow_any_instance_of(TopologicalInventory::MockCollector::EntityType).to receive(:entity_class).and_return(TopologicalInventory::MockCollector::Entity)
+    allow_any_instance_of(TopologicalInventory::MockSource::EntityType).to receive(:entity_class).and_return(TopologicalInventory::MockSource::Entity)
 
     stub_settings_merge(:amounts          => { :entities => 1 },
                         :uuid_strategy    => :uuids,
