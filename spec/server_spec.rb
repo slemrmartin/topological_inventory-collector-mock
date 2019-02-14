@@ -1,16 +1,16 @@
-describe MockCollector::Server do
+describe TopologicalInventory::MockSource::Server do
   it "raises error when base class instantiated" do
     expect { described_class.new }.to raise_error(NotImplementedError)
   end
 
   let(:server) do
-    allow_any_instance_of(MockCollector::Server).to receive(:collector_type).and_return(:test)
+    allow_any_instance_of(TopologicalInventory::MockSource::Server).to receive(:collector_type).and_return(:test)
     described_class.new
   end
 
   context "#class_for" do
     it "finds general class when unknown server type" do
-      expect(server.class_for(:storage)).to eq(MockCollector::Storage)
+      expect(server.class_for(:storage)).to eq(TopologicalInventory::MockSource::Storage)
     end
 
     it "raises error when class not found" do

@@ -81,4 +81,4 @@ All values are documented in YML files located under `config` folder.
 ## Development files
 Following local files can be created:
 * bundler.d/Gemfile.dev.rb - specification of local gems
-* lib/mock_collector/require.dev.rb - specification of local requires
+* lib/require.dev.rb - specification of local requires
