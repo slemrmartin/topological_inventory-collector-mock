@@ -14,7 +14,7 @@ module TopologicalInventory
           @connection ||= TopologicalInventory::MockSource::Openshift::Server.new
         end
 
-        def collector_thread(entity_type)
+        def collector_thread(_connection, entity_type)
           full_refresh(entity_type)
 
           # Stop if full refresh only
@@ -23,17 +23,17 @@ module TopologicalInventory
           # Watching events (targeted refresh)
           if %i(standard events).include?(::Settings.refresh_mode)
             watch(entity_type, nil) do |notice|
-              log.info("#{entity_type} #{notice.object.metadata.name} was #{notice.type.downcase}")
+              logger.info("#{entity_type} #{notice.object.metadata.name} was #{notice.type.downcase}")
               queue.push(notice)
             end
           end
         rescue => err
-          log.error(err)
+          logger.error(err)
         end
 
         def full_refresh(entity_type)
           (::Settings.full_refresh&.repeats_count || 1).to_i.times do |cnt|
-            log.info("Collecting #{entity_type}: round #{cnt}")
+            logger.info("Collecting #{entity_type}: round #{cnt}")
             super(entity_type)
           end
         end
@@ -42,6 +42,7 @@ module TopologicalInventory
           case ::Settings.full_refresh.send_order
           when :normal then
             TopologicalInventory::MockSource::Openshift::Storage.entity_types
+            # %i(namespaces)
           when :reversed then
             TopologicalInventory::MockSource::Openshift::Storage.entity_types.reverse
           else
