@@ -1,6 +1,6 @@
 module TopologicalInventory
   module MockSource
-    class Parser < TopologicalInventory::ProviderCommon::Collector::Parser
+    class Parser < TopologicalInventoryIngressApiClient::Collector::Parser
     end
   end
 end

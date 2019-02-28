@@ -1,12 +1,15 @@
 require "config"
 require "concurrent"
 require "topological_inventory-ingress_api-client/collector"
+require "topological_inventory/mock_source/logging"
 require "topological_inventory/mock_source/parser"
 require "topological_inventory/mock_source/server"
 
 module TopologicalInventory
   module MockSource
-    class Collector < TopologicalInventory::ProviderCommon::Collector
+    class Collector < TopologicalInventoryIngressApiClient::Collector
+      include Logging
+
       def initialize(source, config)
         unless config.nil?
           ::Config.load_and_set_settings(File.join(path_to_config, "#{config}.yml"))
