@@ -1,6 +1,6 @@
 require "config"
 require "concurrent"
-require "topological_inventory/provider_common/collector"
+require "topological_inventory-ingress_api-client/collector"
 require "topological_inventory/mock_source/parser"
 require "topological_inventory/mock_source/server"
 

@@ -8,7 +8,7 @@ module TopologicalInventory
       delegate :add_collection, :to => :collections
 
       def initialize
-        @collections = TopologicalInventory::ProviderCommon::Collector::InventoryCollectionStorage.new
+        @collections = TopologicalInventoryIngressApiClient::Collector::InventoryCollectionStorage.new
 
         self.resource_timestamp = Time.now.utc
       end
