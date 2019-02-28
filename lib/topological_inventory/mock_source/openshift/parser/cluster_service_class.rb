@@ -17,7 +17,7 @@ module TopologicalInventory
             icon_class   = (service_class.spec&.externalMetadata || {})["console.openshift.io/iconClass"]
             @icons_cache << icon_class
 
-            service_offering = TopologicalInventoryIngressApiClient::ServiceOffering.new(
+            service_offering = collections.service_offerings.build(
               :source_ref            => service_class.spec.externalID,
               :name                  => service_class.spec&.externalName,
               :description           => service_class.spec&.description,
@@ -30,7 +30,6 @@ module TopologicalInventory
               :service_offering_icon => lazy_find(:service_offering_icons, :source_ref => icon_class)
             )
 
-            collections[:service_offerings].data << service_offering
             parse_service_offering_tags(service_offering.source_ref, service_class.spec&.tags)
 
             service_offering
@@ -46,14 +45,12 @@ module TopologicalInventory
 
             return if icons_cache.empty?
 
-            collections[:service_offering_icons].data.concat(
-              icons_cache.map do |icon|
-                TopologicalInventoryIngressApiClient::ServiceOfferingIcon.new(
-                  :source_ref => icon,
-                  :data       => fetch_icon(icon)
-                )
-              end
-            )
+            icons_cache.map do |icon|
+              collections.service_offering_icons.build(
+                :source_ref => icon,
+                :data       => fetch_icon(icon)
+              )
+            end
           end
 
           private
@@ -76,7 +73,7 @@ module TopologicalInventory
             (tags || []).each do |key|
               next if key.empty?
 
-              collections[:service_offering_tags].data << TopologicalInventoryIngressApiClient::ServiceOfferingTag.new(
+              collections.service_offering_tags.build(
                 :service_offering => lazy_find(:service_offerings, :source_ref => source_ref),
                 :tag              => lazy_find(:tags, :name => key),
                 :value            => '',

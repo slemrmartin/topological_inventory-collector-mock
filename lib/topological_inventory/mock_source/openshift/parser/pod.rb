@@ -11,7 +11,7 @@ module TopologicalInventory
           end
 
           def parse_pod(pod)
-            container_group = TopologicalInventoryIngressApiClient::ContainerGroup.new(
+            container_group = collections.container_groups.build(
               parse_base_item(pod).merge(
                 :ipaddress         => pod.status&.podIP,
                 :container_node    => lazy_find_node(pod.spec&.nodeName),
@@ -19,8 +19,7 @@ module TopologicalInventory
               )
             )
 
-            collections[:container_groups].data << container_group
-            collections[:containers].data.concat(parse_containers(pod))
+            parse_containers(pod)
             parse_pod_tags(container_group.source_ref, pod.metadata&.labels&.to_h)
             parse_pod_tags(container_group.source_ref, pod.entity&.spec&.nodeSelector&.to_h)
 
@@ -36,7 +35,7 @@ module TopologicalInventory
 
           def parse_pod_tags(source_ref, tags)
             (tags || {}).each do |key, value|
-              collections[:container_group_tags].data << TopologicalInventoryIngressApiClient::ContainerGroupTag.new(
+              collections.container_group_tags.build(
                 :container_group => lazy_find(:container_groups, :source_ref => source_ref),
                 :tag             => lazy_find(:tags, :name => key),
                 :value           => value,
@@ -46,7 +45,7 @@ module TopologicalInventory
 
           def parse_containers(pod)
             pod.spec.containers.map do |container|
-              TopologicalInventoryIngressApiClient::Container.new(
+              collections.containers.build(
                 :container_group    => lazy_find(:container_groups, :source_ref => pod.metadata.uid),
                 :container_image    => lazy_find(:container_images, :source_ref => container.image),
                 :name               => container.name,
