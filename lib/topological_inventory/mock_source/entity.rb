@@ -6,6 +6,8 @@ module TopologicalInventory
       attr_reader :name, :uid, :ref_id, :resourceVersion,
                   :creationTimestamp, :deletionTimestamp
 
+      delegate :storage, :to => :entity_type
+
       # @param id [Integer]
       # @param entity_type [TopologicalInventory::MockSource::EntityType]
       def initialize(id, entity_type)
