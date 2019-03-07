@@ -1,3 +1,4 @@
+require "active_support/inflector"
 require "topological_inventory/mock_source/collector"
 require "topological_inventory/mock_source/openshift/parser"
 require "topological_inventory/mock_source/openshift/server"
