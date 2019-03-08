@@ -1,13 +1,14 @@
 # Number of generated items
 amounts:
-  cluster_service_classes: 2
-  cluster_service_plans: 5
-  images: 5
-  namespaces: 2
-  nodes: 5
-  pods: 10
+  container_images: 5
+  container_groups: 10
+  container_nodes: 5
+  container_projects: 2
+  container_templates: 5
   service_instances: 10
-  templates: 5
+  service_offerings: 2
+  service_offering_icons: 2
+  service_plans: 5
 
 default_limit: 100 # Number of entities to send at once to ingress api
 
@@ -30,7 +31,7 @@ full_refresh:
 # Generate and send entities in parallel
 # - :on
 # - :off
-multithreading: :on
+multithreading: :off
 
 # Refresh mode:
 # - :full_refresh - one-time full refresh, applied settings *full_refresh*

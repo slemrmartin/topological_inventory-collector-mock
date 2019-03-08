@@ -6,18 +6,14 @@ module TopologicalInventory
       class Entity::ServiceInstance < Entity
         attr_reader :spec
 
-        def initialize(_id, _entity_type)
-          super
-          @spec = RecursiveOpenStruct.new(
-            :externalName           => @name,
-            :externalID             => @uid,
-            :clusterServicePlanRef  => {
-              :name => link_to(:cluster_service_plans)
-            },
-            :clusterServiceClassRef => {
-              :name => link_to(:cluster_service_classes)
-            }
-          )
+        def to_hash
+          {
+            :source_ref                  => @uid,
+            :name                        => @name,
+            :source_created_at           => @creationTimestamp,
+            :service_plan_source_ref     => link_to(:service_plans),
+            :service_offering_source_ref => link_to(:service_offerings)
+          }
         end
       end
     end

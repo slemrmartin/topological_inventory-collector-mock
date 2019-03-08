@@ -27,10 +27,6 @@ module TopologicalInventory
           :volume_types      => nil
         }
       end
-
-      def entity_types
-        self.class.entity_types.flatten.flatten.compact
-      end
     end
   end
 end
