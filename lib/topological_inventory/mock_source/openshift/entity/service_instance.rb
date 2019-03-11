@@ -10,7 +10,7 @@ module TopologicalInventory
           {
             :source_ref                  => @uid,
             :name                        => @name,
-            :source_created_at           => @creationTimestamp,
+            :source_created_at           => @created_at,
             :service_plan_source_ref     => link_to(:service_plans),
             :service_offering_source_ref => link_to(:service_offerings)
           }

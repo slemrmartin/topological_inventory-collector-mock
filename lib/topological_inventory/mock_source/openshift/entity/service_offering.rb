@@ -8,7 +8,7 @@ module TopologicalInventory
           {
             :name                  => @name,
             :source_ref            => @uid,
-            :source_created_at     => @creationTimestamp,
+            :source_created_at     => @created_at,
             :description           => 'Description for ClusterServiceClass',
             :display_name          => 'Service Offering',
             :documentationUrl      => "http://example.com/documentation/",

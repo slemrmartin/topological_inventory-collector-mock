@@ -20,8 +20,8 @@ module TopologicalInventory
           {
             :name              => @name,
             :source_ref        => @uid,
-            :resource_version  => @resourceVersion,
-            :source_created_at => @creationTimestamp,
+            :resource_version  => @resource_version,
+            :source_created_at => @created_at,
           }
         end
 

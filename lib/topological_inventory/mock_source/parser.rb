@@ -23,6 +23,11 @@ module TopologicalInventory
         inventory_object
       end
 
+      def archive_entity(inventory_object, entity)
+        source_deleted_at                  = entity.deleted_at || Time.now.utc
+        inventory_object.source_deleted_at = source_deleted_at
+      end
+
       protected
 
       def parse_entity_simple(entity_type, entity)

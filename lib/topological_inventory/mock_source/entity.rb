@@ -3,8 +3,8 @@ module TopologicalInventory
     class Entity
       attr_reader :entity_type
 
-      attr_reader :name, :uid, :ref_id, :resourceVersion,
-                  :creationTimestamp, :deletionTimestamp
+      attr_reader :name, :uid, :ref_id, :resource_version,
+                  :created_at, :deleted_at
 
       delegate :storage, :to => :entity_type
 
@@ -17,9 +17,9 @@ module TopologicalInventory
         @name = generate_name
         @uid  = generate_uid
 
-        @resourceVersion   = resource_version
-        @creationTimestamp = Time.new(2018, 3, 1).utc
-        @deletionTimestamp = nil
+        @resource_version = resource_version_by_settings
+        @created_at = Time.new(2018, 3, 1).utc
+        @deleted_at = nil
       end
 
       # Can be overriden by subclasses
@@ -32,11 +32,11 @@ module TopologicalInventory
       end
 
       def archive
-        @deletionTimestamp = Time.now.utc
+        @deleted_at = Time.now.utc
       end
 
       def modify
-        @resourceVersion = resource_version
+        @resource_version = resource_version_by_settings
       end
 
       protected
@@ -53,7 +53,7 @@ module TopologicalInventory
         @entity_type.link(@ref_id, dest_entity_type, :ref => ref)
       end
 
-      def resource_version
+      def resource_version_by_settings
         case ::Settings.resource_version&.strategy
         when :default_value then
           resource_version_default_value
@@ -67,7 +67,7 @@ module TopologicalInventory
       end
 
       def resource_version_default_value
-        ::Settings.resource_version&.default_value || '1'
+        ::Settings.resource_version_by_settings&.default_value || '1'
       end
 
       def resource_version_timestamp
@@ -76,7 +76,7 @@ module TopologicalInventory
 
       # Ratio of default values:timestamps for resource version in percents
       def resource_version_by_ratio
-        ratio_values = ::Settings.resource_version&.ratio_default_values
+        ratio_values = ::Settings.resource_version_by_settings&.ratio_default_values
         ratio        = ratio_values.send(@entity_type.name) unless ratio_values.nil?
         ratio        = 100 if ratio.nil? || !(0..100).cover?(ratio.to_i)
 

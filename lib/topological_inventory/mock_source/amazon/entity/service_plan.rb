@@ -10,7 +10,7 @@ module TopologicalInventory
             :name                        => @name,
             :description                 => "Sample Service Plan #{@ref_id}",
             :service_offering_source_ref => link_to(:service_offerings),
-            :source_created_at           => @creationTimestamp,
+            :source_created_at           => @created_at,
             :create_json_schema          => {:type => 'TODO'},
             :source_region_source_ref    => link_to(:source_regions),
             :extra                       => {

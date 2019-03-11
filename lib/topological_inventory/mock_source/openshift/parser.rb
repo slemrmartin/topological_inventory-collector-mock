@@ -101,15 +101,10 @@ module TopologicalInventory
         def parse_container_template(entity, sub_entity_types)
           entity.data[:container_project] = lazy_find_container_project(entity.data.delete(:container_project_name))
 
-          inventory_object = parse_entity_simple(:container_groups, entity)
+          inventory_object = parse_entity_simple(:container_templates, entity)
           parse_sub_entities(sub_entity_types, entity)
 
           inventory_object
-        end
-
-        def archive_entity(inventory_object, entity)
-          source_deleted_at                  = entity.metadata&.deletionTimestamp || Time.now.utc
-          inventory_object.source_deleted_at = source_deleted_at
         end
 
         def lazy_find_container_project(name)

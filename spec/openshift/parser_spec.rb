@@ -3,14 +3,15 @@ describe TopologicalInventory::MockSource::Openshift::Parser do
 
   before do
     @amounts = {
-      :service_offerings   => 1,
-      :service_plans       => 1,
-      :container_projects  => 1,
-      :container_nodes     => 1,
-      :container_groups    => 1,
-      :service_instances   => 1,
-      :container_templates => 1,
-      :container_images    => 1
+      :service_offerings      => 1,
+      :service_offering_icons => 1,
+      :service_plans          => 1,
+      :container_projects     => 1,
+      :container_nodes        => 1,
+      :container_groups       => 1,
+      :service_instances      => 1,
+      :container_templates    => 1,
+      :container_images       => 1
     }
 
     stub_settings_merge(:refresh_mode   => :full_refresh,
@@ -24,41 +25,25 @@ describe TopologicalInventory::MockSource::Openshift::Parser do
   end
 
   it "parses openshift mock objects correctly" do
-    container_project  = @storage.container_projects.get_entity(0)
-    container_node     = @storage.container_nodes.get_entity(0)
-    container_group    = @storage.container_groups.get_entity(0)
-    container_image    = @storage.container_images.get_entity(0)
-    container_template = @storage.container_templates.get_entity(0)
-    service_instance   = @storage.service_instances.get_entity(0)
-    service_offering   = @storage.service_offerings.get_entity(0)
-    service_plan       = @storage.service_plans.get_entity(0)
-
     entity_types = @storage.class.entity_types
+    entities = {}
 
-    @parser.parse_entity(:container_projects, container_project, entity_types[:container_projects])
-    assert_container_project(container_project, @parser.collections[:container_projects].data.first)
+    @amounts.each_key do |entity_type|
+      entities[entity_type] = @storage.send(entity_type).get_entity(0)
+      @parser.parse_entity(entity_type,
+                           entities[entity_type],
+                           entity_types[entity_type])
+    end
 
-    @parser.parse_entity(:container_nodes, container_node, entity_types[:container_nodes])
-    assert_container_node(container_node, @parser.collections[:container_nodes].data.first)
-
-    @parser.parse_entity(:container_groups, container_group, entity_types[:container_groups])
-    assert_container_group(container_group, @parser.collections[:container_groups].data.first)
-    assert_container(container_group, @parser.collections[:containers].data.first)
-
-    @parser.parse_entity(:container_images, container_image, entity_types[:container_images])
-    assert_container_image(container_image, @parser.collections[:container_images].data.first)
-
-    @parser.parse_entity(:container_templates, container_template, entity_types[:container_templates])
-    assert_container_template(container_template, @parser.collections[:container_templates].data.first)
-
-    @parser.parse_entity(:service_instances, service_instance, entity_types[:service_instances])
-    assert_service_instance(service_instance, @parser.collections[:service_instances].data.first)
-
-    @parser.parse_entity(:service_offerings, service_offering, entity_types[:service_offerings])
-    assert_service_offering(service_offering, @parser.collections[:service_offerings].data.first)
-
-    @parser.parse_entity(:service_plans, service_plan, entity_types[:service_plans])
-    assert_service_plan(service_plan, @parser.collections[:service_plans].data.first)
+    assert_container_project(entities[:container_projects], @parser.collections[:container_projects].data.first)
+    assert_container_node(entities[:container_nodes], @parser.collections[:container_nodes].data.first)
+    assert_container_group(entities[:container_groups], @parser.collections[:container_groups].data.first)
+    assert_container_image(entities[:container_images], @parser.collections[:container_images].data.first)
+    assert_container(entities[:container_groups], entities[:container_images], @parser.collections[:containers].data.first)
+    assert_container_template(entities[:container_templates], @parser.collections[:container_templates].data.first)
+    assert_service_instance(entities[:service_instances], @parser.collections[:service_instances].data.first)
+    assert_service_offering(entities[:service_offerings], @parser.collections[:service_offerings].data.first)
+    assert_service_plan(entities[:service_plans], @parser.collections[:service_plans].data.first)
   end
 
   private
@@ -98,22 +83,18 @@ describe TopologicalInventory::MockSource::Openshift::Parser do
   end
 
   # TODO (mslemr): write again, get original entity
-  def assert_container(mock_container_group, api_container)
-    return
-    mock_container = @storage.entities[:containers].get_entity(mock_container_group.ref_id.to_i)
-    expect(mock_container).not_to be_nil
+  def assert_container(mock_container_group, mock_container_image, api_container)
+    mock_container = @storage.entities[:containers].get_entity(0)
 
     expect(api_container).to be_instance_of(::TopologicalInventoryIngressApiClient::Container)
-    expect(api_container).to have_attributes(
-      :name           => mock_container.data[:name],
-      # :cpu_limit      => mock_container.data[:cpu_limit], #random values
-      # :cpu_request    => mock_container.data[:cpu_request],
-      # :memory_limit   => mock_container.data[:memory_limit],
-      # :memory_request => mock_container.data[:memory_request]
-    )
+    expect(api_container).to have_attributes(:name => mock_container.data[:name])
+    expect([nil, 0.1]).to include(api_container.cpu_limit)
+    expect([nil, 0.5]).to include(api_container.cpu_request)
+    expect([nil, 100_000_000]).to include(api_container.memory_limit)
+    expect([nil, 100_000_000]).to include(api_container.memory_request)
 
     assert_lazy_object(api_container.container_group, :source_ref => mock_container_group.data[:source_ref])
-    assert_lazy_object(api_container.container_image, :source_ref => mock_container.container_image)
+    assert_lazy_object(api_container.container_image, :source_ref => mock_container_image.data[:source_ref])
   end
 
   def assert_container_image(mock_container_image, api_container_image)
@@ -135,7 +116,7 @@ describe TopologicalInventory::MockSource::Openshift::Parser do
 
     expect(api_container_template).to have_base_attributes(mock_container_template)
 
-    assert_lazy_object(api_container_template.container_project, :name => mock_container_template.metadata.container_project)
+    assert_lazy_object(api_container_template.container_project, :name => @storage.entities[:container_projects].get_entity(0).name)
     assert_tag(:container_template_tags, :source_ref => mock_container_template.uid)
   end
 
@@ -150,8 +131,8 @@ describe TopologicalInventory::MockSource::Openshift::Parser do
       :subscription      => nil
     )
 
-    assert_lazy_object(api_service_instance.service_offering, :source_ref => mock_service_instance.spec.clusterServiceClassRef.name)
-    assert_lazy_object(api_service_instance.service_plan, :source_ref => mock_service_instance.spec.clusterServicePlanRef.name)
+    assert_lazy_object(api_service_instance.service_offering, :source_ref => @storage.entities[:service_offerings].get_entity(0).uid)
+    assert_lazy_object(api_service_instance.service_plan, :source_ref => @storage.entities[:service_plans].get_entity(0).uid)
   end
 
   def assert_service_offering(mock_cluster_svc_class, api_service_offering)
@@ -178,7 +159,7 @@ describe TopologicalInventory::MockSource::Openshift::Parser do
     expect(api_service_plan).to be_instance_of(TopologicalInventoryIngressApiClient::ServicePlan)
 
     expect(api_service_plan).to have_attributes(
-      :name               => mock_cluster_svc_plan.data[].externalName,
+      :name               => mock_cluster_svc_plan.data[:name],
       :source_ref         => mock_cluster_svc_plan.data[:source_ref],
       :description        => mock_cluster_svc_plan.data[:description],
       :resource_version   => mock_cluster_svc_plan.data[:resource_version],
@@ -189,7 +170,7 @@ describe TopologicalInventory::MockSource::Openshift::Parser do
       :subscription       => nil
     )
 
-    assert_lazy_object(api_service_plan.service_offering, :source_ref => mock_cluster_svc_plan.spec.clusterServiceClassRef.name)
+    assert_lazy_object(api_service_plan.service_offering, :source_ref => @storage.entities[:service_offerings].get_entity(0).uid)
   end
 
   def assert_tag(tag_collection_name, reference, tags_count: 1)

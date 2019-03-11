@@ -84,7 +84,7 @@ module TopologicalInventory
         # Watching events (targeted refresh)
         if %i[standard events].include?(::Settings.refresh_mode)
           watch(entity_type, resource_version) do |event|
-            logger.info("#{entity_type} #{event.object.name} was #{notice.type.downcase}")
+            logger.info("#{entity_type} #{event.object.name} was #{event.type.downcase}")
             queue.push(event)
           end
         end
@@ -124,7 +124,7 @@ module TopologicalInventory
             break if entities.nil?
 
             continue         = entities.continue
-            resource_version = entities.resourceVersion
+            resource_version = entities.resource_version
 
             parser = parser_class.new
             parser.parse_entities(entity_type, entities, storage_class.entity_types[entity_type])

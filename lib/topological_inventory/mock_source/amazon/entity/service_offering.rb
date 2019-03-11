@@ -10,7 +10,7 @@ module TopologicalInventory
             :name                     => @name,
             :description              => @name,
             :display_name             => "Sample Service Offering #{@ref_id}",
-            :source_created_at        => @creationTimestamp,
+            :source_created_at        => @created_at,
             :source_region_source_ref => link_to(:source_regions),
             :extra                    => {
               :status               => "CREATED",
