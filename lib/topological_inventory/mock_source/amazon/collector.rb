@@ -6,7 +6,7 @@ module TopologicalInventory
   module MockSource
     module Amazon
       class Collector < ::TopologicalInventory::MockSource::Collector
-        def path_to_config
+        def path_to_amounts_config
           File.expand_path("../../../../config/amazon", File.dirname(__FILE__))
         end
 

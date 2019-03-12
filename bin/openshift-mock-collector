@@ -17,14 +17,15 @@ require require_dev_path if File.exist?(require_dev_path)
 # Input args
 # --source      (ENV["SOURCE_UID"])  - core: Source.uid (manager for this collector)
 # --ingress_api (ENV["INGRESS_API"]) - swagger api server, by default *localhost:9292*
-# --config      (ENV["CONFIG"])      - file located in config/openshift
-#                                      *small*/*large*
+# --config      (ENV["CONFIG"])      - file located in /config
+# --amounts     (ENV["AMOUNTS"])     - file located in /config/openshift
 def parse_args
   require 'optimist'
   opts = Optimist.options do
     opt :source, "Inventory Source UID", :type => :string, :required => ENV["SOURCE_UID"].nil?, :default => ENV["SOURCE_UID"]
     opt :ingress_api, "Hostname of the ingress-api route", :type => :string, :default => ENV["INGRESS_API"] || "http://localhost:9292"
     opt :config, "Configuration file name", :type => :string, :default => ENV["CONFIG"] || "default"
+    opt :amounts, "Amount of generated items", :type => :string, :default => ENV["AMOUNTS"] || "default"
   end
 
   opts

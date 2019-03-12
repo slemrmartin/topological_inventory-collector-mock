@@ -82,7 +82,7 @@ describe TopologicalInventory::MockSource::Openshift::Parser do
     assert_tag(:container_group_tags, :source_ref => mock_container_group.data[:source_ref])
   end
 
-  # TODO (mslemr): write again, get original entity
+  # TODO: (mslemr) write again, get original entity
   def assert_container(mock_container_group, mock_container_image, api_container)
     mock_container = @storage.entities[:containers].get_entity(0)
 

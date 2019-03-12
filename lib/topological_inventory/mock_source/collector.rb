@@ -12,7 +12,7 @@ module TopologicalInventory
 
       def initialize(source, config)
         unless config.nil?
-          ::Config.load_and_set_settings(File.join(path_to_config, "#{config}.yml"))
+          ::Config.load_and_set_settings(File.join(path_to_defaults_config, 'default.yml'), File.join(path_to_amounts_config, "#{config}.yml"))
         end
 
         super(source,
@@ -61,7 +61,11 @@ module TopologicalInventory
       attr_accessor :collector_threads, :finished, :limits,
                     :poll_time, :queue, :source
 
-      def path_to_config
+      def path_to_amounts_config
+        File.expand_path("../../../config", File.dirname(__FILE__))
+      end
+
+      def path_to_defaults_config
         File.expand_path("../../../config", File.dirname(__FILE__))
       end
 

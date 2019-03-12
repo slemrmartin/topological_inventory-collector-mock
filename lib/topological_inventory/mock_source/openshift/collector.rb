@@ -7,7 +7,7 @@ module TopologicalInventory
   module MockSource
     module Openshift
       class Collector < ::TopologicalInventory::MockSource::Collector
-        def path_to_config
+        def path_to_amounts_config
           File.expand_path("../../../../config/openshift", File.dirname(__FILE__))
         end
 

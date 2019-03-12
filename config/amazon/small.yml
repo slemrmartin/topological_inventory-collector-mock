@@ -1,0 +1,10 @@
+# Number of generated items
+amounts:
+  flavors: 5
+  service_instances: 5     # belongs_to [:source_region, :service_offering, :service_plan]
+  service_offerings: 10    # belongs_to [:source_region]
+  service_plans: 15        # belongs_to [:source_region, :service_offering]
+  source_regions: 5
+  volumes: 10              # belongs_to [:volume_type, :source_region]
+  volume_types: 5
+  vms: 10                  # belongs_to [:flavor]

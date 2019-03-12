@@ -15,9 +15,6 @@ default_limit: 100 # Number of entities to send at once to ingress api
 events:
   check_interval: 1 #second
   checks_count: 1
-  # TODO: Modify options:
-  # :first  | :last    | :random
-  # :active | :deleted | :all
   per_check:
     add: 1
     modify: 1
@@ -35,29 +32,6 @@ full_refresh:
 # - :on
 # - :off
 multithreading: :off
-
-# Refresh mode:
-# - :full_refresh - one-time full refresh, applied settings *full_refresh*
-# - :events - generated events, applied settings *events*
-# - :standard - first full_refresh then generating events (like standard provider)
-refresh_mode: :standard
-
-resource_version:
-  default_value: 1
-  # Strategy of creating resource version value
-  # - default_value - constant
-  # - timestamp - current timestamp
-  # - ratio - ratio default_value/timestamp
-  strategy: :default_value
-  # How many percents of entities have default_value
-  ratio_default_values:
-    cluster_service_classes: 100
-    cluster_service_plans: 100
-    namespaces: 100
-    nodes: 100
-    pods: 100
-    service_instances: 100
-    templates: 100
 
 # Strategy for generating Unique IDs
 # - :human_readable - sequential, human readable format
