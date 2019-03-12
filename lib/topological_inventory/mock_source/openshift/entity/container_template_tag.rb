@@ -1,4 +1,4 @@
-require "topological_inventory/mock_source/amazon/entity"
+require "topological_inventory/mock_source/openshift/entity"
 
 module TopologicalInventory
   module MockSource
