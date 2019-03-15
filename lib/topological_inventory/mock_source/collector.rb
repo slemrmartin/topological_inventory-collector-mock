@@ -4,16 +4,16 @@ require "topological_inventory-ingress_api-client/collector"
 require "topological_inventory/mock_source/logging"
 require "topological_inventory/mock_source/parser"
 require "topological_inventory/mock_source/server"
+require "topological_inventory/mock_source/storage"
 
 module TopologicalInventory
   module MockSource
     class Collector < TopologicalInventoryIngressApiClient::Collector
       include Logging
 
-      def initialize(source, config)
-        unless config.nil?
-          ::Config.load_and_set_settings(File.join(path_to_defaults_config, 'default.yml'), File.join(path_to_amounts_config, "#{config}.yml"))
-        end
+      def initialize(source, config, amounts)
+        # TODO: check config strings
+        ::Config.load_and_set_settings(File.join(path_to_defaults_config, "#{config}.yml"), File.join(path_to_amounts_config, "#{amounts}.yml"))
 
         super(source,
               :default_limit => (::Settings.default_limit || 100).to_i,
@@ -62,7 +62,7 @@ module TopologicalInventory
                     :poll_time, :queue, :source
 
       def path_to_amounts_config
-        File.expand_path("../../../config", File.dirname(__FILE__))
+        File.expand_path("../../../config/openshift", File.dirname(__FILE__))
       end
 
       def path_to_defaults_config
@@ -132,7 +132,6 @@ module TopologicalInventory
 
             parser = parser_class.new
             parser.parse_entities(entity_type, entities, storage_class.entity_types[entity_type])
-
             refresh_state_part_uuid = SecureRandom.uuid
             total_parts += 1
             save_inventory(parser.collections.values, refresh_state_uuid, refresh_state_part_uuid)
@@ -153,6 +152,7 @@ module TopologicalInventory
         logger.info("[#{cnt}] Sweeping inactive records for #{entity_type} with :refresh_state_uuid => '#{refresh_state_uuid}'...")
 
         parsed_entity_types = [entity_type] + (storage_class.entity_types[entity_type] || []).flatten.compact
+        # parsed_entity_types = [entity_type]
 
         sweep_inventory(refresh_state_uuid,
                         total_parts,
@@ -178,6 +178,10 @@ module TopologicalInventory
 
       def storage_class
         TopologicalInventory::MockSource::Storage
+      end
+
+      def connection
+        @connection ||= TopologicalInventory::MockSource::Server.new
       end
 
       def connection_for_entity_type(_entity_type)

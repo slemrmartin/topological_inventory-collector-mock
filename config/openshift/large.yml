@@ -9,3 +9,4 @@ amounts:
   service_offerings: 100000
   service_offering_icons: 5000
   service_plans: 500000
+  source_regions: 5

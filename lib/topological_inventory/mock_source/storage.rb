@@ -1,24 +1,58 @@
+require "topological_inventory/mock_source/entity/container_project"
+require "topological_inventory/mock_source/entity/container_project_tag"
+require "topological_inventory/mock_source/entity/container"
+require "topological_inventory/mock_source/entity/container_group"
+require "topological_inventory/mock_source/entity/container_group_tag"
+require "topological_inventory/mock_source/entity/container_node"
+require "topological_inventory/mock_source/entity/container_node_tag"
+require "topological_inventory/mock_source/entity/container_template"
+require "topological_inventory/mock_source/entity/container_template_tag"
+require "topological_inventory/mock_source/entity/container_image"
+require "topological_inventory/mock_source/entity/container_image_tag"
+require "topological_inventory/mock_source/entity/flavor"
+require "topological_inventory/mock_source/entity/service_offering"
+require "topological_inventory/mock_source/entity/service_offering_icon"
+require "topological_inventory/mock_source/entity/service_offering_tag"
+require "topological_inventory/mock_source/entity/service_plan"
+require "topological_inventory/mock_source/entity/service_instance"
+require "topological_inventory/mock_source/entity/source_region"
+require "topological_inventory/mock_source/entity/vm"
+require "topological_inventory/mock_source/entity/vm_tag"
+require "topological_inventory/mock_source/entity/volume"
+require "topological_inventory/mock_source/entity/volume_attachment"
+require "topological_inventory/mock_source/entity/volume_type"
+
 module TopologicalInventory
   module MockSource
     class Storage
       attr_reader :entities, :server, :ref_id
 
-      delegate :collector_type,
-               :class_for, :to => :server
-
-      REF_IDS = {
-        :default   => 0,
-        :amazon    => 1,
-        :azure     => 2,
-        :openshift => 4,
-      }.freeze
+      def self.entity_types
+        {
+          :container_images       => %i[container_image_tags],
+          :container_groups       => %i[containers
+                                        container_group_tags],
+          :container_projects     => %i[container_project_tags],
+          :container_nodes        => %i[container_node_tags],
+          :container_templates    => %i[container_template_tags],
+          :flavors                => nil,
+          :service_instances      => nil,
+          :service_offerings      => %i[service_offering_tags],
+          :service_offering_icons => nil,
+          :service_plans          => nil,
+          :source_regions         => nil,
+          :vms                    => %i[vm_tags],
+          :volumes                => %i[volume_attachments],
+          :volume_types           => nil
+        }
+      end
 
       def initialize(server)
         @server = server
 
         @entities = {}
         # UUID simulation of entity consists of storage id
-        @ref_id = REF_IDS[collector_type] || REF_IDS[:default]
+        @ref_id = 0
       end
 
       # Creates entity types and initializes data
@@ -26,10 +60,6 @@ module TopologicalInventory
         entity_types.each do |entity_type|
           create_entities_of(entity_type)
         end
-      end
-
-      def self.entity_types
-        %i[]
       end
 
       # List of entity types which this server provides
@@ -56,7 +86,7 @@ module TopologicalInventory
       def create_entities_of(entity_type)
         initial_amount = ::Settings.amounts[entity_type].to_i
 
-        @entities[entity_type] = server.class_for(:entity_type).new(entity_type,
+        @entities[entity_type] = TopologicalInventory::MockSource::EntityType.new(entity_type,
                                                                     self,
                                                                     entity_type_ref_id(entity_type),
                                                                     initial_amount)

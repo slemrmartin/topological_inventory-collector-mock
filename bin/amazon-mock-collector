@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 STDOUT.sync = true
 
 require "bundler/setup"
-require "topological_inventory/mock_source/amazon/collector"
+require "topological_inventory/mock_source/collector"
 
 #
 # You can add local requires to /lib/topological_inventory/mock_source/require.dev.rb
@@ -38,5 +38,5 @@ ingress_api_uri = URI(args[:ingress_api])
 TopologicalInventoryIngressApiClient.configure.scheme = ingress_api_uri.scheme || "http"
 TopologicalInventoryIngressApiClient.configure.host   = "#{ingress_api_uri.host}:#{ingress_api_uri.port}"
 
-collector = TopologicalInventory::MockSource::Amazon::Collector.new(args[:source], args[:config])
+collector = TopologicalInventory::MockSource::Collector.new(args[:source], args[:config])
 collector.collect!

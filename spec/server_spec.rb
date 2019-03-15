@@ -8,17 +8,6 @@ describe TopologicalInventory::MockSource::Server do
     described_class.new
   end
 
-  context "#class_for" do
-    it "finds general class when unknown server type" do
-      expect(server.class_for(:storage)).to eq(TopologicalInventory::MockSource::Storage)
-    end
-
-    it "raises error when class not found" do
-      msg = "Class nonexisting doesn't exist!"
-      expect { server.class_for(:nonexisting) }.to raise_error(msg)
-    end
-  end
-
   context "#watch" do
     it "can watch only allowed entity types" do
       expect(server.watch(:nonexisting)).to be_nil

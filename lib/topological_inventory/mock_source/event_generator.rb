@@ -16,8 +16,6 @@ module TopologicalInventory
 
       attr_reader :server
 
-      delegate :class_for, :to => :server
-
       # @param entity_type [TopologicalInventory::MockSource::EntityType]
       # @param server [TopologicalInventory::MockSource::Openshift::Server]
       def initialize(entity_type, server)
@@ -76,9 +74,8 @@ module TopologicalInventory
       end
 
       def make_event(entity, operation)
-        klass = class_for(:event)
         # save memory with 1 event per generator
-        @event        ||= klass.new
+        @event      ||= TopologicalInventory::MockSource::Event.new
         @event.object = entity
         @event.type   = klass::OPERATIONS[operation]
         @event

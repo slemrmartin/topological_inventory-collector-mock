@@ -9,3 +9,4 @@ amounts:
   service_offerings: 10
   service_offering_icons: 5
   service_plans: 50
+  source_regions: 5 # amazon IC

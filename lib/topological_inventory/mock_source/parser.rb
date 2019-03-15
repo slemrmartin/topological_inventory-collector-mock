@@ -1,6 +1,11 @@
 module TopologicalInventory
   module MockSource
     class Parser < TopologicalInventoryIngressApiClient::Collector::Parser
+      require "topological_inventory/mock_source/parser/custom_lazy_find"
+      require "topological_inventory/mock_source/parser/custom_parsing"
+      include TopologicalInventory::MockSource::Parser::CustomLazyFind
+      include TopologicalInventory::MockSource::Parser::CustomParsing
+
       def parse_entities(entity_type, entities, sub_entity_types = [])
         entities.each { |entity| parse_entity(entity_type, entity, sub_entity_types) }
 
@@ -12,7 +17,7 @@ module TopologicalInventory
         # Type specific parsing if needed
         #
         if respond_to?("parse_#{entity_type.to_s.singularize}")
-          send("parse_#{entity_type.to_s.singularize}", entity, sub_entity_types)
+          inventory_object = send("parse_#{entity_type.to_s.singularize}", entity, sub_entity_types)
         #
         # Else basic parsing
         #
@@ -20,6 +25,19 @@ module TopologicalInventory
           inventory_object = parse_entity_simple(entity_type, entity)
           parse_sub_entities(sub_entity_types, entity)
         end
+        inventory_object
+      end
+
+      # @param event [TopologicalInventory::MockSource::Event]
+      def parse_event(event)
+        entity = event.object
+        entity_type = entity&.kind&.to_sym
+        return if entity.nil? || entity_type.nil?
+
+        sub_entity_types = entity.storage.class.entity_types[entity_type]
+
+        inventory_object = parse_entity(entity_type, entity, sub_entity_types)
+        archive_entity(inventory_object, entity) if event.type == "DELETED"
         inventory_object
       end
 
@@ -52,22 +70,13 @@ module TopologicalInventory
                      entity_collection.add_entity)
       end
 
-      def lazy_object_refs
-        {}
-      end
-
+      # Adds InventoryLazyObject with ref: :manager_ref to data
+      # If custom lazy object needed, define custom parse method
+      #
+      # @param entity [TopologicalInventory::MockSource::Entity]
       def add_lazy_objects_to(entity)
-        lazy_refs = lazy_object_refs[entity.kind.to_sym]
-        if lazy_refs.present?
-          lazy_refs.each_pair do |name, references|
-            ref_values = {}
-            references.each do |reference|
-              # i.e. "service_offering_source_ref"
-              ref_values[reference] = entity.data.delete("#{name}_#{reference}".to_sym)
-            end
-
-            entity.data[name] = lazy_find(name.to_s.pluralize.to_sym, ref_values)
-          end
+        entity.references.each_pair do |collection_name, reference|
+          entity.data[collection_name] = lazy_find(collection_name.to_s.pluralize.to_sym, reference)
         end
       end
 
