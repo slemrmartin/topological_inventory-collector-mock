@@ -40,3 +40,4 @@ TopologicalInventoryIngressApiClient.configure.host   = "#{ingress_api_uri.host}
 
 collector = TopologicalInventory::MockSource::Collector.new(args[:source], args[:config], args[:amounts])
 collector.collect!
+

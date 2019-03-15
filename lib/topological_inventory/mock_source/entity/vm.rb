@@ -5,11 +5,11 @@ module TopologicalInventory
     class Entity::Vm < Entity
       def to_hash
         {
-          :source_ref        => @uid,
-          :name              => @name,
-          :uid_ems           => @uid,
-          :power_state       => %w[on off].sample,
-          :mac_addresses     => [],
+          :source_ref    => @uid,
+          :name          => @name,
+          :uid_ems       => @uid,
+          :power_state   => %w[on off].sample,
+          :mac_addresses => [],
         }
       end
 

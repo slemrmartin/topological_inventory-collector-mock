@@ -12,8 +12,7 @@ module TopologicalInventory
       include Logging
 
       def initialize(source, config, amounts)
-        # TODO: check config strings
-        ::Config.load_and_set_settings(File.join(path_to_defaults_config, "#{config}.yml"), File.join(path_to_amounts_config, "#{amounts}.yml"))
+        initialize_config(config, amounts)
 
         super(source,
               :default_limit => (::Settings.default_limit || 100).to_i,
@@ -62,7 +61,7 @@ module TopologicalInventory
                     :poll_time, :queue, :source
 
       def path_to_amounts_config
-        File.expand_path("../../../config/openshift", File.dirname(__FILE__))
+        File.expand_path("../../../config/amounts", File.dirname(__FILE__))
       end
 
       def path_to_defaults_config
@@ -97,7 +96,7 @@ module TopologicalInventory
       end
 
       def entity_types
-        types = storage_class.entity_types.keys
+        types = requested_entity_types
         case ::Settings.full_refresh.send_order
         when :normal then types
         when :reversed then types.reverse
@@ -105,6 +104,12 @@ module TopologicalInventory
           raise "Send order :#{::Settings.send_order} of entity types unknown. Allowed values: :normal, :reversed"
         end
         types
+      end
+
+      def requested_entity_types
+        all_types = storage_class.entity_types.keys
+        requested = ::Settings.amounts.keys
+        all_types & requested # intersection
       end
 
       def ensure_collector_threads
@@ -186,6 +191,17 @@ module TopologicalInventory
 
       def connection_for_entity_type(_entity_type)
         :unused
+      end
+
+      def initialize_config(settings_config, amounts_config)
+        # TODO: check if not insecure by loading '../../'
+        settings_file = File.join(path_to_defaults_config, "#{settings_config}.yml")
+        amounts_file  = File.join(path_to_amounts_config, "#{amounts_config}.yml")
+
+        raise "Settings configuration file #{settings_config} doesn't exist" unless File.exists?(settings_file)
+        raise "Amounts configuration file #{amounts_config} doesn't exist" unless File.exists?(amounts_file)
+
+        ::Config.load_and_set_settings(settings_file, amounts_file)
       end
     end
   end
