@@ -1,13 +1,14 @@
 # Number of generated items
 amounts:
-  cluster_service_classes: 100000
-  cluster_service_plans: 500000
-  images: 50000
-  namespaces: 10000
-  nodes: 500000
-  pods: 1000000
+  container_images: 50000
+  container_groups: 1000000
+  container_nodes: 500000
+  container_projects: 10000
+  container_templates: 50000
   service_instances: 100000
-  templates: 50000
+  service_offerings: 100000
+  service_offering_icons: 5000
+  service_plans: 500000
 
 default_limit: 100 # Number of entities to send at once to ingress api
 

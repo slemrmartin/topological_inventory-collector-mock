@@ -12,26 +12,36 @@ module TopologicalInventory
         # Type specific parsing if needed
         #
         if respond_to?("parse_#{entity_type.to_s.singularize}")
-          send("parse_#{entity_type.to_s.singularize}", entity)
+          send("parse_#{entity_type.to_s.singularize}", entity, sub_entity_types)
         #
         # Else basic parsing
         #
         else
-          parse_entity_simple(entity_type, entity)
-          sub_entity_types&.each do |sub_entity_type|
-            parse_sub_entity(sub_entity_type, entity)
-          end
+          inventory_object = parse_entity_simple(entity_type, entity)
+          parse_sub_entities(sub_entity_types, entity)
         end
+        inventory_object
       end
 
-      def parse_entity_simple(entity_type, entity)
-        add_lazy_objects_to(entity)
-        object = collections[entity_type].build(entity.data)
-        add_resource_timestamp(object)
-        object
+      def archive_entity(inventory_object, entity)
+        source_deleted_at                  = entity.deleted_at || Time.now.utc
+        inventory_object.source_deleted_at = source_deleted_at
       end
 
       protected
+
+      def parse_entity_simple(entity_type, entity)
+        add_lazy_objects_to(entity)
+        inventory_object = collections[entity_type].build(entity.data)
+        add_resource_timestamp(inventory_object)
+        inventory_object
+      end
+
+      def parse_sub_entities(sub_entity_types, parent_entity)
+        sub_entity_types&.each do |sub_entity_type|
+          parse_sub_entity(sub_entity_type, parent_entity)
+        end
+      end
 
       def parse_sub_entity(entity_type, parent_entity)
         storage = parent_entity.storage

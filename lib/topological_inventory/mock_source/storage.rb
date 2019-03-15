@@ -28,10 +28,14 @@ module TopologicalInventory
         end
       end
 
+      def self.entity_types
+        %i[]
+      end
+
       # List of entity types which this server provides
       # Should be defined by subclass
       def entity_types
-        %i()
+        self.class.entity_types.flatten.flatten.compact
       end
 
       # Keys in @entities are method names

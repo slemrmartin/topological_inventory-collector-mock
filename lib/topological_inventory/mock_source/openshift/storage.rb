@@ -1,13 +1,20 @@
 require "topological_inventory/mock_source/storage"
 
-require "topological_inventory/mock_source/openshift/entity/namespace"
+require "topological_inventory/mock_source/openshift/entity/container_project"
+require "topological_inventory/mock_source/openshift/entity/container_project_tag"
 require "topological_inventory/mock_source/openshift/entity/container"
-require "topological_inventory/mock_source/openshift/entity/pod"
-require "topological_inventory/mock_source/openshift/entity/node"
-require "topological_inventory/mock_source/openshift/entity/template"
-require "topological_inventory/mock_source/openshift/entity/image"
-require "topological_inventory/mock_source/openshift/entity/cluster_service_class"
-require "topological_inventory/mock_source/openshift/entity/cluster_service_plan"
+require "topological_inventory/mock_source/openshift/entity/container_group"
+require "topological_inventory/mock_source/openshift/entity/container_group_tag"
+require "topological_inventory/mock_source/openshift/entity/container_node"
+require "topological_inventory/mock_source/openshift/entity/container_node_tag"
+require "topological_inventory/mock_source/openshift/entity/container_template"
+require "topological_inventory/mock_source/openshift/entity/container_template_tag"
+require "topological_inventory/mock_source/openshift/entity/container_image"
+require "topological_inventory/mock_source/openshift/entity/container_image_tag"
+require "topological_inventory/mock_source/openshift/entity/service_offering"
+require "topological_inventory/mock_source/openshift/entity/service_offering_icon"
+require "topological_inventory/mock_source/openshift/entity/service_offering_tag"
+require "topological_inventory/mock_source/openshift/entity/service_plan"
 require "topological_inventory/mock_source/openshift/entity/service_instance"
 
 module TopologicalInventory
@@ -16,24 +23,18 @@ module TopologicalInventory
       # Ordering of items in array is important!
       # Used for ordered generation of entities
       def self.entity_types
-        %i(namespaces
-         nodes
-         pods
-         templates
-         images
-         cluster_service_classes
-         cluster_service_plans
-         service_instances)
-      end
-
-      def entity_types
-        self.class.entity_types
-      end
-
-      # Containers are initialized in a special way by pods
-      def create_entities
-        create_entities_of(:containers)
-        super
+        {
+          :container_images       => %i[container_image_tags],
+          :container_groups       => %i[containers
+                                        container_group_tags],
+          :container_projects     => %i[container_project_tags],
+          :container_nodes        => %i[container_node_tags],
+          :container_templates    => %i[container_template_tags],
+          :service_instances      => nil,
+          :service_offerings      => %i[service_offering_tags],
+          :service_offering_icons => nil,
+          :service_plans          => nil
+        }
       end
     end
   end

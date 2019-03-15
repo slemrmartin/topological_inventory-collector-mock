@@ -64,9 +64,9 @@ describe TopologicalInventory::MockSource::EntityType do
     it "changes resource_version" do
       3.times { @entity_type.add_entity }
 
-      resource_version_before = @entity_type.get_entity(1).resourceVersion
+      resource_version_before = @entity_type.get_entity(1).resource_version
       sleep(1)
-      resource_version_after = @entity_type.modify_entity(1).resourceVersion
+      resource_version_after = @entity_type.modify_entity(1).resource_version
 
       expect(resource_version_before < resource_version_after).to be(true)
     end

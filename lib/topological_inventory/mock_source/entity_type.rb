@@ -65,7 +65,7 @@ module TopologicalInventory
       end
 
       # TODO: Starting resource_version to watch notification
-      def resourceVersion
+      def resource_version
         nil
       end
 
@@ -88,7 +88,7 @@ module TopologicalInventory
         get_entity(deleted_count)
       end
 
-      # By default, entity modifies its resourceVersion
+      # By default, entity modifies its resource_version
       # When timestamp, it's changed in 1 second interval
       def modify_entity(index)
         return nil if index >= @stats[:total].value

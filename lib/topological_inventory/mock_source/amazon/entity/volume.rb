@@ -10,7 +10,7 @@ module TopologicalInventory
             :name                     => @name,
             :uid_ems                  => @uid,
             :power_state              => power_states.sample,
-            :source_created_at        => @creationTimestamp,
+            :source_created_at        => @created_at,
             :size                     => 2 * 1024**3,
             :volume_type_source_ref   => link_to(:volume_types),
             :source_region_source_ref => link_to(:source_regions)

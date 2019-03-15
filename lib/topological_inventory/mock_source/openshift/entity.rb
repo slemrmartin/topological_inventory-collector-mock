@@ -1,36 +1,34 @@
 require "topological_inventory/mock_source/entity"
-require "recursive-open-struct"
+require "more_core_extensions/core_ext/string/iec60027_2"
+require "more_core_extensions/core_ext/string/decimal_suffix"
 
 module TopologicalInventory
   module MockSource
     module Openshift
       class Entity < ::TopologicalInventory::MockSource::Entity
-        attr_reader :labels
+        def data(forced_init: false)
+          return @data if !@data.nil? && !forced_init
 
-        def initialize(_id, _entity_type)
-          super
-
-          # metadata
-          @labels      = self.class.labels
-          @annotations = self.class.annotations
+          @data = to_hash
         end
 
-        def metadata
-          self
+        def to_hash
+          {}
         end
 
-        def self.annotations
+        def shared_attributes
           {
-            :"node.openshift.io/md5sum"                               => "d59c38bb2c2e6553a869752ba72d3a6c",
-            :"volumes.kubernetes.io/controller-managed-attach-detach" => "true"
+            :name              => @name,
+            :source_ref        => @uid,
+            :resource_version  => @resource_version,
+            :source_created_at => @created_at,
           }
         end
 
-        # labels are optional,
-        # generated for each even
-        def self.labels
+        def shared_tag_attributes
           {
-            :"mock/openshift" => "true"
+            :tag_name  => "mock-tag-#{@ref_id}",
+            :tag_value => @ref_id.to_s,
           }
         end
       end
