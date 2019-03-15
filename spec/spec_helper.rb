@@ -1,5 +1,5 @@
 require "bundler/setup"
-require "topological_inventory/mock_source/openshift/collector"
+require "topological_inventory/mock_source/collector"
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure

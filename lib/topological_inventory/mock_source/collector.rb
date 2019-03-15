@@ -194,14 +194,18 @@ module TopologicalInventory
       end
 
       def initialize_config(settings_config, amounts_config)
-        # TODO: check if not insecure by loading '../../'
-        settings_file = File.join(path_to_defaults_config, "#{settings_config}.yml")
-        amounts_file  = File.join(path_to_amounts_config, "#{amounts_config}.yml")
+        settings_file = File.join(path_to_defaults_config, "#{sanitize_filename(settings_config)}.yml")
+        amounts_file  = File.join(path_to_amounts_config, "#{sanitize_filename(amounts_config)}.yml")
 
-        raise "Settings configuration file #{settings_config} doesn't exist" unless File.exists?(settings_file)
-        raise "Amounts configuration file #{amounts_config} doesn't exist" unless File.exists?(amounts_file)
+        raise "Settings configuration file #{settings_config} doesn't exist" unless File.exist?(settings_file)
+        raise "Amounts configuration file #{amounts_config} doesn't exist" unless File.exist?(amounts_file)
 
         ::Config.load_and_set_settings(settings_file, amounts_file)
+      end
+
+      def sanitize_filename(filename)
+        # Remove any character that aren't 0-9, A-Z, or a-z, / or -
+        filename.gsub(/[^0-9A-Z\/\-]/i, '_')
       end
     end
   end

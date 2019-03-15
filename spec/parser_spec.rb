@@ -1,11 +1,12 @@
-describe TopologicalInventory::MockSource::Openshift::Parser do
-  let(:server) { TopologicalInventory::MockSource::Openshift::Server.new }
+describe TopologicalInventory::MockSource::Parser do
+  let(:server) { TopologicalInventory::MockSource::Server.new }
 
   before do
     @amounts = {
       :service_offerings      => 1,
       :service_offering_icons => 1,
       :service_plans          => 1,
+      :source_regions         => 1,
       :container_projects     => 1,
       :container_nodes        => 1,
       :container_groups       => 1,
@@ -18,13 +19,13 @@ describe TopologicalInventory::MockSource::Openshift::Parser do
                         :multithreading => :off,
                         :amounts        => @amounts)
 
-    @storage = TopologicalInventory::MockSource::Openshift::Storage.new(server)
+    @storage = TopologicalInventory::MockSource::Storage.new(server)
     @storage.create_entities
 
-    @parser = TopologicalInventory::MockSource::Openshift::Parser.new
+    @parser = TopologicalInventory::MockSource::Parser.new
   end
 
-  it "parses openshift mock objects correctly" do
+  it "parses mock objects correctly" do
     entity_types = @storage.class.entity_types
     entities = {}
 
@@ -52,7 +53,7 @@ describe TopologicalInventory::MockSource::Openshift::Parser do
     expect(api_container_project).to be_instance_of(::TopologicalInventoryIngressApiClient::ContainerProject)
     expect(api_container_project).to have_base_attributes(mock_container_project)
     expect(api_container_project).to have_attributes(
-      :display_name => nil
+      :display_name => "Namespace #{mock_container_project.ref_id}"
     )
 
     assert_tag(:container_project_tags, :source_ref => mock_container_project.uid)
@@ -127,10 +128,10 @@ describe TopologicalInventory::MockSource::Openshift::Parser do
       :name              => mock_service_instance.data[:name],
       :source_ref        => mock_service_instance.data[:source_ref],
       :source_created_at => mock_service_instance.data[:source_created_at],
-      :source_region     => nil,
       :subscription      => nil
     )
 
+    assert_lazy_object(api_service_instance.source_region, :source_ref => @storage.entities[:source_regions].get_entity(0).uid)
     assert_lazy_object(api_service_instance.service_offering, :source_ref => @storage.entities[:service_offerings].get_entity(0).uid)
     assert_lazy_object(api_service_instance.service_plan, :source_ref => @storage.entities[:service_plans].get_entity(0).uid)
   end
@@ -148,11 +149,11 @@ describe TopologicalInventory::MockSource::Openshift::Parser do
       :distributor       => mock_cluster_svc_class.data[:distributor],
       :support_url       => mock_cluster_svc_class.data[:support_url],
       :source_created_at => mock_cluster_svc_class.data[:source_created_at],
-      :source_region     => nil,
       :subscription      => nil,
     )
 
-    assert_lazy_object(api_service_offering.service_offering_icon, :source_ref => nil)
+    assert_lazy_object(api_service_offering.source_region, :source_ref => @storage.entities[:source_regions].get_entity(0).uid)
+    assert_lazy_object(api_service_offering.service_offering_icon, :source_ref => @storage.entities[:service_offering_icons].get_entity(0).uid)
   end
 
   def assert_service_plan(mock_cluster_svc_plan, api_service_plan)
@@ -166,10 +167,10 @@ describe TopologicalInventory::MockSource::Openshift::Parser do
       :source_created_at  => mock_cluster_svc_plan.data[:source_created_at],
       :create_json_schema => mock_cluster_svc_plan.data[:create_json_schema],
       :update_json_schema => nil,
-      :source_region      => nil,
       :subscription       => nil
     )
 
+    assert_lazy_object(api_service_plan.source_region, :source_ref => @storage.entities[:source_regions].get_entity(0).uid)
     assert_lazy_object(api_service_plan.service_offering, :source_ref => @storage.entities[:service_offerings].get_entity(0).uid)
   end
 

@@ -77,7 +77,7 @@ module TopologicalInventory
         # save memory with 1 event per generator
         @event      ||= TopologicalInventory::MockSource::Event.new
         @event.object = entity
-        @event.type   = klass::OPERATIONS[operation]
+        @event.type   = @event.class::OPERATIONS[operation]
         @event
       end
 

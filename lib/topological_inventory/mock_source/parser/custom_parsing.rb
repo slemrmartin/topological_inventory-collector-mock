@@ -15,7 +15,7 @@ module TopologicalInventory
           inventory_object = parse_entity_simple(:container_nodes, entity)
           parse_sub_entities(sub_entity_types, entity)
 
-          inventory_object.lives_on = lazy_find(:cross_link_vms, :uid_ems => entity.references[:cross_link_vms])
+          inventory_object.lives_on = lazy_find(:cross_link_vms, entity.references[:cross_link_vms])
           inventory_object
         end
 
