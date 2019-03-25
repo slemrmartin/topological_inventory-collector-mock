@@ -38,6 +38,6 @@ ingress_api_uri = URI(args[:ingress_api])
 TopologicalInventoryIngressApiClient.configure.scheme = ingress_api_uri.scheme || "http"
 TopologicalInventoryIngressApiClient.configure.host   = "#{ingress_api_uri.host}:#{ingress_api_uri.port}"
 
-collector = TopologicalInventory::MockSource::Collector.new(args[:source], args[:config], "amazon/#{args[:amounts]}")
+collector = TopologicalInventory::MockSource::Collector.new(args[:source], args[:config], args[:amounts])
 collector.collect!
 

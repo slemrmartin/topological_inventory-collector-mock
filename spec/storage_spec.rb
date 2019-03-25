@@ -1,6 +1,5 @@
 describe TopologicalInventory::MockSource::Storage do
   let(:server) do
-    allow_any_instance_of(TopologicalInventory::MockSource::Server).to receive(:collector_type).and_return(:test)
     TopologicalInventory::MockSource::Server.new
   end
 

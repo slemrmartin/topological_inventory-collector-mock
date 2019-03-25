@@ -1,0 +1,12 @@
+# Number of generated items
+amounts:
+  container_images: 50
+  container_groups: 50
+  container_projects: 10
+  container_nodes: 50
+  container_templates: 50
+  service_instances: 10
+  service_offerings: 10
+  service_offering_icons: 5
+  service_plans: 50
+  source_regions: 5 # amazon IC

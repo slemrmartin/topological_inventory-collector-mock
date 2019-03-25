@@ -4,16 +4,15 @@ require "topological_inventory-ingress_api-client/collector"
 require "topological_inventory/mock_source/logging"
 require "topological_inventory/mock_source/parser"
 require "topological_inventory/mock_source/server"
+require "topological_inventory/mock_source/storage"
 
 module TopologicalInventory
   module MockSource
     class Collector < TopologicalInventoryIngressApiClient::Collector
       include Logging
 
-      def initialize(source, config)
-        unless config.nil?
-          ::Config.load_and_set_settings(File.join(path_to_config, "#{config}.yml"))
-        end
+      def initialize(source, config, amounts)
+        initialize_config(config, amounts)
 
         super(source,
               :default_limit => (::Settings.default_limit || 100).to_i,
@@ -61,7 +60,11 @@ module TopologicalInventory
       attr_accessor :collector_threads, :finished, :limits,
                     :poll_time, :queue, :source
 
-      def path_to_config
+      def path_to_amounts_config
+        File.expand_path("../../../config/amounts", File.dirname(__FILE__))
+      end
+
+      def path_to_defaults_config
         File.expand_path("../../../config", File.dirname(__FILE__))
       end
 
@@ -93,7 +96,7 @@ module TopologicalInventory
       end
 
       def entity_types
-        types = storage_class.entity_types.keys
+        types = requested_entity_types
         case ::Settings.full_refresh.send_order
         when :normal then types
         when :reversed then types.reverse
@@ -101,6 +104,12 @@ module TopologicalInventory
           raise "Send order :#{::Settings.send_order} of entity types unknown. Allowed values: :normal, :reversed"
         end
         types
+      end
+
+      def requested_entity_types
+        all_types = storage_class.entity_types.keys
+        requested = ::Settings.amounts.keys
+        all_types & requested # intersection
       end
 
       def ensure_collector_threads
@@ -128,7 +137,6 @@ module TopologicalInventory
 
             parser = parser_class.new
             parser.parse_entities(entity_type, entities, storage_class.entity_types[entity_type])
-
             refresh_state_part_uuid = SecureRandom.uuid
             total_parts += 1
             save_inventory(parser.collections.values, refresh_state_uuid, refresh_state_part_uuid)
@@ -149,6 +157,7 @@ module TopologicalInventory
         logger.info("[#{cnt}] Sweeping inactive records for #{entity_type} with :refresh_state_uuid => '#{refresh_state_uuid}'...")
 
         parsed_entity_types = [entity_type] + (storage_class.entity_types[entity_type] || []).flatten.compact
+        # parsed_entity_types = [entity_type]
 
         sweep_inventory(refresh_state_uuid,
                         total_parts,
@@ -176,8 +185,27 @@ module TopologicalInventory
         TopologicalInventory::MockSource::Storage
       end
 
+      def connection
+        @connection ||= TopologicalInventory::MockSource::Server.new
+      end
+
       def connection_for_entity_type(_entity_type)
         :unused
+      end
+
+      def initialize_config(settings_config, amounts_config)
+        settings_file = File.join(path_to_defaults_config, "#{sanitize_filename(settings_config)}.yml")
+        amounts_file  = File.join(path_to_amounts_config, "#{sanitize_filename(amounts_config)}.yml")
+
+        raise "Settings configuration file #{settings_config} doesn't exist" unless File.exist?(settings_file)
+        raise "Amounts configuration file #{amounts_config} doesn't exist" unless File.exist?(amounts_file)
+
+        ::Config.load_and_set_settings(settings_file, amounts_file)
+      end
+
+      def sanitize_filename(filename)
+        # Remove any character that aren't 0-9, A-Z, or a-z, / or -
+        filename.gsub(/[^0-9A-Z\/\-]/i, '_')
       end
     end
   end

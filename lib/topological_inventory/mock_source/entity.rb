@@ -22,6 +22,39 @@ module TopologicalInventory
         @deleted_at = nil
       end
 
+      def data(forced_init: false)
+        return @data if !@data.nil? && !forced_init
+
+        @data = to_hash
+      end
+
+      def to_hash
+        {}
+      end
+
+      # openshift entities
+      def shared_attributes
+        {
+          :name              => @name,
+          :source_ref        => @uid,
+          :resource_version  => @resource_version,
+          :source_created_at => @created_at,
+        }
+      end
+
+      def references
+        {}
+      end
+
+      def shared_tag_references
+        {
+          :tag => {
+            :name  => "mock-tag-#{@ref_id}",
+            :value => @ref_id.to_s
+          }
+        }
+      end
+
       # Can be overriden by subclasses
       def self.watch_enabled?
         false
@@ -50,7 +83,7 @@ module TopologicalInventory
       end
 
       def link_to(dest_entity_type, ref: :uid)
-        @entity_type.link(@ref_id, dest_entity_type, :ref => ref)
+        @entity_type.link(@ref_id, dest_entity_type, :ref => ref).to_s
       end
 
       def resource_version_by_settings

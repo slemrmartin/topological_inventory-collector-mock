@@ -7,7 +7,7 @@ describe TopologicalInventory::MockSource::EventGenerator do
   before do
     @storage = TopologicalInventory::MockSource::Storage.new(server)
 
-    allow(@storage).to receive(:entity_types).and_return(%i(entity))
+    allow(@storage).to receive(:entity_types).and_return(%i[entity])
     allow_any_instance_of(TopologicalInventory::MockSource::EntityType).to receive(:entity_class).and_return(TopologicalInventory::MockSource::Entity)
 
     @settings = {
@@ -39,7 +39,7 @@ describe TopologicalInventory::MockSource::EventGenerator do
   end
 
   it "generates events of the correct type" do
-    %i(add modify delete).each do |event_type|
+    %i[add modify delete].each do |event_type|
       modify_settings(:add    => event_type == :add ? 3 : 0,
                       :modify => event_type == :modify ? 3 : 0,
                       :delete => event_type == :delete ? 3 : 0)
@@ -77,7 +77,7 @@ describe TopologicalInventory::MockSource::EventGenerator do
     end
   end
 
-  %i(modify delete).each do |operation|
+  %i[modify delete].each do |operation|
     context "on '#{operation}' event." do
       (0..2).each do |checks_cnt|
         (0..2).each do |changed_per_check|

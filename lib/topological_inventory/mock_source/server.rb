@@ -5,35 +5,12 @@ module TopologicalInventory
   module MockSource
     class Server
       def initialize
-        @storage = class_for(:storage).new(self)
+        @storage = TopologicalInventory::MockSource::Storage.new(self)
         @storage.create_entities
       end
 
-      # Collector type for deriving collector-specific class names
-      def collector_type
-        raise NotImplementedError, "Collector type must be defined in subclass"
-      end
-
-      # Classes can be determined from:
-      # - collector_type
-      # - type
-      # @param type [Symbol] :storage | :entity | :entity_type | ...
-      def class_for(type)
-        klass, found = nil, false
-
-        %W(TopologicalInventory::MockSource::#{collector_type.to_s.classify}::#{type.to_s.classify}
-         TopologicalInventory::MockSource::#{type.to_s.classify}).each do |class_name|
-          klass = class_name.safe_constantize
-          found = klass.to_s == class_name
-          break if found
-        end
-
-        raise "Class #{type} doesn't exist!" unless found
-        klass
-      end
-
       def watch(entity_type, &block)
-        class_for(:event_generator).start(@storage.entities[entity_type.to_sym], self, &block)
+        TopologicalInventory::MockSource::EventGenerator.start(@storage.entities[entity_type.to_sym], self, &block)
       end
 
       # Retrieves data from get_ methods in Openshift Collector's parser

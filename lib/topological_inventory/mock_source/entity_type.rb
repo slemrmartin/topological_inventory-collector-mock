@@ -5,12 +5,9 @@ module TopologicalInventory
     class EntityType
       include Enumerable
 
-      attr_reader :storage, :ref_id, :name, :stats, :entity_class
+      attr_reader :storage, :ref_id, :name, :stats
 
       attr_accessor :limit, :continue
-
-      delegate :collector_type,
-               :class_for, :to => :storage
 
       delegate :watch_enabled?, :to => :entity_class
 
@@ -102,7 +99,7 @@ module TopologicalInventory
       def entity_class
         return @entity_class unless @entity_class.nil?
 
-        class_name = "TopologicalInventory::MockSource::#{collector_type.to_s.classify}::Entity::#{@name.to_s.classify}"
+        class_name = "TopologicalInventory::MockSource::Entity::#{@name.to_s.classify}"
         klass      = class_name.safe_constantize
 
         raise "Entity class #{class_name} doesn't exists!" if klass.to_s != class_name
@@ -164,7 +161,7 @@ module TopologicalInventory
 
       # Entity-type specific readable ID
       def human_readable_uid(entity_id)
-        "#{storage.collector_type}-#{@name}-#{'%010d' % entity_id}"
+        "mock-#{@name}-#{'%010d' % entity_id}"
       end
 
       # TODO
