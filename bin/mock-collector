@@ -18,7 +18,7 @@ require require_dev_path if File.exist?(require_dev_path)
 # --source      (ENV["SOURCE_UID"])  - core: Source.uid (manager for this collector)
 # --ingress_api (ENV["INGRESS_API"]) - swagger api server, by default *localhost:9292*
 # --config      (ENV["CONFIG"])      - file located in /config
-# --amounts     (ENV["AMOUNTS"])     - file located in /config/openshift
+# --amounts     (ENV["AMOUNTS"])     - file located in /config/amounts (you can use [large|default|small| amazon/default | openshift/small] etc.)
 def parse_args
   require 'optimist'
   opts = Optimist.options do
