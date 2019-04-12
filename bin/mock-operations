@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+
+$LOAD_PATH << File.expand_path("../lib", __dir__)
+require "bundler/setup"
+require "topological_inventory/mock_source/operations/worker"
+
+queue_host = ENV["QUEUE_HOST"] || "localhost"
+queue_port = ENV["QUEUE_PORT"] || 9092
+
+TopologicalInventoryApiClient.configure do |config|
+  config.scheme = "http"
+  config.host = "http://localhost:3001" #"#{ENV["TOPOLOGICAL_INVENTORY_API_SERVICE_HOST"]}:#{ENV["TOPOLOGICAL_INVENTORY_API_SERVICE_PORT"]}"
+  config.base_path = "/api/v0.1"
+end
+
+operations_worker = TopologicalInventory::MockSource::Operations::Worker.new #(:host => queue_host, :port => queue_port)
+operations_worker.run
