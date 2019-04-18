@@ -24,4 +24,4 @@ RUN echo "gem: --no-document" > ~/.gemrc && \
 RUN chgrp -R 0 $WORKDIR && \
     chmod -R g=u $WORKDIR
 
-ENTRYPOINT ["bin/openshift-mock-collector"]
+ENTRYPOINT ["bin/mock-collector"]
