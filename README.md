@@ -1,8 +1,8 @@
 # Mock collector for OpenShift
 Mock collector for Topological Inventory service
 
-It implements OpenShift (more providers planned) collector and provides fake(generated) data so it also implements simple OpenShift server.   
-Based on https://github.com/agrare/openshift-collector sends data through Kafka messaging server to Topological Inventory Persister service, 
+It implements collector with mock(generated) data, so it's both collector and server.   
+Collector sends data through Kafka messaging server to Topological Inventory Persister service, 
 which parses received data and saves them as an inventory in database.  
 
 ## Usage:
@@ -10,9 +10,7 @@ which parses received data and saves them as an inventory in database.
 start collector:
 - `bin/mock-collector --source=<source> [--config=<type>] [--amounts=<amounts>]`  
 - `bin/mock-collector --source=<source> [--config=<type>] [--amounts=openshift/<amounts>]`  
-- `bin/openshift-mock-collector --source=<source> [--config=<type>] [--amounts=<amounts>]`  
 - `bin/mock-collector --source=<source> [--config=<type>] [--amounts=amazon/<amounts>]`  
-- `bin/amazon-mock-collector --source <source> [--config <type>] [--amounts <amounts>]`  
 
 @param `source` (`ENV["SOURCE_UID"]`) is sources.uid from topological_inventory db
 (service https://github.com/ManageIQ/sources-api)
@@ -31,16 +29,14 @@ start collector:
 - default (default value)
 - small
 - large
-- openshift/default (in case of running `bin/mock-collector`)
-- amazon/default (in case of running `bin/mock-collector`)
+- openshift/default
+- amazon/default
 - ...
   
     
 Example:
 ```
 bin/mock-collector --source=31b5338b-685d-4056-ba39-d00b4d7f19cc --config=simple --amounts=small
-bin/openshift-mock-collector --source=31b5338b-685d-4056-ba39-d00b4d7f19cc --config=simple
-bin/amazon-mock-collector --source=592ba27a-2b89-11e9-b210-d663bd873d93 --amounts=large
 ```    
 _Note: Source is manager for this provider (like ExtManagementSystem in ManageIQ)_
 
