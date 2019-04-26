@@ -9,8 +9,8 @@ events:
     delete: 0
 
 full_refresh:
-  # Total round of generating
-  repeats_count: 1
+  # Sleep between two refreshes [s] - full_refresh mode only
+  sleep_duration: 10
   # Order of generating InventoryCollections:
   # - :normal - top level first, dependent later
   # - :reversed - dependent first
