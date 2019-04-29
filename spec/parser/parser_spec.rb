@@ -3,16 +3,23 @@ describe TopologicalInventory::MockSource::Parser do
 
   before do
     @amounts = {
-      :service_offerings      => 1,
-      :service_offering_icons => 1,
-      :service_plans          => 1,
-      :source_regions         => 1,
-      :container_projects     => 1,
-      :container_nodes        => 1,
-      :container_groups       => 1,
-      :service_instances      => 1,
-      :container_templates    => 1,
-      :container_images       => 1
+      :service_offerings       => 1,
+      :service_offering_tags   => 1,
+      :service_offering_icons  => 1,
+      :service_plans           => 1,
+      :source_regions          => 1,
+      :containers              => 1,
+      :container_projects      => 1,
+      :container_project_tags  => 1,
+      :container_nodes         => 1,
+      :container_node_tags     => 1,
+      :container_groups        => 1,
+      :container_group_tags    => 1,
+      :service_instances       => 1,
+      :container_templates     => 1,
+      :container_template_tags => 1,
+      :container_images        => 1,
+      :container_image_tags    => 1
     }
 
     stub_settings_merge(:refresh_mode   => :full_refresh,
@@ -29,12 +36,13 @@ describe TopologicalInventory::MockSource::Parser do
     entity_types = @storage.class.entity_types
     entities = {}
 
-    @amounts.each_key do |entity_type|
+    (@amounts.keys & @storage.class.entity_types.keys).each do |entity_type|
       entities[entity_type] = @storage.send(entity_type).get_entity(0)
       @parser.parse_entity(entity_type,
                            entities[entity_type],
                            entity_types[entity_type])
     end
+
 
     assert_container_project(entities[:container_projects], @parser.collections[:container_projects].data.first)
     assert_container_node(entities[:container_nodes], @parser.collections[:container_nodes].data.first)
@@ -205,7 +213,7 @@ describe TopologicalInventory::MockSource::Parser do
     expect(api_tag.class.name).to eq(api_class_name)
 
     # Name/value
-    assert_lazy_object(api_tag.tag, :name => "mock-tag-0", :value => "0")
+    assert_lazy_object(api_tag.tag, :name => "mock-tag-0", :value => "0", :namespace => "mock-source")
   end
 
   def assert_lazy_object(lazy_object, reference)

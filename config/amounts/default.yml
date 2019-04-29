@@ -1,16 +1,25 @@
 # Number of generated items
 amounts:
   container_images: 50
+  container_image_tags: 13
   container_groups: 50
-  container_projects: 10
+  containers: 150
+  container_group_tags: 5
   container_nodes: 50
+  container_node_tags: 10
+  container_projects: 10
+  container_project_tags: 7
   container_templates: 50
+  container_template_tags: 10
   flavors: 50
   service_instances: 50     # belongs_to [:source_region, :service_offering, :service_plan]
   service_offerings: 100    # belongs_to [:source_region]
+  service_offering_tags: 50
   service_offering_icons: 5
   service_plans: 150        # belongs_to [:source_region, :service_offering]
   source_regions: 50
   volumes: 100              # belongs_to [:volume_type, :source_region]
+  volume_attachments: 2
   volume_types: 50
   vms: 100                  # belongs_to [:flavor]
+  vm_tags: 60

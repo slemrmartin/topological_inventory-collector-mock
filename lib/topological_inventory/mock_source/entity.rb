@@ -49,8 +49,9 @@ module TopologicalInventory
       def shared_tag_references
         {
           :tag => {
-            :name  => "mock-tag-#{@ref_id}",
-            :value => @ref_id.to_s
+            :name      => "mock-tag-#{@ref_id}",
+            :value     => @ref_id.to_s,
+            :namespace => 'mock-source' # eq. SourceType.name
           }
         }
       end
