@@ -5,3 +5,7 @@ def stub_settings_merge(hash)
   Settings.add_source!(hash)
   Settings.reload!
 end
+
+def clear_settings
+  ::Settings.keys.dup.each { |k| ::Settings.delete_field(k) }
+end

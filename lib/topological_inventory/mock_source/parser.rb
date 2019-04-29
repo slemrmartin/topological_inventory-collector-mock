@@ -61,13 +61,46 @@ module TopologicalInventory
         end
       end
 
-      def parse_sub_entity(entity_type, parent_entity)
+      def parse_sub_entity(sub_entity_type, parent_entity)
+        sub_entities(sub_entity_type, parent_entity) do |sub_entity|
+          parse_entity(sub_entity_type,
+                       sub_entity)
+        end
+      end
+
+      def sub_entities(sub_entity_type, parent_entity)
         storage = parent_entity.storage
+        sub_collection = storage.entities[sub_entity_type]
 
-        entity_collection = storage.entities[entity_type]
+        parent_current = parent_entity.ref_id # starts with idx == 0
+        parent_total   = parent_entity.entity_type.stats[:total].value
+        sub_total = sub_collection.stats[:total].value
 
-        parse_entity(entity_type,
-                     entity_collection.add_entity)
+        # children per parent (rounded down)
+        ratio = sub_total / parent_total
+        idx = {}
+
+        # a) more sub_entities than parents
+        #    - sub_entities generated in ratio except for last parent
+        if ratio > 0
+          idx[:start] = ratio * parent_current
+
+          idx[:end] = if sub_total - idx[:start] >= ratio &&
+                         parent_current < parent_total - 1
+                        idx[:start] + ratio - 1
+                      else
+                        sub_total - 1
+                      end
+        # b) less sub_entities than parents
+        #    - sub_entities associated 1:1 until available
+        else
+          idx[:start] = parent_current
+          idx[:end]   = parent_current < sub_total ? idx[:start] : -1
+        end
+
+        (idx[:start]..idx[:end]).each do |index|
+          yield sub_collection.get_entity(index)
+        end
       end
 
       # Adds InventoryLazyObject with ref: :manager_ref to data

@@ -157,7 +157,6 @@ module TopologicalInventory
         logger.info("[#{cnt}] Sweeping inactive records for #{entity_type} with :refresh_state_uuid => '#{refresh_state_uuid}'...")
 
         parsed_entity_types = [entity_type] + (storage_class.entity_types[entity_type] || []).flatten.compact
-        # parsed_entity_types = [entity_type]
 
         sweep_inventory(refresh_state_uuid,
                         total_parts,
