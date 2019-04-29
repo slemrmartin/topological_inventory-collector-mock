@@ -79,7 +79,7 @@ module TopologicalInventory
         # children per parent (rounded down)
         ratio = sub_total / parent_total
         idx = {}
-        # binding.pry if sub_entity_type == :container_group_tags
+
         # a) more sub_entities than parents
         #    - sub_entities generated in ratio except for last parent
         if ratio > 0
@@ -98,8 +98,8 @@ module TopologicalInventory
           idx[:end]   = parent_current < sub_total ? idx[:start] : -1
         end
 
-        (idx[:start]..idx[:end]).each do |idx|
-          yield sub_collection.get_entity(idx)
+        (idx[:start]..idx[:end]).each do |index|
+          yield sub_collection.get_entity(index)
         end
       end
 

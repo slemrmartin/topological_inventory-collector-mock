@@ -43,7 +43,6 @@ describe TopologicalInventory::MockSource::Parser do
                            entity_types[entity_type])
     end
 
-
     assert_container_project(entities[:container_projects], @parser.collections[:container_projects].data.first)
     assert_container_node(entities[:container_nodes], @parser.collections[:container_nodes].data.first)
     assert_container_group(entities[:container_groups], @parser.collections[:container_groups].data.first)
