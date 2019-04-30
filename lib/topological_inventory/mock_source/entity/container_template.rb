@@ -7,7 +7,7 @@ module TopologicalInventory
         shared_attributes
       end
 
-      def references
+      def references_hash
         {
           :container_project => {:name => link_to(:container_projects, :ref => :name)}
         }

@@ -13,7 +13,7 @@ module TopologicalInventory
         }
       end
 
-      def references
+      def references_hash
         {
           :service_plan     => {:source_ref => link_to(:service_plans)},
           :service_offering => {:source_ref => link_to(:service_offerings)},

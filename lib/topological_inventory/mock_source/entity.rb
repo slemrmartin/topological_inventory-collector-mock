@@ -26,6 +26,14 @@ module TopologicalInventory
         return @data if !@data.nil? && !forced_init
 
         @data = to_hash
+        apply_custom_data
+      end
+
+      def references(forced_init: false)
+        return @references if !@references.nil? && !forced_init
+
+        @references = references_hash
+        apply_custom_references
       end
 
       def to_hash
@@ -42,7 +50,7 @@ module TopologicalInventory
         }
       end
 
-      def references
+      def references_hash
         {}
       end
 
@@ -74,6 +82,37 @@ module TopologicalInventory
       end
 
       protected
+
+      # Applies custom data specification from config/data
+      def apply_custom_data
+        not_overwritable = references_hash.keys
+        apply_custom_values do |name, value|
+          unless not_overwritable.include?(name.to_sym)
+            @data[name.to_sym] = value == 'nil' ? nil : value
+          end
+        end
+        @data
+      end
+
+      def apply_custom_references
+        not_overwritable = to_hash.keys
+        apply_custom_values do |name, value|
+          unless not_overwritable.include?(name.to_sym)
+            @references[name.to_sym] = value == 'nil' ? nil : value
+          end
+        end
+        @references
+      end
+
+      def apply_custom_values
+        values = ::Settings.data&.values&.send(@entity_type.name.to_sym)
+        if values.present?
+          values.each_pair do |name, value|
+            val = value.kind_of?(Config::Options) ? value.to_hash : value
+            yield name, val
+          end
+        end
+      end
 
       def generate_name
         @entity_type.name_for(@ref_id)

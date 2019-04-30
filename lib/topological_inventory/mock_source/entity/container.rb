@@ -13,7 +13,7 @@ module TopologicalInventory
         }
       end
 
-      def references
+      def references_hash
         {
           :container_group => {:source_ref => link_to(:container_groups)},
           :container_image => {:source_ref => link_to(:container_images)}

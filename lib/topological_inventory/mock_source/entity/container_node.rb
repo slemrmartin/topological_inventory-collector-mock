@@ -10,7 +10,7 @@ module TopologicalInventory
         )
       end
 
-      def references
+      def references_hash
         {
           :cross_link_vms => {:uid_ems => nil} # TODO: link_to(:vms)
         }

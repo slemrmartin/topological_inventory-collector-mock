@@ -24,3 +24,13 @@ data:
     volume_types: 5
     vms: 10                  # belongs_to [:flavor]
     vm_tags: 6
+#  values:
+#    flavors:
+#      cpus: 120
+#      extra:
+#        attributes:
+#          test: kvrk
+#    service_offerings:
+#      service_offering_icon:
+#        source_ref: mock-service_offering_icons-0000000000
+#      source_region: nil
