@@ -9,8 +9,8 @@ events:
     delete: 0
 
 full_refresh:
-  # Total round of generating
-  repeats_count: 1
+  # Sleep between two refreshes [s] - full_refresh mode only
+  sleep_duration: 60
   # Order of generating InventoryCollections:
   # - :normal - top level first, dependent later
   # - :reversed - dependent first
@@ -25,7 +25,7 @@ multithreading: :on
 # - :full_refresh - one-time full refresh, applied settings *full_refresh*
 # - :events - generated events, applied settings *events*
 # - :standard - first full_refresh then generating events (like standard provider)
-refresh_mode: :standard
+refresh_mode: :full_refresh
 
 resource_version:
   default_value: 1
