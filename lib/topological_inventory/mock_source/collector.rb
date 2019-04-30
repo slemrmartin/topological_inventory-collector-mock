@@ -11,8 +11,8 @@ module TopologicalInventory
     class Collector < TopologicalInventoryIngressApiClient::Collector
       include Logging
 
-      def initialize(source, config, amounts)
-        initialize_config(config, amounts)
+      def initialize(source, config, data)
+        initialize_config(config, data)
 
         super(source,
               :default_limit => (::Settings.default_limit || 100).to_i,
@@ -80,8 +80,8 @@ module TopologicalInventory
       attr_accessor :collector_threads, :finished, :limits,
                     :poll_time, :queue, :source
 
-      def path_to_amounts_config
-        File.expand_path("../../../config/amounts", File.dirname(__FILE__))
+      def path_to_data_config
+        File.expand_path("../../../config/data", File.dirname(__FILE__))
       end
 
       def path_to_defaults_config
@@ -128,7 +128,7 @@ module TopologicalInventory
 
       def requested_entity_types
         all_types = storage_class.entity_types.keys
-        requested = ::Settings.amounts.keys
+        requested = (::Settings.data&.amounts || {}).keys
         all_types & requested # intersection
       end
 
@@ -210,14 +210,14 @@ module TopologicalInventory
         :unused
       end
 
-      def initialize_config(settings_config, amounts_config)
+      def initialize_config(settings_config, data_config)
         settings_file = File.join(path_to_defaults_config, "#{sanitize_filename(settings_config)}.yml")
-        amounts_file  = File.join(path_to_amounts_config, "#{sanitize_filename(amounts_config)}.yml")
+        data_file  = File.join(path_to_data_config, "#{sanitize_filename(data_config)}.yml")
 
         raise "Settings configuration file #{settings_config} doesn't exist" unless File.exist?(settings_file)
-        raise "Amounts configuration file #{amounts_config} doesn't exist" unless File.exist?(amounts_file)
+        raise "Data configuration file #{data_config} doesn't exist" unless File.exist?(data_file)
 
-        ::Config.load_and_set_settings(settings_file, amounts_file)
+        ::Config.load_and_set_settings(settings_file, data_file)
       end
 
       def sanitize_filename(filename)

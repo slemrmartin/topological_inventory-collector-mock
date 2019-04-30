@@ -1,22 +1,23 @@
-# Number of generated items
-amounts:
-  container_images: 5
-  container_image_tags: 13
-  container_groups: 10
-  containers: 15
-  container_group_tags: 4
-  container_projects: 2
-  container_project_tags: 7
-  container_nodes: 5
-  container_node_tags: 10
-  container_templates: 5
-  container_template_tags: 10
-  service_instances: 10
-  service_offerings: 2
-  service_offering_icons: 2
-  service_offering_tags: 5
-  service_plans: 5
-  source_regions: 5
+data:
+  # Number of generated items
+  amounts:
+    container_images: 5
+    container_image_tags: 13
+    container_groups: 10
+    containers: 15
+    container_group_tags: 4
+    container_projects: 2
+    container_project_tags: 7
+    container_nodes: 5
+    container_node_tags: 10
+    container_templates: 5
+    container_template_tags: 10
+    service_instances: 10
+    service_offerings: 2
+    service_offering_icons: 2
+    service_offering_tags: 5
+    service_plans: 5
+    source_regions: 5
 
 default_limit: 100 # Number of entities to send at once to ingress api
 

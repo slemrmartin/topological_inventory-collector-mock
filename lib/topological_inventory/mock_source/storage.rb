@@ -84,7 +84,8 @@ module TopologicalInventory
       protected
 
       def create_entities_of(entity_type)
-        initial_amount = ::Settings.amounts[entity_type].to_i
+        amounts = ::Settings.data&.amounts || {}
+        initial_amount = amounts[entity_type].to_i
 
         @entities[entity_type] = TopologicalInventory::MockSource::EntityType.new(entity_type,
                                                                     self,

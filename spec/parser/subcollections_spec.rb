@@ -12,7 +12,7 @@ describe TopologicalInventory::MockSource::Parser do
 
           stub_settings_merge(:refresh_mode   => :full_refresh,
                               :multithreading => :off,
-                              :amounts        => @amounts)
+                              :data           => { :amounts => @amounts })
           @storage = TopologicalInventory::MockSource::Storage.new(server)
           @storage.create_entities
 
