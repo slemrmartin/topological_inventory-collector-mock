@@ -141,6 +141,7 @@ module TopologicalInventory
       end
 
       def full_refresh(entity_type)
+        logger.info "Testing log for #{entity_type}"
         resource_version = continue = nil
 
         refresh_state_uuid = SecureRandom.uuid
