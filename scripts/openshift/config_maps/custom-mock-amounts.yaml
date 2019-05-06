@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: custom-mock-amounts-config
+  namespace: test-mslemr
+data:
+  custom.yml: |
+    amounts:
+      container_images: 2
+      container_groups: 8
+      container_nodes: 2
+      container_projects: 2
+      container_templates: 4
+      flavors: 3
+      service_instances: 4
+      service_offerings: 2
+      service_offering_icons: 2
+      service_plans: 5
+      source_regions: 5
+      volumes: 10              # belongs_to [:volume_type, :source_region]
+      volume_types: 5
+      vms: 6                  # belongs_to [:flavor]

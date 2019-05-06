@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+plain_rh_identity="{\"identity\":{\"account_number\":\"test\"}}"
+export X_RH_IDENTITY=$(echo ${plain_rh_identity} | base64)
+
+# Topological API service
+export TOPOLOGICAL_INVENTORY_API_SERVICE_HOST="http://topological-inventory-api-test-mslemr.10.8.96.54.nip.io"
+export TOPOLOGICAL_INVENTORY_API_SERVICE_PORT=80
+export BASE_PATH="api/topological-inventory/v1.0"
+
+export SOURCES_API_SERVICE_HOST="http://sources-api-test-mslemr.10.8.96.54.nip.io"
+export SOURCES_API_SERVICE_PORT=80
+export SOURCES_API_BASE_PATH="api/sources/v1.0"
+
+source_type_name="mock-source"
+
+config_file="openshift/config_maps/custom-mock-config.yaml"
+amounts_config_file="openshift/config_maps/custom-mock-amounts.yaml"
+sources_count=1
+

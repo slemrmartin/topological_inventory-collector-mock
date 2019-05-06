@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: topological-inventory-sources-sync
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    name: topological-inventory-sources-sync
+    labels:
+      app: topological-inventory
+  spec:
+    replicas: 1
+    selector:
+      name: topological-inventory-sources-sync
+    template:
+      metadata:
+        name: topological-inventory-sources-sync
+        labels:
+          name: topological-inventory-sources-sync
+          app: topological-inventory
+      spec:
+        containers:
+        - name: topological-inventory-sources-sync
+          image: ${IMAGE_NAMESPACE}/topological-inventory-sync:latest
+          args:
+          - run_sources_sync
+          env:
+          - name: DATABASE_HOST
+            valueFrom:
+              secretKeyRef:
+                name: topological-inventory-db
+                key: hostname
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: topological-inventory-db
+                key: password
+          - name: DATABASE_PORT
+            value: "5432"
+          - name: DATABASE_USER
+            valueFrom:
+              secretKeyRef:
+                name: topological-inventory-db
+                key: username
+          - name: ENCRYPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: topological-inventory-api-secrets
+                key: encryption-key
+          - name: QUEUE_HOST
+            value: ${KAFKA_BOOTSTRAP_HOST}
+          - name: QUEUE_PORT
+            value: ${KAFKA_BOOTSTRAP_PORT}
+          - name: SOURCES_HOST
+            value: ${SOURCES_HOST}
+          - name: SOURCES_PORT
+            value: ${SOURCES_PORT}
+          - name: SOURCES_SCHEME
+            value: ${SOURCES_SCHEME}
+          resources:
+            limits:
+              cpu: 100m
+              memory: 200Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+    triggers:
+      - type: ConfigChange
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          containerNames:
+            - topological-inventory-sources-sync
+          from:
+            kind: ImageStreamTag
+            name: topological-inventory-sync:latest
+            namespace: ${IMAGE_NAMESPACE}
+parameters:
+- name: IMAGE_NAMESPACE
+  displayName: Image Namespace
+  description: Namespace which contains the image stream to pull from
+  value: test-mslemr
+- name: KAFKA_BOOTSTRAP_HOST
+  displayName: Message Queue Hostname
+  description: Hostname which will be used to contact the message queue.
+  value: mq-kafka
+- name: KAFKA_BOOTSTRAP_PORT
+  displayName: Message Queue Port
+  description: Port which will be used to contact the message queue.
+  value: "29092"
+- name: SOURCES_HOST
+  displayName: Sources Service Host
+  description: Host to use for the Sources service URL.
+  required: true
+- name: SOURCES_PORT
+  displayName: Sources Service Port
+  description: Port to use for the Sources service URL.
+  value: "8080"
+- name: SOURCES_SCHEME
+  displayName: Sources Service Scheme
+  description: Scheme to use for the Sources service URL.
+  value: http
