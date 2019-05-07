@@ -64,16 +64,6 @@ objects:
                 key: username
           - name: PATH_PREFIX
             value: ${PATH_PREFIX}
-
-{% if not deploy_db %}
-
-          - name: PGSSLMODE
-            value: verify-full
-          - name: PGSSLROOTCERT
-            value: /etc/rds-certs/rds-cacert
-
-{% endif %}
-
           - name: SECRET_KEY_BASE
             valueFrom:
               secretKeyRef:
@@ -98,20 +88,6 @@ objects:
             requests:
               cpu: 100m
               memory: 500Mi
-
-{% if not deploy_db %}
-
-          volumeMounts:
-          - name: rds-client-ca
-            mountPath: /etc/rds-certs
-            readOnly: true
-        volumes:
-        - name: rds-client-ca
-          secret:
-            secretName: rds-client-ca
-
-{% endif %}
-
     triggers:
       - type: ConfigChange
       - type: ImageChange
