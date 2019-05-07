@@ -12,7 +12,7 @@ Script [prerequistes.sh](prerequisities.sh) contains packages needed for these s
 * Login to your openshift using `oc login` command.  
 * Create openshift project you want to use and make it current.
 * Update your [config file](config):
-  * *openshift_project* has to equal to openshift project name you created.
+  * *openshift_project* has to be equal to openshift project name you created.
   * HOST variables will be created later.   
 
 
@@ -25,7 +25,7 @@ Then wait when all builds are completed.
 
 Deploy all services by [all-deploy.sh](all-deploy.sh).  
 
-*TODO*: it's not tested if deployments needs to wait from previous group (for example api for database).
+*TODO*: it's not tested if deployments needs to wait until previous group is complete (for example api for database).
 See the script to know which services are grouped.
 
 ## Routes
@@ -45,10 +45,10 @@ Notice these [config file](config) values:
 * source_type_name
   * Name of SourceType created in Sources DB
 * config_file
-  * Config file (will be mapped as "config/custom.yml" files) and used as `--config custom` param
+  * Config file will be mapped as "config/custom.yml" files and used as `--config custom` param
 * amounts_config_file
-  * Data Config file (will be mapped as "config/amounts/custom.yml" files) and used as `--amounts custom` param
-* sources_total=
+  * Data Config file will be mapped as "config/amounts/custom.yml" files and used as `--amounts custom` param
+* sources_total
   * How many Sources/deployments/pods will be created. Each source has it's own deployment config with one pod. It's name equals Source.id in db.
 
 
@@ -62,7 +62,7 @@ Notice these [config file](config) values:
   * creates Source in amount specified by $sources_count in config file
   * (topological-inventory-sync will sync it with topological-postgres)
   * deploys mock-source pod for each Source
-* [cleanup.sh](cleanup.sh):
+* [mock-source-cleanup.sh](mock-source-cleanup.sh):
   * deletes Sources
   * deletes Mock-source pods and deployments
 * [examples.sh](examples.sh):

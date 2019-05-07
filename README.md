@@ -46,6 +46,10 @@ Collector has two modes, both can be switched on/off in config file (described l
 
 Options in config: `refresh_mode`
 
+## Openshift deployment
+
+* [scripts/README.md](scripts/README.md)
+
 ### Full refresh
 
 Full refresh generates specified amount of different entities (`amounts` in config file)
