@@ -1,20 +1,33 @@
 #!/usr/bin/env bash
 
-plain_rh_identity="{\"identity\":{\"account_number\":\"test\"}}"
+# OpenShift project, templates will be changed to this value
+openshift_project="test-mslemr"
+
+# It serves as tenant's authorization. For our purpose, account number can be any value.
+# Creates records in "tenants" db tables
+# And used as x-rh-identity header for curl requests.
+plain_rh_identity="{\"identity\":{\"account_number\":\"test-mock\"}}"
 export X_RH_IDENTITY=$(echo ${plain_rh_identity} | base64)
 
 # Topological API service
+# Create routes in openshift to get these hosts
 export TOPOLOGICAL_INVENTORY_API_SERVICE_HOST="http://topological-inventory-api-test-mslemr.10.8.96.54.nip.io"
 export TOPOLOGICAL_INVENTORY_API_SERVICE_PORT=80
 export BASE_PATH="api/topological-inventory/v1.0"
 
+# Sources API service
+# Create routes in openshift to get these hosts
 export SOURCES_API_SERVICE_HOST="http://sources-api-test-mslemr.10.8.96.54.nip.io"
 export SOURCES_API_SERVICE_PORT=80
 export SOURCES_API_BASE_PATH="api/sources/v1.0"
 
+# Name of SourceType created in Sources DB
 source_type_name="mock-source"
 
-config_file="openshift/config_maps/custom-mock-config.yaml"
-amounts_config_file="openshift/config_maps/custom-mock-amounts.yaml"
-sources_count=1
+# Config files (will be mapped as "custom.yml" files)
+config_file="openshift/config_maps/custom-mock-config.yml"
+amounts_config_file="openshift/config_maps/custom-mock-amounts.yml"
+
+# How many Sources/deployments/pods will be created
+sources_total=2
 

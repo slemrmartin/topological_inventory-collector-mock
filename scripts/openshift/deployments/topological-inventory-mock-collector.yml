@@ -59,6 +59,10 @@ objects:
             name: topological-inventory-mock-collector:latest
             namespace: ${IMAGE_NAMESPACE}
 parameters:
+- name: IMAGE_NAMESPACE
+  displayName: Image Namespace
+  description: Namespace which contains the image stream to pull from
+  value: buildfactory
 - name: CONFIG_NAME
   displayName: Config File Name
   required: true
@@ -69,10 +73,6 @@ parameters:
   required: true
   description: Config file with requested data of data
   value: default
-- name: IMAGE_NAMESPACE
-  displayName: Image Namespace
-  description: Namespace which contains the image stream to pull from
-  value: test-mslemr
 - name: INGRESS_SERVICE_HOST
   displayName: Ingress Service Host
   required: true

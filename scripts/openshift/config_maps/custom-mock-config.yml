@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: custom-mock-config
-  namespace: test-mslemr
+  namespace: ${config_file}
 data:
   custom.yml: |
     default_limit: 100 # Number of entities to send at once to ingress api
@@ -15,7 +15,7 @@ data:
         delete: 0
     full_refresh:
       # Sleep between two refreshes [s] - full_refresh mode only
-      sleep_duration: 60
+      sleep_duration: 120
       # Order of generating InventoryCollections:
       # - :normal - top level first, dependent later
       # - :reversed - dependent first

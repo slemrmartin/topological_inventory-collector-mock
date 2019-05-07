@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: builder-topological-inventory-ingress-api
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: topological-inventory-ingress-api
+  spec:
+    tags:
+    - name: latest
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    name: topological-inventory-ingress-api
+  spec:
+    resources:
+      limits:
+        memory: 1Gi
+    source:
+      type: Git
+      git:
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
+    strategy:
+      type: Docker
+    output:
+      to:
+        kind: ImageStreamTag
+        name: topological-inventory-ingress-api:latest
+    triggers:
+    - type: GitHub
+      github:
+        secret: c8fe1769be11d3f74fde6c67c141a33cb733a172674ab167c24d965d37a00e5d598cd15bbfb2db9f
+parameters:
+- name: SOURCE_REPOSITORY_URL
+  description: The URL of the repository with your application source code.
+  displayName: Git repository URI
+  required: true
+  value: https://github.com/ManageIQ/topological_inventory-ingress_api
+- name: SOURCE_REPOSITORY_REF
+  description: Git repository branch to check out, if different from default
+  displayName: Git Reference
+  required: true
+  value: master

@@ -1,45 +1,45 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: sources-api
+  name: topological-inventory-api
 objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    name: sources-api
+    name: topological-inventory-api
     labels:
-      app: sources
+      app: topological-inventory
   spec:
     ports:
-    - name: sources-api
+    - name: topological-inventory-api
       port: 8080
       targetPort: 3000
     selector:
-      name: sources-api
+      name: topological-inventory-api
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
-    name: sources-api
+    name: topological-inventory-api
     labels:
-      app: sources
+      app: topological-inventory
   spec:
     replicas: 1
     selector:
-      name: sources-api
+      name: topological-inventory-api
     template:
       metadata:
         annotations:
           prometheus.io/path: /metrics
           prometheus.io/port: '3000'
           prometheus.io/scrape: 'true'
-        name: sources-api
+        name: topological-inventory-api
         labels:
-          app: sources
-          name: sources-api
+          app: topological-inventory
+          name: topological-inventory-api
       spec:
         containers:
-        - name: sources-api
-          image: ${IMAGE_NAMESPACE}/sources-api:latest
+        - name: topological-inventory-api
+          image: ${IMAGE_NAMESPACE}/topological-inventory-api:latest
           ports:
           - containerPort: 3000
           env:
@@ -48,32 +48,42 @@ objects:
           - name: DATABASE_HOST
             valueFrom:
               secretKeyRef:
-                name: sources-db
+                name: topological-inventory-db
                 key: hostname
           - name: DATABASE_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: sources-db
+                name: topological-inventory-db
                 key: password
           - name: DATABASE_PORT
             value: "5432"
           - name: DATABASE_USER
             valueFrom:
               secretKeyRef:
-                name: sources-db
+                name: topological-inventory-db
                 key: username
-          - name: ENCRYPTION_KEY
-            valueFrom:
-              secretKeyRef:
-                name: sources-api-secrets
-                key: encryption-key
           - name: PATH_PREFIX
             value: ${PATH_PREFIX}
+
+{% if not deploy_db %}
+
+          - name: PGSSLMODE
+            value: verify-full
+          - name: PGSSLROOTCERT
+            value: /etc/rds-certs/rds-cacert
+
+{% endif %}
+
           - name: SECRET_KEY_BASE
             valueFrom:
               secretKeyRef:
-                name: sources-api-secrets
+                name: topological-inventory-api-secrets
                 key: secret-key
+          - name: ENCRYPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: topological-inventory-api-secrets
+                key: encryption-key
           - name: QUEUE_HOST
             value: ${KAFKA_BOOTSTRAP_HOST}
           - name: QUEUE_PORT
@@ -88,30 +98,43 @@ objects:
             requests:
               cpu: 100m
               memory: 500Mi
+
+{% if not deploy_db %}
+
+          volumeMounts:
+          - name: rds-client-ca
+            mountPath: /etc/rds-certs
+            readOnly: true
+        volumes:
+        - name: rds-client-ca
+          secret:
+            secretName: rds-client-ca
+
+{% endif %}
+
     triggers:
       - type: ConfigChange
       - type: ImageChange
         imageChangeParams:
           automatic: true
           containerNames:
-            - sources-api
+            - topological-inventory-api
           from:
             kind: ImageStreamTag
-            name: sources-api:latest
+            name: topological-inventory-api:latest
             namespace: ${IMAGE_NAMESPACE}
 parameters:
+- name: APP_NAME
+  displayName: Application Name
+  description: Application name to be used in request paths. Only used when PATH_PREFIX is also specified.
+  value: topological-inventory
 - name: IMAGE_NAMESPACE
   displayName: Image Namespace
   description: Namespace which contains the image stream to pull from
   value: buildfactory
-- name: APP_NAME
-  displayName: Application Name
-  description: Application name to be used in request paths.
-  value: sources
 - name: PATH_PREFIX
   displayName: Path Prefix
   description: Base path for the API
-  value: api
 - name: KAFKA_BOOTSTRAP_HOST
   displayName: Message Queue Hostname
   description: Hostname which will be used to contact the message queue.

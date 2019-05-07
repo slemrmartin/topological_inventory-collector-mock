@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: custom-mock-amounts-config
-  namespace: test-mslemr
+  namespace: ${config_file}
 data:
   custom.yml: |
     amounts:

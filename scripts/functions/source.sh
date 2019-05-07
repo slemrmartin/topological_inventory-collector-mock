@@ -50,11 +50,13 @@ function deployment_for_source_id {
     local source_id=$1
     local name="topological-inventory-mock-collector-${source_id}"
     local rules=$(cat <<-EOF
-.objects[0].metadata.name = \$CF_NAME
+.objects[0].metadata.name = \$CF_NAME |
+.parameters[0].value=\$CF_NAMESPACE
 EOF
     )
 
-    echo "$(cat 'openshift/deployments/topological-inventory-mock-collector.yaml' | yq --arg CF_NAME "$name" "${rules}")"
+    local modified=$(cat 'openshift/deployments/topological-inventory-mock-collector.yml' | yq --arg CF_NAME ${name} --arg CF_NAMESPACE ${openshift_project} "${rules}")
+    echo "${modified}"
 }
 
 function deploy_sources {

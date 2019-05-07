@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: topological-inventory-database
+objects:
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: topological-inventory-postgresql
+    labels:
+      app: topological-inventory
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${DATABASE_STORAGE}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: topological-inventory-postgresql
+    labels:
+      app: topological-inventory
+  spec:
+    ports:
+    - name: topological-inventory-postgresql
+      port: 5432
+      targetPort: 5432
+    selector:
+      name: topological-inventory-postgresql
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    name: topological-inventory-postgresql
+    labels:
+      app: topological-inventory
+  spec:
+    strategy:
+      type: Recreate
+    triggers:
+    - type: ConfigChange
+    replicas: 1
+    selector:
+      name: topological-inventory-postgresql
+    template:
+      metadata:
+        name: topological-inventory-postgresql
+        labels:
+          name: topological-inventory-postgresql
+          app: topological-inventory
+      spec:
+        volumes:
+        - name: topological-inventory-postgresql
+          persistentVolumeClaim:
+            claimName: topological-inventory-postgresql
+          emptyDir: {}
+        containers:
+        - name: topological-inventory-postgresql
+          image: docker.io/centos/postgresql-10-centos7:latest
+          ports:
+          - containerPort: 5432
+          volumeMounts:
+          - name: topological-inventory-postgresql
+            mountPath: "/var/lib/pgsql/data"
+          env:
+          - name: POSTGRESQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: topological-inventory-db
+                key: username
+          - name: POSTGRESQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: topological-inventory-db
+                key: password
+          - name: POSTGRESQL_DATABASE
+            value: topological_inventory_production
+          resources:
+            limits:
+              cpu: 200m
+              memory: 500Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+parameters:
+- name: DATABASE_STORAGE
+  displayName: Database persistent storage size
+  description: Amount of storage to request for the database persistent volume
+  value: 15Gi
