@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: sources-api
+objects:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: sources-api
+    labels:
+      app: sources
+  spec:
+    ports:
+    - name: sources-api
+      port: 8080
+      targetPort: 3000
+    selector:
+      name: sources-api
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    name: sources-api
+    labels:
+      app: sources
+  spec:
+    replicas: 1
+    selector:
+      name: sources-api
+    template:
+      metadata:
+        annotations:
+          prometheus.io/path: /metrics
+          prometheus.io/port: '3000'
+          prometheus.io/scrape: 'true'
+        name: sources-api
+        labels:
+          app: sources
+          name: sources-api
+      spec:
+        containers:
+        - name: sources-api
+          image: ${IMAGE_NAMESPACE}/sources-api:latest
+          ports:
+          - containerPort: 3000
+          env:
+          - name: APP_NAME
+            value: ${APP_NAME}
+          - name: DATABASE_HOST
+            valueFrom:
+              secretKeyRef:
+                name: sources-db
+                key: hostname
+          - name: DATABASE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sources-db
+                key: password
+          - name: DATABASE_PORT
+            value: "5432"
+          - name: DATABASE_USER
+            valueFrom:
+              secretKeyRef:
+                name: sources-db
+                key: username
+          - name: ENCRYPTION_KEY
+            valueFrom:
+              secretKeyRef:
+                name: sources-api-secrets
+                key: encryption-key
+          - name: PATH_PREFIX
+            value: ${PATH_PREFIX}
+          - name: SECRET_KEY_BASE
+            valueFrom:
+              secretKeyRef:
+                name: sources-api-secrets
+                key: secret-key
+          - name: QUEUE_HOST
+            value: ${KAFKA_BOOTSTRAP_HOST}
+          - name: QUEUE_PORT
+            value: ${KAFKA_BOOTSTRAP_PORT}
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+          resources:
+            limits:
+              cpu: 200m
+              memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 500Mi
+    triggers:
+      - type: ConfigChange
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          containerNames:
+            - sources-api
+          from:
+            kind: ImageStreamTag
+            name: sources-api:latest
+            namespace: ${IMAGE_NAMESPACE}
+parameters:
+- name: IMAGE_NAMESPACE
+  displayName: Image Namespace
+  description: Namespace which contains the image stream to pull from
+  value: buildfactory
+- name: APP_NAME
+  displayName: Application Name
+  description: Application name to be used in request paths.
+  value: sources
+- name: PATH_PREFIX
+  displayName: Path Prefix
+  description: Base path for the API
+  value: api
+- name: KAFKA_BOOTSTRAP_HOST
+  displayName: Message Queue Hostname
+  description: Hostname which will be used to contact the message queue.
+  value: mq-kafka
+- name: KAFKA_BOOTSTRAP_PORT
+  displayName: Message Queue Port
+  description: Port which will be used to contact the message queue.
+  value: "29092"

@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: builder-topological-inventory-sync
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: topological-inventory-sync
+  spec:
+    tags:
+    - name: latest
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    name: topological-inventory-sync
+  spec:
+    resources:
+      limits:
+        memory: 1Gi
+    source:
+      type: Git
+      git:
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
+    strategy:
+      dockerStrategy:
+        noCache: true
+      type: Docker
+    output:
+      to:
+        kind: ImageStreamTag
+        name: topological-inventory-sync:latest
+    triggers:
+    - type: GitHub
+      github:
+        secret: e1a16ce925499e5c0111835c983b8cc836cbed639f6040f389f95247876a5e4e50ef2f5cb88e2b62
+parameters:
+- name: SOURCE_REPOSITORY_URL
+  description: The URL of the repository with your application source code.
+  displayName: Git repository URI
+  required: true
+  value: https://github.com/slemrmartin/topological_inventory-sync
+- name: SOURCE_REPOSITORY_REF
+  description: Git repository branch to check out, if different from default
+  displayName: Git Reference
+  required: true
+  value: gemfile-core-miq

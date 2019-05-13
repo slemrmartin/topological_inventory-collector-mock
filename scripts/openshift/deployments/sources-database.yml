@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: sources-database
+objects:
+- apiVersion: v1
+  kind: PersistentVolumeClaim
+  metadata:
+    name: sources-postgresql
+    labels:
+      app: sources
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: ${DATABASE_STORAGE}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: sources-postgresql
+    labels:
+      app: sources
+  spec:
+    ports:
+    - name: sources-postgresql
+      port: 5432
+      targetPort: 5432
+    selector:
+      name: sources-postgresql
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    name: sources-postgresql
+    labels:
+      app: sources
+  spec:
+    strategy:
+      type: Recreate
+    triggers:
+    - type: ConfigChange
+    replicas: 1
+    selector:
+      name: sources-postgresql
+    template:
+      metadata:
+        name: sources-postgresql
+        labels:
+          name: sources-postgresql
+          app: sources
+      spec:
+        volumes:
+        - name: sources-postgresql
+          persistentVolumeClaim:
+            claimName: sources-postgresql
+        containers:
+        - name: sources-postgresql
+          image: docker.io/centos/postgresql-10-centos7:latest
+          ports:
+          - containerPort: 5432
+          volumeMounts:
+          - name: sources-postgresql
+            mountPath: "/var/lib/pgsql/data"
+          env:
+          - name: POSTGRESQL_USER
+            valueFrom:
+              secretKeyRef:
+                name: sources-db
+                key: username
+          - name: POSTGRESQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: sources-db
+                key: password
+          - name: POSTGRESQL_DATABASE
+            value: sources_production
+          resources:
+            limits:
+              cpu: 200m
+              memory: 500Mi
+            requests:
+              cpu: 100m
+              memory: 200Mi
+parameters:
+- name: DATABASE_STORAGE
+  displayName: Database persistent storage size
+  description: Amount of storage to request for the database persistent volume
+  value: 15Gi

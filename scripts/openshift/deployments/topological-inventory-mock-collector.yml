@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: topological-inventory-mock-collector
+metadata:
+  name: topological-inventory-mock-collector
+objects:
+- apiVersion: v1
+  kind: DeploymentConfig
+  metadata:
+    name: topological-inventory-mock-collector
+    labels:
+      app: topological-inventory
+      label: topological-inventory-mock-collector
+  spec:
+    replicas: 1
+    selector:
+      name: topological-inventory-mock-collector
+    template:
+      metadata:
+        name: topological-inventory-mock-collector
+        labels:
+          name: topological-inventory-mock-collector
+          app: topological-inventory
+      spec:
+        containers:
+        - name: topological-inventory-mock-collector
+          image: ${IMAGE_NAMESPACE}/topological-inventory-mock-collector:latest
+          env:
+          - name: CONFIG
+            value: ${CONFIG_NAME}
+          - name: INGRESS_API
+            value: http://${INGRESS_SERVICE_HOST}:${INGRESS_SERVICE_PORT}
+          - name: SOURCE_UID
+            value: ${SOURCE_UID}
+          - name: AMOUNTS
+            value: ${AMOUNTS_CONFIG_NAME}
+          volumeMounts:
+          - name: custom-config
+            mountPath: /opt/mock-collector/config
+          - name: custom-amounts-config
+            mountPath: /opt/mock-collector/config/amounts
+        volumes:
+        - name: custom-config
+          configMap:
+            name: custom-mock-config
+        - name: custom-amounts-config
+          configMap:
+            name: custom-mock-amounts-config
+    triggers:
+      - type: ConfigChange
+      - type: ImageChange
+        imageChangeParams:
+          automatic: true
+          containerNames:
+            - topological-inventory-mock-collector
+          from:
+            kind: ImageStreamTag
+            name: topological-inventory-mock-collector:latest
+            namespace: ${IMAGE_NAMESPACE}
+parameters:
+- name: IMAGE_NAMESPACE
+  displayName: Image Namespace
+  description: Namespace which contains the image stream to pull from
+  value: buildfactory
+- name: CONFIG_NAME
+  displayName: Config File Name
+  required: true
+  description: Config File to use for the mock collector
+  value: default
+- name: AMOUNTS_CONFIG_NAME
+  displayName: Amounts config file name
+  required: true
+  description: Config file with requested data of data
+  value: default
+- name: INGRESS_SERVICE_HOST
+  displayName: Ingress Service Host
+  required: true
+  description: Hostname of the ingress service
+  value: topological-inventory-ingress-api
+- name: INGRESS_SERVICE_PORT
+  displayName: Ingress Service Port
+  required: true
+  description: Port to access on the Ingress Service Host
+  value: "3000"
+- name: SOURCE_UID
+  displayName: Source UID
+  required: true
+  description: Source to collect data from

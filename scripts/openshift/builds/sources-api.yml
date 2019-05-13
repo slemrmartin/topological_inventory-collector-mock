@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: builder-sources-api
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    name: sources-api
+  spec:
+    tags:
+    - name: latest
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    name: sources-api
+  spec:
+    resources:
+      limits:
+        memory: 1Gi
+    source:
+      type: Git
+      git:
+        ref: ${SOURCE_REPOSITORY_REF}
+        uri: ${SOURCE_REPOSITORY_URL}
+    strategy:
+      dockerStrategy:
+        noCache: true
+      type: Docker
+    output:
+      to:
+        kind: ImageStreamTag
+        name: sources-api:latest
+    triggers:
+    - type: GitHub
+      github:
+        secret: 69b55a806c370fb0d920d3c5ade724716f1e271a209417fe07f069d0ed5a90004cd1b05d5a895524
+parameters:
+- name: SOURCE_REPOSITORY_URL
+  description: The URL of the repository with your application source code.
+  displayName: Git repository URI
+  required: true
+  value: https://github.com/ManageIQ/sources-api
+- name: SOURCE_REPOSITORY_REF
+  description: Git repository branch to check out, if different from default
+  displayName: Git Reference
+  required: true
+  value: master
