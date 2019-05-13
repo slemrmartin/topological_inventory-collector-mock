@@ -166,7 +166,8 @@ module TopologicalInventory
 
       # TODO
       def assert_objects_count(dest_entity_type)
-        if ::Settings.amounts[dest_entity_type].to_i == 0
+        amounts=::Settings.data&.amounts || {}
+        if amounts[dest_entity_type].to_i == 0
           # TODO: can be nil in the future
           raise "Nil config on #{dest_entity_type}"
         end

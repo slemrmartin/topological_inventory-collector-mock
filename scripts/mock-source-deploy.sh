@@ -8,7 +8,7 @@ source "functions/namespace.sh"
 oc project ${openshift_project}
 
 echo "$(change_configmap_namespace ${config_file})" | oc apply -f -
-echo "$(change_configmap_namespace ${amounts_config_file})" | oc apply -f -
+echo "$(change_configmap_namespace ${data_config_file})" | oc apply -f -
 echo ""
 echo "* Creating Source Type if missing..."
 source_type_id=$(find_or_create_source_type)

@@ -9,7 +9,9 @@ describe TopologicalInventory::MockSource::EntityType do
   before do
     allow_any_instance_of(TopologicalInventory::MockSource::EntityType).to receive(:entity_class).and_return(TopologicalInventory::MockSource::Entity)
 
-    stub_settings_merge(:amounts          => { :entities => 1 },
+    stub_settings_merge(:data             => {
+                          :amounts => { :entities => 1 }
+                        },
                         :uuid_strategy    => :uuids,
                         :resource_version => {
                           :strategy => :timestamp

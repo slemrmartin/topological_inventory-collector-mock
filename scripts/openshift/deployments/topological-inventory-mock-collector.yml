@@ -33,20 +33,20 @@ objects:
             value: http://${INGRESS_SERVICE_HOST}:${INGRESS_SERVICE_PORT}
           - name: SOURCE_UID
             value: ${SOURCE_UID}
-          - name: AMOUNTS
-            value: ${AMOUNTS_CONFIG_NAME}
+          - name: DATA
+            value: ${DATA_CONFIG_NAME}
           volumeMounts:
           - name: custom-config
             mountPath: /opt/mock-collector/config
-          - name: custom-amounts-config
-            mountPath: /opt/mock-collector/config/amounts
+          - name: custom-data-config
+            mountPath: /opt/mock-collector/config/data
         volumes:
         - name: custom-config
           configMap:
             name: custom-mock-config
-        - name: custom-amounts-config
+        - name: custom-data-config
           configMap:
-            name: custom-mock-amounts-config
+            name: custom-mock-data-config
     triggers:
       - type: ConfigChange
       - type: ImageChange
@@ -68,8 +68,8 @@ parameters:
   required: true
   description: Config File to use for the mock collector
   value: default
-- name: AMOUNTS_CONFIG_NAME
-  displayName: Amounts config file name
+- name: DATA_CONFIG_NAME
+  displayName: Data config file name
   required: true
   description: Config file with requested data of data
   value: default
