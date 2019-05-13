@@ -46,8 +46,8 @@ Notice these [config file](config) values:
   * Name of SourceType created in Sources DB
 * config_file
   * Config file will be mapped as "config/custom.yml" files and used as `--config custom` param
-* amounts_config_file
-  * Data Config file will be mapped as "config/amounts/custom.yml" files and used as `--amounts custom` param
+* data_config_file
+  * Data Config file will be mapped as "config/data/custom.yml" files and used as `--data custom` param
 * sources_total
   * How many Sources/deployments/pods will be created. Each source has it's own deployment config with one pod. It's name equals Source.id in db.
 

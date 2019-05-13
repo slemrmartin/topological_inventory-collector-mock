@@ -76,7 +76,7 @@ function deploy_sources {
             echo "${template}" | \
             oc process -f - \
             -p CONFIG_NAME="custom" \
-            -p AMOUNTS_CONFIG_NAME="custom" \
+            -p DATA_CONFIG_NAME="custom" \
             -p SOURCE_UID=${source_uid} \
             | oc apply -f -
 

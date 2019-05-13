@@ -62,7 +62,7 @@ source "functions/source.sh"
 #oc process -f openshift/topological-inventory-mock-collector.yml --param-file="openshift/mock-collector.env" | oc apply -f -
 #oc process -f openshift/topological-inventory-mock-collector.yml \
 #           -p CONFIG_NAME="default" \
-#           -p AMOUNTS_CONFIG_NAME="custom" \
+#           -p DATA_CONFIG_NAME="custom" \
 #           -p SOURCE_ID=${source_id} \
 #           | oc apply -f -
 
