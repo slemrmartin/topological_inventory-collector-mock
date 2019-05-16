@@ -18,6 +18,7 @@ data:
     service_offering_tags: 5
     service_plans: 5
     source_regions: 5
+  values:
 
 default_limit: 100 # Number of entities to send at once to ingress api
 

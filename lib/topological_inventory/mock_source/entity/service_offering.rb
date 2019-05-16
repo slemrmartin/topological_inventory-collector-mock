@@ -17,7 +17,7 @@ module TopologicalInventory
         }
       end
 
-      def references
+      def references_hash
         {
           :service_offering_icon => {:source_ref => link_to(:service_offering_icons)},
           :source_region         => {:source_ref => link_to(:source_regions)}

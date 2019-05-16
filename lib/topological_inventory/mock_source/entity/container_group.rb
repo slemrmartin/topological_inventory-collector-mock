@@ -14,7 +14,7 @@ module TopologicalInventory
         )
       end
 
-      def references
+      def references_hash
         {
           :container_node    => {:name => link_to(:container_nodes, :ref => :name)},
           :container_project => {:name => link_to(:container_projects, :ref => :name)}

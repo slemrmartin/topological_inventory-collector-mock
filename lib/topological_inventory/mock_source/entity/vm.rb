@@ -13,7 +13,7 @@ module TopologicalInventory
         }
       end
 
-      def references
+      def references_hash
         {
           :flavor => {:source_ref => link_to(:flavors)}
         }

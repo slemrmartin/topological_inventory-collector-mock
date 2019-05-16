@@ -10,7 +10,7 @@ module TopologicalInventory
         }
       end
 
-      def references
+      def references_hash
         {
           :volume => {:source_ref => link_to(:volumes)},
           :vm     => {:source_ref => link_to(:vms)},

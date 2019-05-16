@@ -212,7 +212,7 @@ module TopologicalInventory
 
       def initialize_config(settings_config, data_config)
         settings_file = File.join(path_to_defaults_config, "#{sanitize_filename(settings_config)}.yml")
-        data_file  = File.join(path_to_data_config, "#{sanitize_filename(data_config)}.yml")
+        data_file     = File.join(path_to_data_config, "#{sanitize_filename(data_config)}.yml")
 
         raise "Settings configuration file #{settings_config} doesn't exist" unless File.exist?(settings_file)
         raise "Data configuration file #{data_config} doesn't exist" unless File.exist?(data_file)

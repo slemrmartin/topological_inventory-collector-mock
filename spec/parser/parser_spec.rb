@@ -22,6 +22,7 @@ describe TopologicalInventory::MockSource::Parser do
       :container_image_tags    => 1
     }
 
+    init_settings
     stub_settings_merge(:refresh_mode   => :full_refresh,
                         :multithreading => :off,
                         :data           => { :amounts => @amounts })

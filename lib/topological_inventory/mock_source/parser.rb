@@ -46,6 +46,10 @@ module TopologicalInventory
         inventory_object.source_deleted_at = source_deleted_at
       end
 
+      def lazy_find(collection, reference, ref: :manager_ref)
+        super unless reference.nil?
+      end
+
       protected
 
       def parse_entity_simple(entity_type, entity)

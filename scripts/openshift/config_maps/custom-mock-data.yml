@@ -21,3 +21,6 @@ data:
         volumes: 10
         volume_types: 5
         vms: 6
+      values:
+        flavors:
+          cpus: 100
