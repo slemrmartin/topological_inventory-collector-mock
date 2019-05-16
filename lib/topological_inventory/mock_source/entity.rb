@@ -104,7 +104,7 @@ module TopologicalInventory
       end
 
       def resource_version_timestamp
-        Time.new.to_i
+        Time.new.to_i.to_s
       end
 
       # Ratio of default values:timestamps for resource version in percents
