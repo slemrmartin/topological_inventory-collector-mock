@@ -1,12 +1,16 @@
 describe TopologicalInventory::MockSource::Parser do
   let(:server) { TopologicalInventory::MockSource::Server.new }
   let(:amounts) do
-    {:service_offerings      => 2,
-     :service_offering_tags  => 1,
-     :service_offering_icons => 2,
-     :source_regions         => 1}
+    { :container_groups       => 2,
+      :container_projects     => 2,
+      :container_nodes        => 2,
+      :service_offerings      => 2,
+      :service_offering_tags  => 1,
+      :service_offering_icons => 2,
+      :source_regions         => 1}
   end
   let(:custom_display_name) { "Custom display name" }
+  let(:custom_project_ref)  { "mock-containerproject-1"}
 
   let(:values) do
     {
@@ -18,6 +22,12 @@ describe TopologicalInventory::MockSource::Parser do
       },
       :service_offering_tags => {
         :service_offering => nil
+      },
+      :container_groups => {
+        :container_project => {
+          :name => custom_project_ref
+        },
+        :container_node => nil
       }
     }
   end
@@ -52,12 +62,22 @@ describe TopologicalInventory::MockSource::Parser do
     assert_counts
     assert_service_offerings
     assert_service_offering_tags
+    assert_container_groups
   end
 
   def assert_counts
     amounts.each_pair do |name, amount|
       expect(@storage.send(name).stats[:total].value).to eq(amount)
       expect(@parser.collections[name].data.count).to eq(amount)
+    end
+  end
+
+  # Container groups have lazy links specified by name
+  def assert_container_groups
+    amounts[:container_groups].times do |idx|
+      container_group = @parser.collections[:container_groups].data[idx]
+      expect(container_group.container_project.reference).to eq(:name => custom_project_ref)
+      expect(container_group.container_node).to be_nil
     end
   end
 
