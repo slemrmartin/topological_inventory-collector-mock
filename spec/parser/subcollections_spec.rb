@@ -10,6 +10,7 @@ describe TopologicalInventory::MockSource::Parser do
             :container_project_tags => project_tags_count
           }
 
+          init_settings
           stub_settings_merge(:refresh_mode   => :full_refresh,
                               :multithreading => :off,
                               :data           => { :amounts => @amounts })

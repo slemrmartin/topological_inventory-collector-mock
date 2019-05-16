@@ -23,6 +23,7 @@ describe TopologicalInventory::MockSource::Parser do
   end
 
   before do
+    init_settings
     stub_settings_merge(:refresh_mode   => :full_refresh,
                         :multithreading => :off,
                         :data           => {
