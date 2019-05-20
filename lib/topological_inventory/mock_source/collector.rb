@@ -5,6 +5,8 @@ require "topological_inventory/mock_source/logging"
 require "topological_inventory/mock_source/parser"
 require "topological_inventory/mock_source/server"
 require "topological_inventory/mock_source/storage"
+require "topological_inventory-ingress_api-client"
+require "topological_inventory-ingress_api-client/save_inventory/saver"
 
 module TopologicalInventory
   module MockSource
@@ -15,7 +17,7 @@ module TopologicalInventory
         initialize_config(config, data)
 
         super(source,
-              :default_limit => (::Settings.default_limit || 100).to_i,
+              :default_limit => (::Settings.default_limit || 1000).to_i,
               :poll_time     => (::Settings.events&.check_interval || 5).to_i)
       end
 
@@ -157,8 +159,7 @@ module TopologicalInventory
           parser = parser_class.new
           parser.parse_entities(entity_type, entities, storage_class.entity_types[entity_type])
           refresh_state_part_uuid = SecureRandom.uuid
-          total_parts             += 1
-          save_inventory(parser.collections.values, refresh_state_uuid, refresh_state_part_uuid)
+          total_parts             += save_inventory(parser.collections.values, refresh_state_uuid, refresh_state_part_uuid)
 
           break if entities.last?
         end
@@ -167,7 +168,8 @@ module TopologicalInventory
 
         full_refresh_sweep(entity_type, refresh_state_uuid, resource_version, total_parts)
       rescue => e
-        logger.error("Error collecting :#{entity_type}, message => #{e.message}")
+        response_body = e.response_body if e.respond_to? :response_body
+        logger.error("Error collecting :#{entity_type}, message => #{e.message}, response body: #{response_body}")
         raise e
       end
 
@@ -182,6 +184,37 @@ module TopologicalInventory
 
         logger.info("Sweeping inactive records for #{entity_type} with :refresh_state_uuid => '#{refresh_state_uuid}'...Complete")
         resource_version
+      end
+
+      def save_inventory(collections, refresh_state_uuid = nil, refresh_state_part_uuid = nil)
+        return 0 if collections.empty?
+
+        TopologicalInventoryIngressApiClient::SaveInventory::Saver.new(:client => ingress_api_client, :logger => logger).save(
+          :inventory => TopologicalInventoryIngressApiClient::Inventory.new(
+            :name                    => "OCP",
+            :schema                  => TopologicalInventoryIngressApiClient::Schema.new(:name => "Default"),
+            :source                  => source,
+            :collections             => collections,
+            :refresh_state_uuid      => refresh_state_uuid,
+            :refresh_state_part_uuid => refresh_state_part_uuid,
+            )
+        )
+      end
+
+      def sweep_inventory(refresh_state_uuid, total_parts, sweep_scope)
+        return if !total_parts || sweep_scope.empty?
+
+        TopologicalInventoryIngressApiClient::SaveInventory::Saver.new(:client => ingress_api_client, :logger => logger).save(
+          :inventory => TopologicalInventoryIngressApiClient::Inventory.new(
+            :name               => "OCP",
+            :schema             => TopologicalInventoryIngressApiClient::Schema.new(:name => "Default"),
+            :source             => source,
+            :collections        => [],
+            :refresh_state_uuid => refresh_state_uuid,
+            :total_parts        => total_parts,
+            :sweep_scope        => sweep_scope,
+            )
+        )
       end
 
       def targeted_refresh(events)
