@@ -159,7 +159,11 @@ module TopologicalInventory
           parser = parser_class.new
           parser.parse_entities(entity_type, entities, storage_class.entity_types[entity_type])
           refresh_state_part_uuid = SecureRandom.uuid
-          total_parts             += save_inventory(parser.collections.values, refresh_state_uuid, refresh_state_part_uuid)
+          total_parts             += save_inventory(parser.collections.values,
+                                                    inventory_name,
+                                                    schema_name,
+                                                    refresh_state_uuid,
+                                                    refresh_state_part_uuid)
 
           break if entities.last?
         end
@@ -178,7 +182,9 @@ module TopologicalInventory
 
         parsed_entity_types = [entity_type] + (storage_class.entity_types[entity_type] || []).flatten.compact
 
-        sweep_inventory(refresh_state_uuid,
+        sweep_inventory(inventory_name,
+                        schema_name,
+                        refresh_state_uuid,
                         total_parts,
                         parsed_entity_types)
 
@@ -193,7 +199,7 @@ module TopologicalInventory
           parser.parse_event(event)
         end
 
-        save_inventory(parser.collections.values)
+        save_inventory(parser.collections.values, inventory_name, schema_name)
       end
 
       # Used for Save & Sweep Inventory
