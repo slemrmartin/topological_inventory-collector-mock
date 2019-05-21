@@ -24,6 +24,8 @@ source "functions/source.sh"
 # GET Sources
 # sources_api_get 'sources'
 # echo ""
+#api_get 'sources'
+# echo ""
 
 # CREATE Source
 # sources_api_post "sources" "{\"name\":\"Mock Source 1\",\"source_type_id\":\"4\"}"
