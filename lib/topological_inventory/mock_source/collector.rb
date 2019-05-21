@@ -186,37 +186,6 @@ module TopologicalInventory
         resource_version
       end
 
-      def save_inventory(collections, refresh_state_uuid = nil, refresh_state_part_uuid = nil)
-        return 0 if collections.empty?
-
-        TopologicalInventoryIngressApiClient::SaveInventory::Saver.new(:client => ingress_api_client, :logger => logger).save(
-          :inventory => TopologicalInventoryIngressApiClient::Inventory.new(
-            :name                    => "OCP",
-            :schema                  => TopologicalInventoryIngressApiClient::Schema.new(:name => "Default"),
-            :source                  => source,
-            :collections             => collections,
-            :refresh_state_uuid      => refresh_state_uuid,
-            :refresh_state_part_uuid => refresh_state_part_uuid,
-            )
-        )
-      end
-
-      def sweep_inventory(refresh_state_uuid, total_parts, sweep_scope)
-        return if !total_parts || sweep_scope.empty?
-
-        TopologicalInventoryIngressApiClient::SaveInventory::Saver.new(:client => ingress_api_client, :logger => logger).save(
-          :inventory => TopologicalInventoryIngressApiClient::Inventory.new(
-            :name               => "OCP",
-            :schema             => TopologicalInventoryIngressApiClient::Schema.new(:name => "Default"),
-            :source             => source,
-            :collections        => [],
-            :refresh_state_uuid => refresh_state_uuid,
-            :total_parts        => total_parts,
-            :sweep_scope        => sweep_scope,
-            )
-        )
-      end
-
       def targeted_refresh(events)
         parser = parser_class.new
 
@@ -225,6 +194,11 @@ module TopologicalInventory
         end
 
         save_inventory(parser.collections.values)
+      end
+
+      # Used for Save & Sweep Inventory
+      def inventory_name
+        "Mock"
       end
 
       def parser_class
