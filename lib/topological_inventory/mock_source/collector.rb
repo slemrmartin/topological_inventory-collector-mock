@@ -6,7 +6,6 @@ require "topological_inventory/mock_source/parser"
 require "topological_inventory/mock_source/server"
 require "topological_inventory/mock_source/storage"
 require "topological_inventory-ingress_api-client"
-require "topological_inventory-ingress_api-client/save_inventory/saver"
 
 module TopologicalInventory
   module MockSource
