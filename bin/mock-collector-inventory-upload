@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+lib = File.expand_path("../../lib", __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+STDOUT.sync = true
+
+require "bundler/setup"
+require "topological_inventory/mock_source/inventory_upload_worker"
+
+#
+# You can add local requires to /lib/topological_inventory/mock_source/require.dev.rb
+#
+require_dev_path = File.join(lib, "require.dev.rb")
+require require_dev_path if File.exist?(require_dev_path)
+
+#
+# Input args
+# --source      (ENV["SOURCE_UID"])  - core: Source.uid (manager for this collector)
+# --ingress_api (ENV["INGRESS_API"]) - swagger api server, by default *localhost:9292*
+# --config      (ENV["CONFIG"])      - file located in /config
+# --data        (ENV["DATA"])        - file located in /config/data (you can use [large|default|small| amazon/default | openshift/small] etc.)
+def parse_args
+  require 'optimist'
+  opts = Optimist.options do
+    opt :source, "Inventory Source UID", :type => :string, :required => ENV["SOURCE_UID"].nil?, :default => ENV["SOURCE_UID"]
+    opt :insights_upload_api, "URL for InsightsUpload service", :type => :string, :default => ENV["INSIGHTS_UPLOAD_API"] || "http://localhost:8888"
+    opt :insights_upload_base_path, "Base path for Insights upload API", :type => :string, :default => ENV["INSIGHTS_UPLOAD_BASE_PATH"] || "api/ingress/v1/upload"
+    opt :config, "Configuration file name", :type => :string, :default => ENV["CONFIG"] || "default"
+    opt :data, "Amount & custom values of generated items", :type => :string, :default => ENV["DATA"] || "default"
+  end
+
+  opts
+end
+
+args = parse_args
+
+insights_upload_uri = "#{args[:insights_upload_api]}/#{args[:insights_upload_base_path]}"
+
+worker = TopologicalInventory::MockSource::InventoryUploadWorker.new(args[:source], args[:config], args[:data], insights_upload_uri)
+worker.collect!
