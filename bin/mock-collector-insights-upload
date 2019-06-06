@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 STDOUT.sync = true
 
 require "bundler/setup"
-require "topological_inventory/mock_source/inventory_upload_worker"
+require "topological_inventory/mock_source/insights_upload_generator"
 
 #
 # You can add local requires to /lib/topological_inventory/mock_source/require.dev.rb
@@ -36,5 +36,5 @@ args = parse_args
 
 insights_upload_uri = "#{args[:insights_upload_api]}/#{args[:insights_upload_base_path]}"
 
-worker = TopologicalInventory::MockSource::InventoryUploadWorker.new(args[:source], args[:config], args[:data], insights_upload_uri)
+worker = TopologicalInventory::MockSource::InsightsUploadGenerator.new(args[:source], args[:config], args[:data], insights_upload_uri)
 worker.collect!

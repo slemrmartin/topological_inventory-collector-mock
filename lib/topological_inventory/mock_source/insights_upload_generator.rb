@@ -3,20 +3,23 @@ require "topological_inventory/mock_source/collector"
 require "net/http"
 require "uri"
 require "json"
+require "minitar"
+require "tempfile"
 
 module TopologicalInventory
   module MockSource
-    class InventoryUploadWorker < TopologicalInventory::MockSource::Collector
-      def initialize(source, config, data, inventory_upload_url)
+    class InsightsUploadGenerator < TopologicalInventory::MockSource::Collector
+      def initialize(source, config, data, insights_upload_url)
         super(source, config, data)
-        self.inventory_upload_uri = URI.parse(inventory_upload_url)
+        self.insights_upload_uri = URI.parse(insights_upload_url)
       end
 
       private
 
-      attr_accessor :inventory_upload_uri
+      attr_accessor :insights_upload_uri
 
       BOUNDARY = "AaB03x".freeze
+      SOURCE_TYPE = "mock-source".freeze
 
       def save_inventory(collections,
                          inventory_name,
@@ -30,12 +33,25 @@ module TopologicalInventory
           "x-rh-insights-request" => "1",
         }.merge(identity_headers('slemrmartin'))
 
-        file = {
-          'name'        => "CloudForms",
-          'schema'      => {'name' => schema_name},
-          'source'      => source,
-          'collections' => {}
-        }
+
+        inventory = TopologicalInventoryIngressApiClient::Inventory.new(
+          :name                    => "CloudForms",
+          :schema                  => TopologicalInventoryIngressApiClient::Schema.new(:name => schema_name),
+          :source_type             => SOURCE_TYPE,
+          :source                  => source,
+          :collections             => collections,
+          :refresh_state_uuid      => refresh_state_uuid,
+          :refresh_state_part_uuid => refresh_state_part_uuid
+        )
+
+        data = JSON.generate(inventory.to_hash)
+
+        tempfile = create_tempfile(data, source)
+        file = StringIO.new(String.new)
+        sgz = ::Zlib::GzipWriter.new(file)
+        tar = ::Minitar::Output.new(sgz)
+        ::Minitar.pack_file(tempfile.path, tar)
+        tar.close
 
         post_body = []
 
@@ -43,7 +59,7 @@ module TopologicalInventory
         post_body << "--#{BOUNDARY}\r\n"
         post_body << "Content-Disposition: form-data; name=\"upload\"; filename=\"mock-source.json\"\r\n"
         post_body << "Content-Type: #{content_type}\r\n\r\n"
-        post_body << "#{file.to_json}\r\n"
+        post_body << "#{file.string}\r\n"
 
         # Metadata
         post_body << "--#{BOUNDARY}\r\n"
@@ -51,10 +67,11 @@ module TopologicalInventory
         post_body << metadata.to_json
         post_body << "\r\n--#{BOUNDARY}--\r\n"
 
-        # Create the HTTP objects
-        http = Net::HTTP.new(inventory_upload_uri.host, inventory_upload_uri.port)
 
-        request = Net::HTTP::Post.new(inventory_upload_uri.request_uri, header)
+        # Create the HTTP objects
+        http = Net::HTTP.new(insights_upload_uri.host, insights_upload_uri.port)
+
+        request = Net::HTTP::Post.new(insights_upload_uri.request_uri, header)
         request.body = post_body.join
 
         res = http.request(request)
@@ -64,6 +81,9 @@ module TopologicalInventory
       rescue => err
         logger.error(err)
         raise err
+      ensure
+        tempfile.close if tempfile.present?
+        tar.close if tar.present?
       end
 
       def sweep_inventory(inventory_name,
@@ -89,9 +109,18 @@ module TopologicalInventory
       def identity_headers(tenant)
         {
           "x-rh-identity" => Base64.strict_encode64(
-            JSON.dump({ "identity" => { "account_number" => tenant }})
+            JSON.dump({ "identity" => { "account_number" => tenant }, "internal" => { "org_id" => "12345" }})
           )
         }
+      end
+
+      # ---
+
+      def create_tempfile(json_data, source)
+        file = Tempfile.new(source)
+        file.write(json_data)
+        file.rewind
+        file
       end
     end
   end

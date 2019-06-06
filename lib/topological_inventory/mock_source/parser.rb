@@ -47,6 +47,7 @@ module TopologicalInventory
       end
 
       def lazy_find(collection, reference, ref: :manager_ref)
+        # binding.pry if collection == :container_group_tags
         super unless reference.nil?
       end
 

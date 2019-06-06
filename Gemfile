@@ -12,6 +12,7 @@ gem "optimist"
 gem "recursive-open-struct"
 gem "manageiq-loggers", "~> 0.1.1"
 gem "topological_inventory-ingress_api-client", :git => "https://github.com/ManageIQ/topological_inventory-ingress_api-client-ruby", :branch => "master"
+gem 'minitar'
 
 group :development, :test do
   gem "rspec", "~> 3.0"

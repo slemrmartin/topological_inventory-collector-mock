@@ -1,4 +1,4 @@
-default_limit: 100 # Number of entities to send at once to ingress api
+default_limit: 1000000 # Number of entities to send at once to ingress api
 
 events:
   check_interval: 1 #second
