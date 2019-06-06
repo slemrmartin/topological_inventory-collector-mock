@@ -23,7 +23,7 @@ function find_or_create_source_type {
 
     local source_types_cnt=$(records_count "${response}")
     local source_type_id=""
-    if [[ ${source_types_cnt} -ge "1" ]]; then
+    if [[ "${source_types_cnt}" -ge "1" ]]; then
         source_type_id=$(parse_source_type_id "${response}")
     else
         local create_response=$(create_source_type)

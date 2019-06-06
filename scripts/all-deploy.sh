@@ -19,7 +19,7 @@ echo "$(change_deployment_namespace './openshift/deployments/topological-invento
 
 echo "* Deploying Group 3"
 
-echo "$(change_deployment_namespace './openshift/deployments/topological-inventory-sources-sync.yml')" | oc process -f - | oc apply -f -
+echo "$(change_deployment_namespace './openshift/deployments/topological-inventory-sources-sync.yml')" | oc process -p SOURCES_HOST=sources-api -f - | oc apply -f -
 
 echo "* Deploying Group 4"
 

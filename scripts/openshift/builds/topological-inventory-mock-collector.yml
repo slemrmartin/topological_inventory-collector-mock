@@ -24,7 +24,6 @@ objects:
       to:
         kind: ImageStreamTag
         name: topological-inventory-mock-collector:latest
-        namespace: ${IMAGE_NAMESPACE}
     triggers:
     - type: GitHub
       github:
@@ -37,10 +36,6 @@ objects:
     tags:
     - name: latest
 parameters:
-- name: IMAGE_NAMESPACE
-  displayName: Image Namespace
-  description: Namespace to push the resulting image stream tag to
-  value: test-mslemr
 - name: GITHUB_WEBHOOK_SECRET
   displayName: GitHub Webhook Secret
   description: Github trigger secret.  A difficult to guess string encoded as part of the webhook URL.  Not encrypted.
