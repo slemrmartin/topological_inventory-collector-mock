@@ -1,7 +1,7 @@
 data:
   # Number of generated items
   amounts:
-    container_images: 5
+    container_images: 3
     container_image_tags: 13
     container_groups: 10
     containers: 15

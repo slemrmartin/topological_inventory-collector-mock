@@ -24,6 +24,7 @@ module TopologicalInventory
 
       def collect!
         loop do
+          initialize_config(@config, @config_data)
           #
           # Collect each entity type in 1 / separate threads
           #
