@@ -14,6 +14,8 @@ module TopologicalInventory
 
       def initialize(source, config, data)
         initialize_config(config, data)
+        @config = config
+        @config_data = data
 
         super(source,
               :default_limit => (::Settings.default_limit || 1000).to_i,
@@ -145,7 +147,7 @@ module TopologicalInventory
         resource_version = continue = nil
 
         refresh_state_uuid = SecureRandom.uuid
-        logger.info("Collecting #{entity_type} with :refresh_state_uuid => '#{refresh_state_uuid}'...")
+        logger.info("Collecting #{entity_type}(#{::Settings.data&.amounts[entity_type]}) with :refresh_state_uuid => '#{refresh_state_uuid}'...")
 
         total_parts = 0
         loop do
@@ -223,6 +225,8 @@ module TopologicalInventory
       end
 
       def initialize_config(settings_config, data_config)
+        clear_settings
+
         settings_file = File.join(path_to_defaults_config, "#{sanitize_filename(settings_config)}.yml")
         data_file     = File.join(path_to_data_config, "#{sanitize_filename(data_config)}.yml")
 
@@ -235,6 +239,10 @@ module TopologicalInventory
       def sanitize_filename(filename)
         # Remove any character that aren't 0-9, A-Z, or a-z, / or -
         filename.gsub(/[^0-9A-Z\/\-]/i, '_')
+      end
+
+      def clear_settings
+        ::Settings.keys.dup.each { |k| ::Settings.delete_field(k) } if defined?(::Settings)
       end
     end
   end

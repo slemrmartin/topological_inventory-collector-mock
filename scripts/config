@@ -34,5 +34,5 @@ config_file="openshift/config_maps/custom-mock-config.yml"
 data_config_file="openshift/config_maps/custom-mock-data.yml"
 
 # How many Sources/deployments/pods will be created
-sources_total=2
+sources_total=1
 
