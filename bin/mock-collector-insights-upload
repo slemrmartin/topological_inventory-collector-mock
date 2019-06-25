@@ -27,6 +27,7 @@ def parse_args
     opt :insights_upload_base_path, "Base path for Insights upload API", :type => :string, :default => ENV["INSIGHTS_UPLOAD_BASE_PATH"] || "api/ingress/v1/upload"
     opt :config, "Configuration file name", :type => :string, :default => ENV["CONFIG"] || "default"
     opt :data, "Amount & custom values of generated items", :type => :string, :default => ENV["DATA"] || "default"
+    opt :tenant, "Tenant name", :type => :string, :required => true
   end
 
   opts
@@ -36,5 +37,5 @@ args = parse_args
 
 insights_upload_uri = "#{args[:insights_upload_api]}/#{args[:insights_upload_base_path]}"
 
-worker = TopologicalInventory::MockSource::InsightsUploadGenerator.new(args[:source], args[:config], args[:data], insights_upload_uri)
+worker = TopologicalInventory::MockSource::InsightsUploadGenerator.new(args[:source], args[:config], args[:data], insights_upload_uri, args[:tenant])
 worker.collect!

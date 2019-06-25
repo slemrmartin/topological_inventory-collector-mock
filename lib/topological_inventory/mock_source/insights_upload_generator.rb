@@ -9,14 +9,17 @@ require "tempfile"
 module TopologicalInventory
   module MockSource
     class InsightsUploadGenerator < TopologicalInventory::MockSource::Collector
-      def initialize(source, config, data, insights_upload_url)
+      def initialize(source, config, data, insights_upload_url, tenant)
         super(source, config, data)
+        # We want one big file
+        self.limits              = Hash.new(100_000_000_000)
         self.insights_upload_uri = URI.parse(insights_upload_url)
+        self.tenant              = tenant
       end
 
       private
 
-      attr_accessor :insights_upload_uri
+      attr_accessor :insights_upload_uri, :tenant
 
       BOUNDARY = "AaB03x".freeze
       SOURCE_TYPE = "mock-source".freeze
@@ -31,7 +34,7 @@ module TopologicalInventory
         header = {
           "Content-Type"          => "multipart/form-data;boundary=\"#{BOUNDARY}\"",
           "x-rh-insights-request" => "1",
-        }.merge(identity_headers('slemrmartin'))
+        }.merge(identity_headers(tenant))
 
 
         inventory = TopologicalInventoryIngressApiClient::Inventory.new(
@@ -91,7 +94,6 @@ module TopologicalInventory
                           refresh_state_uuid,
                           total_parts,
                           sweep_scope)
-        return # if !total_parts || sweep_scope.empty?
       end
 
       def metadata
@@ -103,7 +105,7 @@ module TopologicalInventory
       end
 
       def content_type
-        'application/vnd.redhat.topological-inventory.mock-source'
+        'application/vnd.redhat.topological-inventory.mock-source'.freeze
       end
 
       def identity_headers(tenant)
@@ -113,8 +115,6 @@ module TopologicalInventory
           )
         }
       end
-
-      # ---
 
       def create_tempfile(json_data, source)
         file = Tempfile.new(source)
