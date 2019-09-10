@@ -1,15 +1,14 @@
 require "config"
 require "concurrent"
-require "topological_inventory-ingress_api-client/collector"
+require "topological_inventory/providers/common/collector"
 require "topological_inventory/mock_source/logging"
 require "topological_inventory/mock_source/parser"
 require "topological_inventory/mock_source/server"
 require "topological_inventory/mock_source/storage"
-require "topological_inventory-ingress_api-client"
 
 module TopologicalInventory
   module MockSource
-    class Collector < TopologicalInventoryIngressApiClient::Collector
+    class Collector < TopologicalInventory::Providers::Common::Collector
       include Logging
 
       def initialize(source, config, data)
