@@ -1,6 +1,8 @@
+require "topological_inventory/providers/common/collector/parser"
+
 module TopologicalInventory
   module MockSource
-    class Parser < TopologicalInventoryIngressApiClient::Collector::Parser
+    class Parser < TopologicalInventory::Providers::Common::Collector::Parser
       require "topological_inventory/mock_source/parser/custom_lazy_find"
       require "topological_inventory/mock_source/parser/custom_parsing"
       include TopologicalInventory::MockSource::Parser::CustomLazyFind

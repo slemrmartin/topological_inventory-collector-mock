@@ -10,8 +10,8 @@ gem "kubeclient"
 gem "more_core_extensions"
 gem "optimist"
 gem "recursive-open-struct"
-gem "manageiq-loggers", "~> 0.1.1"
 gem "topological_inventory-ingress_api-client", :git => "https://github.com/ManageIQ/topological_inventory-ingress_api-client-ruby", :branch => "master"
+gem "topological_inventory-providers-common",   :git => "https://github.com/ManageIQ/topological_inventory-providers-common", :branch => "master"
 
 group :development, :test do
   gem "rspec", "~> 3.0"
