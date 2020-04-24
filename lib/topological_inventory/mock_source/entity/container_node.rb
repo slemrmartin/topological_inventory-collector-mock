@@ -9,12 +9,6 @@ module TopologicalInventory
           :memory => 134_902_530_048,
         )
       end
-
-      def references_hash
-        {
-          # :cross_link_vms => {:uid_ems => nil} # TODO: link_to(:vms)
-        }
-      end
     end
   end
 end
