@@ -7,8 +7,7 @@ module TopologicalInventory
         {
           :source_ref        => @uid,
           :name              => @name,
-          :uid_ems           => @uid,
-          :power_state       => power_states.sample,
+          :state             => power_states.sample,
           :source_created_at => @created_at,
           :size              => 2 * 1024**3,
         }
