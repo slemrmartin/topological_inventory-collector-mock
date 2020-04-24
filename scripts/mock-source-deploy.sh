@@ -15,7 +15,8 @@ source_type_id=$(find_or_create_source_type)
 echo "Source Type ID: ${source_type_id}"
 
 echo ""
-existing=$(records_count "$(sources_api_get 'sources')")
+sources_response=$(sources_api_get "sources?filter\[source_type_id\]=${source_type_id}')")
+existing=$(records_count "${sources_response}")
 sources_needed=$((sources_total - existing))
 
 if [[ ${sources_needed} -eq 0 ]]; then

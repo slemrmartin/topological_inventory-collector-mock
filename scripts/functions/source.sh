@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 source "functions/common.sh"
+source "functions/source_type.sh"
+source "functions/application.sh"
 
 function sources_count {
     local response=$(sources_api_get 'sources')
@@ -13,21 +15,28 @@ function create_source {
     local source_type_id=$1
     local source_no=$2
 
-    sources_api_post "sources" "{\"name\":\"Mock Source ${source_no}\",\"source_type_id\":\"${source_type_id}\"}"
+    local response=`sources_api_post "sources" "{\"name\":\"Mock Source ${source_no}\",\"source_type_id\":\"${source_type_id}\"}"`
+    echo ${response}
 }
 
 function create_sources {
     local source_type_id=$1
     local cnt=$2
+
+    local app_type_id=$(get_application_type_id)
+
     for i in `seq 1 ${cnt}`;
     do
-        create_source ${source_type_id} ${i}
+        local source_id=$(create_source ${source_type_id} ${i} | jq -r '.id')
+        create_application ${app_type_id} ${source_id}
     done
 }
-
+# Delete all sources of MockSource type
 function delete_all_sources {
     local cnt=$(sources_count)
-    local response=$(sources_api_get 'sources')
+
+    local source_type_id=$(find_or_create_source_type)
+    local response=$(sources_api_get "sources?filter\[source_type_id\]=${source_type_id}')")
 
     for source_id in $(echo ${response} | jq -r '.data[].id'); do
         echo "DELETE /sources/${source_id}"
