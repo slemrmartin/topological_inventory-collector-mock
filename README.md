@@ -1,4 +1,10 @@
 # Mock collector for OpenShift
+
+[![Build Status](https://travis-ci.org/RedHatInsights/topological_inventory-mock_source.svg?branch=master)](https://travis-ci.org/RedHatInsights/topological_inventory-mock_source)
+[![Maintainability](https://api.codeclimate.com/v1/badges/a9786a524995131c01a4/maintainability)](https://codeclimate.com/github/RedHatInsights/topological_inventory-mock_source/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/a9786a524995131c01a4/test_coverage)](https://codeclimate.com/github/RedHatInsights/topological_inventory-mock_source/test_coverage)
+[![security](https://hakiri.io/github/RedHatInsights/topological_inventory-mock_source/master.svg)](https://hakiri.io/github/RedHatInsights/topological_inventory-mock_source/master)
+
 Mock collector for Topological Inventory service
 
 It implements collector with mock(generated) data, so it's both collector and server.   
