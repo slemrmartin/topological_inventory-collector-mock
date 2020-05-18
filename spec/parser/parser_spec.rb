@@ -74,7 +74,6 @@ describe TopologicalInventory::MockSource::Parser do
       :cpus   => mock_container_node.data[:cpus],
       :memory => mock_container_node.data[:memory],
     )
-    assert_lazy_object(api_container_node.lives_on, :uid_ems => nil)
     assert_tag(:container_node_tags, :source_ref => mock_container_node.uid)
   end
 
