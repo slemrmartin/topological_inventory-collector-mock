@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 plugin 'bundler-inject', '~> 1.1'
 require File.join(Bundler::Plugin.index.load_paths("bundler-inject")[0], "bundler-inject") rescue nil
 
-gem "activesupport", '>= 5.2.2.1', '~> 5.2.2'
+gem "activesupport", '~> 5.2.4.3'
 gem "concurrent-ruby"
 gem "config"
 gem "kubeclient"
