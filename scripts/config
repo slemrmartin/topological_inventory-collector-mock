@@ -2,6 +2,7 @@
 
 # OpenShift project, templates will be changed to this value
 openshift_project="topological-inventory-ci"
+openshift_sources_project="sources-ci"
 account_number="6089719" # insights-qa account
 
 # It serves as tenant's authorization. For our purpose, account number can be any value.

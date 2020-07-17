@@ -10,12 +10,15 @@ oc project ${openshift_project}
 echo "$(change_configmap_namespace ${config_file})" | oc apply -f -
 echo "$(change_configmap_namespace ${data_config_file})" | oc apply -f -
 echo ""
+
+oc project ${openshift_sources_project}
+
 echo "* Creating Source Type if missing..."
 source_type_id=$(find_or_create_source_type)
 echo "Source Type ID: ${source_type_id}"
 
 echo ""
-sources_response=$(sources_api_get "sources?filter\[source_type_id\]=${source_type_id}')")
+sources_response=$(sources_api_get "sources?filter\[source_type_id\]=${source_type_id}&filter\[version\]=mock")
 existing=$(records_count "${sources_response}")
 sources_needed=$((sources_total - existing))
 
