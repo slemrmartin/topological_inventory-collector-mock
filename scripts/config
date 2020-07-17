@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # OpenShift project, templates will be changed to this value
-openshift_project="mslemr-test"
-account_number="6089719"
+openshift_project="topological-inventory-ci"
+account_number="6089719" # insights-qa account
 
 # It serves as tenant's authorization. For our purpose, account number can be any value.
 # Creates records in "tenants" db tables
@@ -28,12 +28,12 @@ export SOURCES_API_SERVICE_PORT=3002
 export SOURCES_API_BASE_PATH="api/sources/v2.0"
 
 # Name of SourceType created in Sources DB
-source_type_name="mock-source"
+source_type_name="amazon"
 
 # Config files (will be mapped as "custom.yml" files)
 config_file="openshift/config_maps/custom-mock-config.yml"
 data_config_file="openshift/config_maps/custom-mock-data.yml"
 
 # How many Sources/deployments/pods will be created
-sources_total=2
+sources_total=1
 

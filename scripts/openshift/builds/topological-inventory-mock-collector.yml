@@ -50,4 +50,4 @@ parameters:
   description: Git repository branch to check out, if different from default
   displayName: Git Reference
   required: true
-  value: dev-ocp-branch
+  value: mock-amazon-ocp
