@@ -45,9 +45,9 @@ parameters:
   description: The URL of the repository with your application source code.
   displayName: Git repository URI
   required: true
-  value: https://github.com/ManageIQ/topological_inventory-mock_source
+  value: https://github.com/slemrmartin/topological_inventory-mock_source
 - name: SOURCE_REPOSITORY_REF
   description: Git repository branch to check out, if different from default
   displayName: Git Reference
   required: true
-  value: master
+  value: mock-amazon-ocp

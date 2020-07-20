@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 
 source "functions/common.sh"
+source "functions/source_type.sh"
+source "functions/application.sh"
 
 function sources_count {
-    local response=$(sources_api_get 'sources')
+    local response=$(sources_api_get 'sources?filter\[source_type_id\]=${source_type_id}&filter\[version\]=mock')
     local cnt=$(records_count "${response}")
 
     echo ${cnt}
@@ -13,21 +15,29 @@ function create_source {
     local source_type_id=$1
     local source_no=$2
 
-    sources_api_post "sources" "{\"name\":\"Mock Source ${source_no}\",\"source_type_id\":\"${source_type_id}\"}"
+    local response=`sources_api_post "sources" "{\"name\":\"Mock Source ${source_no}\",\"source_type_id\":\"${source_type_id}\",\"version\":\"mock\"}"`
+    echo ${response}
 }
 
 function create_sources {
     local source_type_id=$1
     local cnt=$2
+
+    local app_type_id=$(get_application_type_id)
+
     for i in `seq 1 ${cnt}`;
     do
-        create_source ${source_type_id} ${i}
+        local source_id=$(create_source ${source_type_id} ${i} | jq -r '.id')
+        create_application ${app_type_id} ${source_id}
     done
 }
-
+# Delete all sources of MockSource type
 function delete_all_sources {
+    oc project ${openshift_sources_project}
     local cnt=$(sources_count)
-    local response=$(sources_api_get 'sources')
+
+    local source_type_id=$(find_or_create_source_type)
+    local response=$(sources_api_get "sources?filter\[source_type_id\]=${source_type_id}&filter\[version\]=mock")
 
     for source_id in $(echo ${response} | jq -r '.data[].id'); do
         echo "DELETE /sources/${source_id}"
@@ -37,6 +47,7 @@ function delete_all_sources {
 }
 
 function delete_pods_with_sources {
+    oc project ${openshift_project}
     local dcs=$(oc get dc | grep mock-collector | awk '{print $1}')
 
     for dc in ${dcs[@]}
@@ -60,11 +71,16 @@ EOF
 }
 
 function deploy_sources {
-    local response=$(sources_api_get 'sources')
+    oc project ${openshift_sources_project}
+
+    local source_type_id=$(find_or_create_source_type)
+    local response=$(sources_api_get "sources?filter\[source_type_id\]=${source_type_id}&filter\[version\]=mock")
 
     local source_id
     local source_uid
     local param_no=0
+
+    oc project ${openshift_project}
 
     for param in $(echo ${response} | jq -r '.data[] | .id, .uid | tostring'); do
          if [[ ${param_no} -eq 0 ]]; then
@@ -83,4 +99,6 @@ function deploy_sources {
             param_no=0
          fi
     done
+
+    oc project ${openshift_sources_project}
 }

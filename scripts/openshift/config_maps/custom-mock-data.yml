@@ -7,20 +7,15 @@ data:
   custom.yml: |
     data:
       amounts:
-        container_images: 2
-        container_groups: 8
-        container_nodes: 2
-        container_projects: 2
-        container_templates: 4
-        flavors: 3
-        service_instances: 4
-        service_offerings: 2
-        service_offering_icons: 2
-        service_plans: 5
-        source_regions: 5
-        volumes: 10
-        volume_types: 5
-        vms: 6
-      values:
-        flavors:
-          cpus: 100
+        flavors: 500
+        service_instances: 500     # belongs_to [:source_region, :service_offering, :service_plan]
+        service_offerings: 1000    # belongs_to [:source_region]
+        service_offering_icons: 500
+        service_offering_tags: 1000
+        service_plans: 1500        # belongs_to [:source_region, :service_offering]
+        source_regions: 500
+        volumes: 1000              # belongs_to [:volume_type, :source_region]
+        volume_attachments: 10
+        volume_types: 500
+        vms: 1000                  # belongs_to [:flavor]
+        vm_tags: 5000
